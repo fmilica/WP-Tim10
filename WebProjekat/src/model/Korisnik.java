@@ -13,6 +13,11 @@ public class Korisnik {
 	
 	public Korisnik() {}
 	
+	public Korisnik(String email, String lozinka) {
+		this.email = email;
+		this.lozinka =lozinka;
+	}
+	
 	public Korisnik(String email, String lozinka, String ime, String prezime, Organizacija organizacija, Uloga uloga) {
 		this.email = email;
 		this.lozinka = lozinka;
