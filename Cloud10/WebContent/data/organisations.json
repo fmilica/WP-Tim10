@@ -1,0 +1,10 @@
+{
+  "Organisaton1" : {
+  	"name" : "Organisation1",
+  	"description" : "First organisation to exist",
+  	"users" : [
+  		"email2",
+  		"email3"
+  	]
+  }
+}
