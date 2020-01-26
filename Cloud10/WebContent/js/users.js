@@ -22,7 +22,6 @@ function verification(){
 
 //pozivanje funkcije za odjavljivanje
 function logout(){
-    e.preventDefault();
     console.log("odjavljivanje..");
     $.ajax({
         type : 'POST',
