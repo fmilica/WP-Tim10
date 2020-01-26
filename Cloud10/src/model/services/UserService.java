@@ -233,6 +233,14 @@ public class UserService {
 		return orgs.getOrganisationsMap().values();
 	}
 	
+	@GET
+	@Path("/getUserType")
+	@Produces(MediaType.APPLICATION_JSON)
+	public RoleType getUserType() {
+		User current = getCurrent();
+		return current.getRole();
+	}
+	
 	private Users getUsers() throws JsonIOException, JsonSyntaxException, FileNotFoundException {
 		Users users = (Users) ctx.getAttribute("users");
 		if(users == null){
