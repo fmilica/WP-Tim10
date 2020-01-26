@@ -37,11 +37,9 @@ $(document).on('submit', function(e) {
 	console.log(password);
 	
 	if(!email){
-		//ne prikaze 
 		$(this).find('#displayError1').html('Polje email mora biti popunjeno');
 	}
 	if(!password){
-		//ne prikaze
 		$(this).find('#displayError2').html('Polje password mora biti popunjeno');
 
 	}

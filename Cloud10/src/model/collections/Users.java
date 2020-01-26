@@ -74,4 +74,8 @@ public class Users {
 			}
 		}
 	}
+	
+	public void removeUser(User u) {
+		usersMap.remove(u.getEmail());
+	}
 }

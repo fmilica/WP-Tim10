@@ -84,6 +84,12 @@ public class UserService {
 	}
 	
 	@POST
+	@Path("/logout")
+	public void logout() {
+		setCurrent();
+	}
+	
+	@POST
 	@Path("/adduserSA")
 	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	@Produces(MediaType.APPLICATION_JSON)
@@ -150,7 +156,7 @@ public class UserService {
 		
 		//provera validnosti podataka
 		Users us = getUsers();
-		if(us.checkUser(p)) {
+		if(!us.checkUser(p)) {
 			return new User();
 		}
 		
@@ -172,7 +178,7 @@ public class UserService {
 		
 		//provera validnosti podataka
 		Users us = getUsers();
-		if(us.checkUser(p)) {
+		if(!us.checkUser(p)) {
 			return new User();
 		}
 		
@@ -182,11 +188,49 @@ public class UserService {
 		return p;
 	}
 	
+	@POST
+	@Path("/deleteuser")
+	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+	@Produces(MediaType.APPLICATION_JSON)
+	public User deleteuser(User p) throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+		//admin i super admin mogu da brisu korisnike
+		//naravno one koji su njima vidljivi
+		Users us = getUsers();
+		if(us.checkUser(p)) {
+			us.removeUser(p);
+			ctx.setAttribute("users", us);
+		}
+		
+		return new User();
+	}
 	
 	@POST
-	@Path("/logout")
-	public void logout() {
-		setCurrent();
+	@Path("/editprofile")
+	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+	@Produces(MediaType.APPLICATION_JSON)
+	public User editprofile(User p) {
+		User current = getCurrent();
+		current.setEmail(p.getEmail());
+		current.setPassword(p.getPassword());
+		current.setName(p.getName());
+		current.setSurname(p.getSurname());
+		ctx.setAttribute("curent", current);
+		return current;
+	}
+	
+	@GET
+	@Path("/getOrgs")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Organisation> getOrgs() throws JsonIOException, JsonSyntaxException, FileNotFoundException{
+		User current = getCurrent();
+		Organisations orgs = new Organisations();
+		if(current.getRole() == RoleType.SuperAdmin) {
+			orgs = getOrganisations();
+		}
+		else {
+			orgs.getOrganisationsMap().put(current.getOrganisation().getName(), current.getOrganisation());
+		}
+		return orgs.getOrganisationsMap().values();
 	}
 	
 	private Users getUsers() throws JsonIOException, JsonSyntaxException, FileNotFoundException {

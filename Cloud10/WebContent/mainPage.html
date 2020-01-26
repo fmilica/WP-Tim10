@@ -6,16 +6,22 @@
   <title>Cloud10 Service</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- jQuery -->
+  <!-- Bootstrap 4 -->
+  <script src="html/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- overlayScrollbars -->
+  <script src="html/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- overlayScrollbars -->
-  <link rel="stylesheet" href="overlayScrollbars/css/OverlayScrollbars.min.css">
+  <link rel="stylesheet" href="html/overlayScrollbars/css/OverlayScrollbars.min.css">
   <!-- Theme style -->
-  <link rel="stylesheet" href="dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="html/dist/css/adminlte.min.css">
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
   <!-- Project style -->
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="html/css/style.css">
+  <script type="text/javascript" src="js/users.js"></script>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <!-- Site wrapper -->
@@ -25,7 +31,7 @@
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="#" class="brand-link">
-      <img src="../images/png/logo.png"
+      <img src="html/images/png/logo.png"
            alt="Cloud10 Logo"
            class="brand-image img-circle elevation-3"
            style="opacity: .8">
@@ -112,7 +118,7 @@
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Logout</a></li>
+              <li class="breadcrumb-item"><a href="#" onclick="logout()">Logout</a></li>
               <li class="breadcrumb-item">&nbsp;</li>
             </ol>
           </div>
@@ -229,11 +235,5 @@
 </div>
 <!-- ./wrapper -->
 
-<!-- jQuery -->
-<script src="jquery/jquery.min.js"></script>
-<!-- Bootstrap 4 -->
-<script src="bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- overlayScrollbars -->
-<script src="overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
 </body>
 </html>

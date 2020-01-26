@@ -21,12 +21,12 @@ function verification(){
 };
 
 //pozivanje funkcije za odjavljivanje
-$(document).on('submit', '.Logout', function(e){
+function logout(){
     e.preventDefault();
     console.log("odjavljivanje..");
     $.ajax({
         type : 'POST',
-		url : rootURL + "/rest/users/logout",
+		url :  rootURL + "/rest/users/logout",
 		success : function() {
 				window.location.href = "login.html";
 				
@@ -35,4 +35,4 @@ $(document).on('submit', '.Logout', function(e){
 			alert("AJAX ERROR: " + errorThrown);
 		}
     });
-})
+}
