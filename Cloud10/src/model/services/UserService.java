@@ -37,14 +37,14 @@ public class UserService {
 	public Collection<User> load() throws JsonIOException, JsonSyntaxException, FileNotFoundException {
 		System.out.println("ucitaj korisnike");
 		User current = getCurrent();
-		if(current.getRole() == RoleType.SuperAdmin) {
-			return (getUsers()).getUsersMap().values();
-		}
-		else if(current.getRole() == RoleType.Admin){
+		if(current.getRole() == RoleType.Admin){
 			return getAdminUsers().getUsersMap().values();
 		}
-		else {
+		else if(current.getRole() == RoleType.User){
 			return getCurrentUsers().getUsersMap().values();
+		}
+		else {
+			return (getUsers()).getUsersMap().values();
 		}
 	}
 	
@@ -128,7 +128,6 @@ public class UserService {
 			return new User();
 		}
 		
-		User current = getCurrent();
 		Organisation org = (Organisation)ctx.getAttribute("organisation");
 		p.setOrganisation(org);
 		org.addUser(p);
