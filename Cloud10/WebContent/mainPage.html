@@ -2,23 +2,23 @@
 <head>
 	<title>Main page</title>
 	<script src="js/jquery.min.js"></script>
+	<script src="js/users.js"></script>
+	<script src="js/organisations.js"></script>
 	<script src="js/main.js"></script>
 </head>
 
 <body>
-	<form name="formUser" id="formUser">
-		<table>
-			<tr>
-				<td><input type="button" id="listUsers" name="listUsers"
-					value="list users"></td>
-			</tr>
-		</table>
+	<form name="formLogout" id="logout" class="Logout">
+		<input type="submit" id="logout" name="logoutbtn" value="logout">
 	</form>
-
-	<div id="changeable">
-	</div>
-	
-	<div id="edit">
-	</div>
+	<form name="formViewORG" id="viewo">
+		<input type="submit" id="vieworg" name="vieworgbtn" value="view orgs">
+	</form>
+	<form name="formAddORG" id="addo">
+		<input type="submit" id="addorg" name="addorgbtn" value="add org">
+	</form>
+	<form name="formChangeORG" id="changeo">
+		<input type="submit" id="changeorg" name="changeorgbtn" value="change org">
+	</form>
 </body>
 </html>

@@ -16,8 +16,11 @@ import javax.ws.rs.core.MediaType;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
+import model.Organisation;
 import model.User;
+import model.collections.Organisations;
 import model.collections.Users;
+import model.enums.RoleType;
 
 @Path("/users")
 public class UserService {
@@ -33,31 +36,45 @@ public class UserService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Collection<User> load() throws JsonIOException, JsonSyntaxException, FileNotFoundException {
 		System.out.println("ucitaj korisnike");
-		return (getUsers()).getUsersMap().values();
+		User current = getCurrent();
+		if(current.getRole() == RoleType.SuperAdmin) {
+			return (getUsers()).getUsersMap().values();
+		}
+		else if(current.getRole() == RoleType.Admin){
+			return getAdminUsers().getUsersMap().values();
+		}
+		else {
+			return getCurrentUsers().getUsersMap().values();
+		}
 	}
 	
-
+	@GET
+	@Path("/checkCurrent")
+	@Produces(MediaType.APPLICATION_JSON)
+	public User checkCurrent() throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+		System.out.println("---------validacija----------");
+		return getCurrent();
+	}
+	
+	
 	@POST
 	@Path("/login")
 	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-//    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	@Produces(MediaType.TEXT_PLAIN)
 	public String login(User p) throws JsonIOException, JsonSyntaxException, FileNotFoundException {
 		System.out.println("provera na serverskoj strani");
-		System.out.println(p.getEmail() + "         " + p.getPassword());
+		User current = new User();
 		boolean ind = false;
 		for (User k : getUsers().getUsersMap().values()) {
-			//System.out.println(pr.getName() + " " + pr.getPrice());
-			System.out.println(k.getEmail() + "    " + k.getPassword());
 			if(k.getEmail().equals(p.getEmail()) && k.getPassword().equals(p.getPassword()))
 			{
 				ind = true;
+				current = k;
 				break;
 			}	
 		}
-		System.out.println();
 		if(ind) {
-			request.getSession().setAttribute("trenutni", p);
+			request.getSession().setAttribute("current", current);
 		}
 		else {
 			return "greska404";
@@ -66,10 +83,161 @@ public class UserService {
 		return getCurrent().getEmail();
 	}
 	
+	@POST
+	@Path("/adduserSA")
+	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+	@Produces(MediaType.APPLICATION_JSON)
+	public User adduserSA(User p) throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+		System.out.println("dodavanje korisnika na serverskoj strani SuperAdmin");
+		//super admin moze da popuni samo 
+		//email, sifru, ime, prezime i organizaciju
+		//za tip moze da odabere admin ili korisnik
+		
+		//provera validnosti podataka
+		Users us = getUsers();
+		if(!us.checkUser(p)) {
+			return new User();
+		}
+		
+		Organisation org = getOrganisations().getOrganisationsMap().get(p.getOrganisation().getName());
+		p.setOrganisation(org);
+		org.addUser(p);
+		us.addUser(p);
+		ctx.setAttribute("users", us);
+		ctx.setAttribute("organisations", getOrganisations());
+		for (Organisation o : getOrganisations().getOrganisationsMap().values()) {
+			System.out.println(o);
+		}
+		return p;
+	}
+	
+	@POST
+	@Path("/adduserA")
+	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+	@Produces(MediaType.APPLICATION_JSON)
+	public User adduserA(User p) throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+		System.out.println("dodavanje korisnika na serverskoj strani SuperAdmin");
+		//super admin moze da popuni samo 
+		//email, sifru, ime, prezime
+		//organizaciju dobija od admina koji je trenutno prijavljen
+		//za tip moze da odabere admin ili korisnik
+		
+		//provera validnosti podataka
+		Users us = getUsers();
+		if(us.checkUser(p)) {
+			return new User();
+		}
+		
+		User current = getCurrent();
+		Organisation org = (Organisation)ctx.getAttribute("organisation");
+		p.setOrganisation(org);
+		org.addUser(p);
+		us.addUser(p);
+		ctx.setAttribute("users", us);
+		ctx.setAttribute("organisation", org);
+		System.out.println((Organisation)ctx.getAttribute("organisation"));
+		return p;
+	}
+	
+	@POST
+	@Path("/changeuserSA")
+	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+	@Produces(MediaType.APPLICATION_JSON)
+	public User changeuserSA(User p) throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+		System.out.println("dodavanje korisnika na serverskoj strani SuperAdmin");
+		//super admin moze da popuni samo 
+		//sifru, ime, prezime i odabere tip za izmenu
+		//EMAIL I ORGANISATION NE MOZE
+		
+		//provera validnosti podataka
+		Users us = getUsers();
+		if(us.checkUser(p)) {
+			return new User();
+		}
+		
+		us.setUserValues(p);
+		ctx.setAttribute("users", us);
+		
+		return p;
+	}
+	
+	@POST
+	@Path("/changeuserA")
+	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+	@Produces(MediaType.APPLICATION_JSON)
+	public User changeuserA(User p) throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+		System.out.println("dodavanje korisnika na serverskoj strani SuperAdmin");
+		//admin moze da popuni samo korisnike u njegovoj organizaciji
+		//sifru, ime, prezime i odabere tip za izmenu
+		//EMAIL I ORGANISATION NE MOZE
+		
+		//provera validnosti podataka
+		Users us = getUsers();
+		if(us.checkUser(p)) {
+			return new User();
+		}
+		
+		us.setUserValues(p);
+		ctx.setAttribute("users", us);
+		
+		return p;
+	}
+	
+	
+	@POST
+	@Path("/logout")
+	public void logout() {
+		setCurrent();
+	}
+	
 	private Users getUsers() throws JsonIOException, JsonSyntaxException, FileNotFoundException {
 		Users users = (Users) ctx.getAttribute("users");
 		if(users == null){
 			users = new Users(ctx.getRealPath(""));
+			Organisations o = new Organisations(ctx.getRealPath(""));
+			ctx.setAttribute("organisations", o);
+			for (Organisation org : o.getOrganisationsMap().values()) {
+				for (String user : org.getUsers()) {
+					if(users.getUsersMap().containsKey(user)) {
+						users.setOrgForUser(user,org);
+					}
+				}
+			}
+			ctx.setAttribute("users",users);
+		}
+		return users;
+	}
+	
+	private Users getAdminUsers() throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+		Users users = (Users) ctx.getAttribute("users");
+		if(users == null){
+			User current = getCurrent();
+			users = new Users(ctx.getRealPath(""),current);
+			Organisations o = new Organisations(ctx.getRealPath(""));
+			ctx.setAttribute("organisation", o.getOrganisationsMap().get(current.getOrganisation().getName()));
+			current.setOrganisation((Organisation)ctx.getAttribute("organisation"));
+			for (User user : users.getUsersMap().values()) {
+				user.setOrganisation((Organisation)ctx.getAttribute("organisation"));
+			}
+			request.getSession().setAttribute("current", current);
+			ctx.setAttribute("users",users);
+		}
+		return users;
+	}
+	
+	private Users getCurrentUsers() throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+		Users users = (Users) ctx.getAttribute("users");
+		if(users == null){
+			User current = getCurrent();
+			Organisations o = new Organisations(ctx.getRealPath(""));
+			ctx.setAttribute("organisation", o.getOrganisationsMap().get(current.getOrganisation().getName()));
+			
+			current.setOrganisation((Organisation)ctx.getAttribute("organisation"));
+			
+			users = new Users();
+			users.getUsersMap().put(current.getEmail(), current);
+			
+			request.getSession().setAttribute("current", current);
 			ctx.setAttribute("users",users);
 		}
 		return users;
@@ -82,5 +250,15 @@ public class UserService {
 			request.getSession().setAttribute("current", sc);
 		} 
 		return sc;
+	}
+	
+	private void setCurrent() {
+		User u = new User();
+		request.getSession().setAttribute("current", u);
+	}
+	
+	private Organisations getOrganisations() throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+		Organisations o = (Organisations) ctx.getAttribute("organisations");
+		return o;
 	}
 }

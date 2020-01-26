@@ -11,6 +11,10 @@ public class Organisation {
 	private Collection<VMResource> resources;
 	
 	public Organisation() {}
+	
+	public Organisation(String name) {
+		this.name = name;
+	}
 
 	public Organisation(String name, String description, String logo, Collection<String> users,
 			Collection<VMResource> resources) {
@@ -49,6 +53,9 @@ public class Organisation {
 	}
 	public void setUsers(Collection<String> users) {
 		this.users = users;
+	}
+	public void addUser(User user) {
+		this.users.add(user.getEmail());
 	}
 	public Collection<VMResource> getResources() {
 		return resources;

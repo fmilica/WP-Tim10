@@ -17,6 +17,34 @@ public class User {
 		this.email = email;
 		this.password = password;
 	}
+	
+	public User(String email, String password, String name, String surname, String role) {
+		this.email = email;
+		this.password = password;
+		this.name = name;
+		this.surname = surname;
+		this.organisation = new Organisation();
+		if(role.equals("Admin")) {
+			this.role = RoleType.Admin;
+		}
+		else {
+			this.role = RoleType.User;
+		}
+	}
+	
+	public User(String email, String password, String name, String surname, String organisation, String role) {
+		this.email = email;
+		this.password = password;
+		this.name = name;
+		this.surname = surname;
+		this.organisation = new Organisation(organisation);
+		if(role.equals("Admin")) {
+			this.role = RoleType.Admin;
+		}
+		else {
+			this.role = RoleType.User;
+		}
+	}
 
 	public User(String email, String password, String name, String surname, Organisation organisation, RoleType role) {
 		this.email = email;
