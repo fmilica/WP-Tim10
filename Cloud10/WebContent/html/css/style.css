@@ -1,0 +1,65 @@
+thead.account {
+    background: #f5a15d;
+}
+
+thead.vm {
+    background: #6caff7;
+}
+
+thead.disc {
+    background: #eecb62;
+}
+
+thead.organ {
+    background: #48cf67;
+}
+
+thead.users {
+    background: #af87ee;
+}
+
+thead.cat {
+    background: #ce0015b0;
+}
+
+.iconAccount {
+    content: url('../../images/png/account.png');
+    height: 20px;
+    width: 20px;
+    display: block;
+}
+
+.iconVM {
+    content: url('../../images/png/vm.png');
+    height: 20px;
+    width: 20px;
+    display: block;
+}
+
+.iconDisc {
+    content: url('../../images/png/disc.png');
+    height: 20px;
+    width: 20px;
+    display: block;
+}
+
+.iconOrgan {
+    content: url('../../images/png/organisation.png');
+    height: 20px;
+    width: 20px;
+    display: block;
+}
+
+.iconUsers {
+    content: url('../../images/png/users.png');
+    height: 20px;
+    width: 20px;
+    display: block;
+}
+
+.iconCat {
+    content: url('../../images/png/category.png');
+    height: 20px;
+    width: 20px;
+    display: block;
+}
