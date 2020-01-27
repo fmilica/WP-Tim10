@@ -1,0 +1,20 @@
+{
+  "Cat1" : {
+  	"name" : "Cat1",
+  	"coreNum" : "4",
+  	"ram" : "16",
+  	"gpu" : null
+  },
+  "Cat2" : {
+  	"name" : "Cat2",
+  	"coreNum" : "16",
+  	"ram" : "256",
+  	"gpu" : null
+  },
+  "Cat3" : {
+  	"name" : "Cat3",
+  	"coreNum" : "8",
+  	"ram" : "128",
+  	"gpu" : "4"
+  }
+}

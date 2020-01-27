@@ -1,0 +1,88 @@
+{
+  "VM1" : {
+  	"name" : "VM1",
+  	"category" : {
+  		"name" : "Cat1",
+  		"coreNum" : "4",
+  		"ram" : "16",
+  		"gpu" : null
+  	},
+  	"coreNum" : "4",
+  	"ram" : "16",
+  	"gpu" : null,
+  	"discs" : [
+  		{
+		"name" : "Disc1",
+		"type" : "HDD",
+		"capacity" : "64",
+		"VM" : "VM1"
+  		},
+	  	{
+	  	"name" : "Disc2",
+	  	"type" : "SDD",
+	  	"capacity" : "32",
+	  	"VM" : "VM1"
+	  	}
+  	],
+  	"activities" : [
+  		{
+  		"onTime" : "9-1-2020 15:00",
+  		"offTime" : "9-1-2020 17:00"
+  		},
+  		{
+  		"onTime" : "15-1-2020 15:00",
+  		"offTime" : "17-1-2020 17:00"
+  		}
+  	]
+  },
+  "VM2" : {
+  	"name" : "VM2",
+  	"category" : {
+  		"name" : "Cat2",
+  		"coreNum" : "16",
+  		"ram" : "256",
+  		"gpu" : null
+  	},
+  	"coreNum" : "16",
+  	"ram" : "256",
+  	"gpu" : null,
+  	"discs" : [
+  		{
+		"name" : "Disc3",
+		"type" : "HDD",
+		"capacity" : "1024",
+		"VM" : "VM2"
+  		},
+	  	{
+	  	"name" : "Disc4",
+	  	"type" : "SDD",
+	  	"capacity" : "128",
+	  	"VM" : "VM2"
+	  	},
+	  	{
+		"name" : "Disc5",
+		"type" : "HDD",
+		"capacity" : "512",
+		"VM" : "VM2"
+  		}
+  	],
+  	"activities" : [
+  		{
+  		"onTime" : "3-1-2020 7:11",
+  		"offTime" : "5-1-2020 5:43"
+  		},
+  		{
+  		"onTime" : "16-1-2020 16:24",
+  		"offTime" : "17-1-2020 17:13"
+  		},
+  		{
+  		"onTime" : "20-1-2020 23:43",
+  		"offTime" : "20-1-2020 23:54"
+  		},
+  		{
+  		"onTime" : "21-1-2020 22:55",
+  		"offTime" : "22-1-2020 1:16"
+  		}
+  	]
+  }
+}

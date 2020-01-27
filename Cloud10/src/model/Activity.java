@@ -3,7 +3,6 @@ package model;
 import java.util.Date;
 
 public class Activity {
-
 	private Date onTime;
 	private Date offTime;
 	

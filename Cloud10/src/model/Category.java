@@ -4,21 +4,21 @@ public class Category {
 
 	private String name;
 	private int coreNum;
-	private int RAM;
-	private int GPU;
+	private int ram;
+	private int gpu;
 	
 	public Category() {}
 
-	public Category(String name, int coreNum, int rAM, int gPU) {
+	public Category(String name, int coreNum, int ram, int gpu) {
 		this.name = name;
 		this.coreNum = coreNum;
-		RAM = rAM;
-		GPU = gPU;
+		this.ram = ram;
+		this.gpu = gpu;
 	}
 	
 	@Override
 	public String toString() {
-		return "Category [name=" + name + ", coreNum=" + coreNum + ", RAM=" + RAM + ", GPU=" + GPU + "]";
+		return "Category [name=" + name + ", coreNum=" + coreNum + ", RAM=" + ram + ", GPU=" + gpu + "]";
 	}
 
 	public String getName() {
@@ -34,15 +34,15 @@ public class Category {
 		this.coreNum = coreNum;
 	}
 	public int getRAM() {
-		return RAM;
+		return ram;
 	}
-	public void setRAM(int rAM) {
-		RAM = rAM;
+	public void setRAM(int ram) {
+		this.ram = ram;
 	}
 	public int getGPU() {
-		return GPU;
+		return gpu;
 	}
-	public void setGPU(int gPU) {
-		GPU = gPU;
+	public void setGPU(int gpu) {
+		this.gpu = gpu;
 	}
 }

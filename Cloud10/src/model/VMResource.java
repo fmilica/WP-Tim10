@@ -2,7 +2,13 @@ package model;
 
 public abstract class VMResource {
 
-	private String name;
+	protected String name;
+	
+	public VMResource() {}
+	
+	public VMResource(String name) {
+		this.name = name;
+	}
 	
 	@Override
 	public String toString() {

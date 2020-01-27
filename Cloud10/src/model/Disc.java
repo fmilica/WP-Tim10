@@ -4,7 +4,6 @@ import model.enums.DiscType;
 
 public class Disc extends VMResource {
 
-	private String name;
 	private DiscType type;
 	private int capacity;
 	private String VM;
@@ -12,7 +11,7 @@ public class Disc extends VMResource {
 	public Disc() {}
 
 	public Disc(String name, DiscType type, int capacity, String vM) {
-		this.name = name;
+		super(name);
 		this.type = type;
 		this.capacity = capacity;
 		VM = vM;

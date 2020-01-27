@@ -1,24 +1,106 @@
-thead.account {
+.superAdmin {
+    display: none;
+}
+
+.admin {
+    display: none;
+}
+
+.user {
+    display: none;
+}
+
+.addForm {
+    display: none;
+}
+
+.btn-acc {
+    background-color: #f5a15d;
+    border-color: #f5a15d;
+}
+
+.btn-acc:hover {
+    background-color: #e9934c;
+    border-color: #e9934c;
+}
+
+.btn-vm {
+    background-color: #6caff7;
+    border-color: #6caff7;
+}
+
+.btn-vm:hover {
+    background-color: #5899df;
+    border-color: #5899df;
+}
+
+.btn-disc {
+    background-color: #eecb62;
+    border-color: #eecb62;
+}
+
+.btn-disc:hover {
+    background-color: #e0bb4b;
+    border-color: #e0bb4b;
+}
+
+.btn-organ {
+    background-color: #48cf67;
+    border-color: #48cf67;
+}
+
+.btn-organ:hover {
+    background-color: #3fc25d;
+    border-color: #3fc25d;
+}
+
+.btn-users {
+    background-color: #af87ee;
+    border-color: #af87ee;
+}
+
+.btn-users:hover {
+    background-color: #a076e4;
+    border-color: #a076e4;
+}
+
+.btn-cat {
+    background-color: #ce0015b0;
+    border-color: #ce0015b0;
+}
+
+.btn-cat:hover {
+    background-color: #bd1122b0;
+    border-color: #bd1122b0;
+}
+
+.account {
+    color: #ffffff;
     background: #f5a15d;
 }
 
-thead.vm {
+.vm {
+    color: #ffffff;
     background: #6caff7;
 }
 
-thead.disc {
+.disc {
+    color: #ffffff;
     background: #eecb62;
 }
 
-thead.organ {
+.organ {
+    color: #ffffff;
     background: #48cf67;
 }
 
-thead.users {
+.users {
+    color: #ffffff;
     background: #af87ee;
 }
 
-thead.cat {
+.cat {
+    color: #ffffff;
     background: #ce0015b0;
 }
 

@@ -2,32 +2,56 @@ package model;
 
 import java.util.Collection;
 
-public class VirtualMachine {
+public class VirtualMachine extends VMResource {
 
 	private Category category;
 	private int coreNum;
-	private int RAM;
-	private int GPU;
+	private int ram;
+	private int gpu;
 	private Collection<Disc> discs;
 	private Collection<Activity> activities;
 	
 	public VirtualMachine() {}
 
-	public VirtualMachine(Category category, int coreNum, int rAM, int gPU, Collection<Disc> discs,
-			Collection<Activity> activities) {
+	public VirtualMachine(String name, Category category) {
+		super(name);
 		this.category = category;
-		this.coreNum = coreNum;
-		RAM = rAM;
-		GPU = gPU;
+		this.coreNum = category.getCoreNum();
+		this.ram = category.getRAM();
+		this.gpu = category.getGPU();
+	}
+	
+	public VirtualMachine(String name, Category category, Collection<Activity> activities) {
+		super(name);
+		this.category = category;
+		this.coreNum = category.getCoreNum();
+		this.ram = category.getRAM();
+		this.gpu = category.getGPU();
+		this.activities = activities;
+	}
+	
+	public VirtualMachine(String name, Category category, Collection<Disc> discs,
+			Collection<Activity> activities) {
+		super(name);
+		this.category = category;
+		this.coreNum = category.getCoreNum();
+		ram = category.getRAM();
+		gpu = category.getGPU();
 		this.discs = discs;
 		this.activities = activities;
 	}
 
 	@Override
 	public String toString() {
-		return "VirtualMachine [category=" + category + ", coreNum=" + coreNum + ", RAM=" + RAM + ", GPU=" + GPU + "]";
+		return "VirtualMachine [name=" + name + "category=" + category + ", coreNum=" + coreNum + ", RAM=" + ram + ", GPU=" + gpu + "]";
 	}
 
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 	public Category getCategory() {
 		return category;
 	}
@@ -41,16 +65,16 @@ public class VirtualMachine {
 		this.coreNum = coreNum;
 	}
 	public int getRAM() {
-		return RAM;
+		return ram;
 	}
-	public void setRAM(int rAM) {
-		RAM = rAM;
+	public void setRAM(int ram) {
+		this.ram = ram;
 	}
 	public int getGPU() {
-		return GPU;
+		return gpu;
 	}
-	public void setGPU(int gPU) {
-		GPU = gPU;
+	public void setGPU(int gpu) {
+		this.gpu = gpu;
 	}
 	public Collection<Disc> getDiscs() {
 		return discs;

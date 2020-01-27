@@ -1,0 +1,14 @@
+{
+  "Disc1" : {
+  	"name" : "Disc1",
+  	"type" : "HDD",
+  	"capacity" : "64",
+  	"VM" : "VM1"
+  },
+  "Disc2" : {
+  	"name" : "Disc2",
+  	"type" : "SDD",
+  	"capacity" : "32",
+  	"VM" : "VM1"
+  }
+}
