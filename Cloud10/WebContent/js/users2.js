@@ -90,23 +90,24 @@ $(document).ready(function(){
 function addUser(){
     $(document).find('.addForm').show();
     if(currentType == "SuperAdmin"){
-        $(document).find('.addOrg').show();
+        $(document).find('.superAdmin').show();
+        $(document).find('.form-control superAdmin').show();
     }
 }
 
 function add(){
     var email = $(document).find('input[name="add_email"]').val()
-    var pass = $(document).find('input[name="add_email"]').val()
-    var name = $(document).find('input[name="add_email"]').val()
-    var surn = $(document).find('input[name="add_email"]').val()
+    var pass = $(document).find('input[name="add_pass"]').val()
+    var name = $(document).find('input[name="add_name"]').val()
+    var surn = $(document).find('input[name="add_surn"]').val()
     var org = "adminorg"
     if(currentType == "SuperAdmin"){
-        org = $(document).find('select[name="selectAdd"]')
+        org = $(document).find('select[name="selectAdd"]').val()
     }
     var type = $(document).find('select[name="selectType"]').val()
 
     if(!email || !pass || !name || !surn || !org || !type){
-        alert("All of the input boxes must me filled!")
+        alert("All of the input boxes must be filled!")
     }
     else{
         $.ajax({
