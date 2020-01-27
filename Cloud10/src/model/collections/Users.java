@@ -12,6 +12,7 @@ import com.google.gson.reflect.TypeToken;
 
 import model.Organisation;
 import model.User;
+import model.enums.RoleType;
 
 public class Users {
 
@@ -54,7 +55,9 @@ public class Users {
 	}
 	
 	public void setOrgForUser(String user, Organisation organisation) {
-		usersMap.get(user).setOrganisation(organisation);
+		if(usersMap.get(user).getRole() != RoleType.SuperAdmin) {
+			usersMap.get(user).setOrganisation(organisation);
+		}
 	}
 	
 	public boolean checkUser(User u) {

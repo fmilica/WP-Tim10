@@ -22,6 +22,10 @@
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
   <!-- Project style -->
   <link rel="stylesheet" href="html/css/style.css">
+  <!-- Srcipt file -->
+  <script type="text/javascript" src="js/users.js"></script>
+  <!-- Srcipt file -->
+  <script type="text/javascript" src="js/users2.js"></script>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <!-- Site wrapper -->
@@ -122,14 +126,14 @@
           <div class="col-12">
             <!-- Default box -->
             <div class="card">
-              <table>
+              <table id="usersTable">
                 <thead class="users">
                 </thead>
                 <tbody>
                 </tbody>
               </table>
               <div class="card-footer">
-                <input type="button" value="Add VM">
+                <input type="button" value="Add User" onclick="addUser()">
               </div>
               <!-- /.card-footer-->
             </div>
@@ -139,6 +143,48 @@
       </div>
     </section>
     <!-- /.content -->
+    <form class="addForm" id="add" action="/">
+      <div>
+        <table>
+          <tr>
+            <td>Email</td>
+            <td><input type="text" name="add_email"></td>
+          </tr>
+          <tr>
+            <td>Password</td>
+            <td><input type="text" name="add_pass"></td>
+          </tr>
+          <tr>
+            <td>Name</td>
+            <td><input type="text" name="add_name"></td>
+          </tr>
+          <tr>
+            <td>Surname</td>
+            <td><input type="text" name="add_surn"></td>
+          </tr>
+          <tr class="superAdmin">
+            <td>Organisation</td>
+            <td>
+              <select id="addSelect" name="selectAdd">
+                <option></option>
+              </select>
+            </td>
+          </tr h>
+          <tr>
+            <td>Type</td>
+            <td>
+              <select name="selectType">
+                <option>Admin</option>
+                <option>User</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td><input type="submit" value="Add User" onclick="add()"></td>
+          </tr>
+        </table>    
+      </div>
+    </form>
   </div>
   <!-- /.content-wrapper -->
 

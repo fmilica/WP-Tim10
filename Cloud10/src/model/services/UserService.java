@@ -62,7 +62,7 @@ public class UserService {
 	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	@Produces(MediaType.TEXT_PLAIN)
 	public String login(User p) throws JsonIOException, JsonSyntaxException, FileNotFoundException {
-		System.out.println("provera na serverskoj strani");
+		System.out.println("login - provera na serverskoj strani");
 		User current = new User();
 		boolean ind = false;
 		for (User k : getUsers().getUsersMap().values()) {
@@ -86,18 +86,21 @@ public class UserService {
 	@POST
 	@Path("/logout")
 	public void logout() {
+		System.out.println("odjavljivanje");
+		System.out.println(getCurrent());
 		setCurrent();
+		System.out.println(getCurrent());
 	}
 	
 	@POST
-	@Path("/adduserSA")
+	@Path("/addUser")
 	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	@Produces(MediaType.APPLICATION_JSON)
 	public User adduserSA(User p) throws JsonIOException, JsonSyntaxException, FileNotFoundException {
-		System.out.println("dodavanje korisnika na serverskoj strani SuperAdmin");
-		//super admin moze da popuni samo 
-		//email, sifru, ime, prezime i organizaciju
-		//za tip moze da odabere admin ili korisnik
+		System.out.println("dodavanje korisnika na serverskoj strani");
+		//super admin moze da popuni samo					admin moze da popuni samo 
+		//email, sifru, ime, prezime i organizaciju			email, sifru, ime, prezime, organizaciju dobija od admina koji je trenutno prijavljen
+		//za tip moze da odabere admin ili korisnik			za tip moze da odabere admin ili korisnik
 		
 		//provera validnosti podataka
 		Users us = getUsers();
@@ -107,40 +110,16 @@ public class UserService {
 		
 		Organisation org = getOrganisations().getOrganisationsMap().get(p.getOrganisation().getName());
 		p.setOrganisation(org);
-		org.addUser(p);
+		getOrganisations().getOrganisationsMap().get(p.getOrganisation().getName()).addUser(p);
 		us.addUser(p);
 		ctx.setAttribute("users", us);
-		ctx.setAttribute("organisations", getOrganisations());
-		for (Organisation o : getOrganisations().getOrganisationsMap().values()) {
-			System.out.println(o);
+		User current = getCurrent();
+		if(current.getRole() == RoleType.SuperAdmin) {
+			ctx.setAttribute("organisations", getOrganisations());
 		}
-		return p;
-	}
-	
-	@POST
-	@Path("/adduserA")
-	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	@Produces(MediaType.APPLICATION_JSON)
-	public User adduserA(User p) throws JsonIOException, JsonSyntaxException, FileNotFoundException {
-		System.out.println("dodavanje korisnika na serverskoj strani SuperAdmin");
-		//super admin moze da popuni samo 
-		//email, sifru, ime, prezime
-		//organizaciju dobija od admina koji je trenutno prijavljen
-		//za tip moze da odabere admin ili korisnik
-		
-		//provera validnosti podataka
-		Users us = getUsers();
-		if(us.checkUser(p)) {
-			return new User();
+		else if(current.getRole() == RoleType.Admin) {
+			ctx.setAttribute("organisation", org);
 		}
-		
-		Organisation org = (Organisation)ctx.getAttribute("organisation");
-		p.setOrganisation(org);
-		org.addUser(p);
-		us.addUser(p);
-		ctx.setAttribute("users", us);
-		ctx.setAttribute("organisation", org);
-		System.out.println((Organisation)ctx.getAttribute("organisation"));
 		return p;
 	}
 	
@@ -282,7 +261,7 @@ public class UserService {
 			User current = getCurrent();
 			Organisations o = new Organisations(ctx.getRealPath(""));
 			ctx.setAttribute("organisation", o.getOrganisationsMap().get(current.getOrganisation().getName()));
-			
+			System.out.println((Organisation)ctx.getAttribute("organisation"));
 			current.setOrganisation((Organisation)ctx.getAttribute("organisation"));
 			
 			users = new Users();
@@ -305,6 +284,7 @@ public class UserService {
 	
 	private void setCurrent() {
 		User u = new User();
+		System.out.println("PRAZAN USER ->>>> " + u);
 		request.getSession().setAttribute("current", u);
 	}
 	

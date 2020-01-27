@@ -1,11 +1,24 @@
 var rootURL = "../Cloud10"
 
-verification();
-
 //funkcija za proveru da li prilikom dolaska na mainPage postoji trenutni ulogovani
-//situacija kada posle odjave pritisnemo back??
-function verification(){
-    $.ajax({
+//situacija kada posle odjave pritisnemo back
+//plus dobavljanje tipa trenutnog ulogovanog 
+//za prikaz funkcionalnosti
+$(window).on('load', function(){
+	$.ajax({
+		type : 'GET',
+		url : rootURL + "/rest/users/getUserType",
+		dataType : "json",
+		success : showTypePage,
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("AJAX ERROR: " + errorThrown);
+		}
+	});
+	validation();
+})
+
+function validation(){
+	$.ajax({
         type : 'GET',
 		url : rootURL + "/rest/users/checkCurrent",
 		dataType : "json",
@@ -18,7 +31,18 @@ function verification(){
 			alert("AJAX ERROR: " + errorThrown);
 		}
     });
-};
+}
+
+function showTypePage(type) {
+	if (type == "Admin") {
+		$(document).find('#cats').hide()
+	}
+	else if (type == "User") {
+		$(document).find('#cats').hide()
+		$(document).find('#users').hide()
+		$(document).find('#organ').hide()
+	}
+}
 
 //pozivanje funkcije za odjavljivanje
 function logout(){

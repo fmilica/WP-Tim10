@@ -1,5 +1,5 @@
 {
-  "email3": {
+  "email1": {
     "email": "email1",
     "password": "pass1",
     "name": "Name1",
@@ -13,7 +13,7 @@
     "surname": "Surname2",
     "role": "Admin"
   },
-  "email1": {
+  "email3": {
     "email": "email3",
     "password": "pass3",
     "name": "Name3",
