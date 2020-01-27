@@ -12,10 +12,18 @@ public class VirtualMachine extends VMResource {
 	private Collection<Activity> activities;
 	
 	public VirtualMachine() {}
-
+	
+	public VirtualMachine(String name, String categoryName, int coreNum, int ram, int gpu) {
+		super(name);
+		this.category = new Category(categoryName);
+		this.coreNum = coreNum;
+		this.ram = ram;
+		this.gpu = gpu;
+	}
+	
 	public VirtualMachine(String name, Category category) {
 		super(name);
-		this.category = category;
+		this.category = new Category(category);
 		this.coreNum = category.getCoreNum();
 		this.ram = category.getRAM();
 		this.gpu = category.getGPU();

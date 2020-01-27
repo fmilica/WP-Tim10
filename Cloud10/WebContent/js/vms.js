@@ -80,36 +80,40 @@ $(document).ready(function() {
 
 	// dobavljanje unetih vrednosti sa forme
 	$('#submitAdd').click(function(e) {
-		var name = $('#iName').val()
+		var vmName = $('#iName').val()
 		var organisation = $('#iOrgan').val()
-		var coreNum = $('#iCore').val()
-		var ram = $('#iRam').val()
-		var gpu = $('#iGpu').val()
+		var vmCoreNum = $('#iCore').val()
+		var vmRam = $('#iRam').val()
+		var vmGpu = $('#iGpu').val()
 
-		if(!name) {
+		if(!vmName) {
 			alert("Name is required")
 			e.preventDefault()
 		}
 		else {
+			var virtualMachine = {
+				"name" : vmName,
+				"category" : currentCat.name,
+				// organisation : organisation
+				"coreNum" : vmCoreNum,
+				"ram" : vmRam,
+				"gpu" : vmGpu
+			}
+			//var obj = { customer: complexObject };
+			//var data2send = JSON.stringify(obj);
 			// dodajemo u listu svih
 			$.ajax({
 				type : "POST",
 				url : rootURL + "/rest/vms/addVM",
 				contentType : "json",
-				data : {
-					action: 'retrieveUsersData',
-					"name" : name,
-					"category" : {
-						"name" : currentCat.name,
-						"coreNum" : currentCat.coreNum,
-						"ram" : currentCat.ram,
-						"gpu" : currentCat.gpu
-					},
-					//"organisation" : organisation,
-					"coreNum" : coreNum,
-					"ram" : ram,
-					"gpu" : gpu
-				},
+				data : JSON.stringify({
+					"name" : vmName,
+					"category" : currentCat.name,
+					// organisation : organisation
+					"coreNum" : vmCoreNum,
+					"ram" : vmRam,
+					"gpu" : vmGpu
+				}),
 				error : function(XMLHttpRequest, textStatus, errorThrown) {
 					alert("AJAX ERROR: " + errorThrown)
 				}

@@ -8,6 +8,17 @@ public class Category {
 	private int gpu;
 	
 	public Category() {}
+	
+	public Category(String name) {
+		this.name = name;
+	}
+	
+	public Category(Category c) {
+		this.name = c.name;
+		this.coreNum = c.coreNum;
+		this.ram = c.ram;
+		this.gpu = c.gpu;
+	}
 
 	public Category(String name, int coreNum, int ram, int gpu) {
 		this.name = name;
