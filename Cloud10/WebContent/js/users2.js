@@ -97,12 +97,14 @@ function showThem(data){
 }
 
 function editUser(user){
+	$(document).find('h3.card-title').html("Edit User");
 	$(document).find('.addForm').show();
     if(currentType == "SuperAdmin"){
         $(document).find('.superAdmin').show();
         $(document).find('.form-control superAdmin').show();
 		$(document).find('.editBtn').show();
     }
+	
 	//disable za email
 	$(document).find('input[name="add_email"]').val(user.email)
 	$(document).find('input[name="add_email"]').attr("readonly", true)
@@ -137,7 +139,6 @@ function submitU(){
 		    dataType : "json",
 		    data : formJSON(email, pass, name, surn, org, type),
 		    success : function(data) {
-                console.log("user je " + data.email)
 				if(data.email == null){
 					alert("User with email '" + email +"' already exists!");
 				}
@@ -170,7 +171,6 @@ function deleteU(){
 		dataType : "json",
 		data : formJSON(email, pass, name, surn, org, type),
 		success : function(data) {
-			console.log("user je " + data.email)
 			if(data.email == null){
 				alert("User with email" + email +" deleted successfully!");
 			}
@@ -230,7 +230,6 @@ function add(){
 		    dataType : "json",
 		    data : formJSON(email, pass, name, surn, org, type),
 		    success : function(data) {
-                console.log("user je " + data.email)
 				if(data.email == null){
 					alert("User with email '" + email +"' already exists!");
 				}
@@ -244,7 +243,6 @@ function add(){
         })
     }
 }
-
 
 function formJSON(email, pass, name, surn, org, type){
     return JSON.stringify({
