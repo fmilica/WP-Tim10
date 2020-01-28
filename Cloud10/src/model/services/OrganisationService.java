@@ -55,7 +55,7 @@ public class OrganisationService {
 		ArrayList<Disc> discs = new ArrayList<Disc>();
 		for (VMResource r : o.getResources()) {
 			if(r instanceof Disc) {
-				if(((Disc) r).getVM() == null) {
+				if(((Disc) r).getVm() == null) {
 					discs.add((Disc)r);
 				}
 			}

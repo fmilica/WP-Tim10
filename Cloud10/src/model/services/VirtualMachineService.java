@@ -52,13 +52,11 @@ public class VirtualMachineService {
 	// AKO JE UNETA VM SA POSTOJECIM IMENOM
 	public VirtualMachine addVM(VirtualMachine vm) {
 		// validacija na serverskoj strani!
-		System.out.println(vm);
 		VirtualMachines vms = getVMs();
 		// jedinstvenost imena
 		if (!vms.checkVMName(vm.getName())) {
 			return null;
 		}
-
 		vms.addVM(vm);
 		return vm;
 	}

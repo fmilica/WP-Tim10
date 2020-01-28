@@ -22,6 +22,9 @@
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
   <!-- Project style -->
   <link rel="stylesheet" href="html/css/style.css">
+  <!-- Project JavaScript files  -->
+  <script type="text/javascript" src="js/users.js"></script>
+  <script type="text/javascript" src="js/discs.js"></script>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <!-- Site wrapper -->
@@ -71,19 +74,19 @@
             </a>
           </li>
           <li class="nav-item has-treeview">
-            <a href="organPage.html" class="nav-link">
+            <a href="organPage.html" class="nav-link admin">
               <i class="iconOrgan"></i>
                 Organisations
             </a>
           </li>
           <li class="nav-item has-treeview">
-            <a href="usersPage.html" class="nav-link">
+            <a href="usersPage.html" class="nav-link admin">
               <i class="iconUsers"></i>
                 Users
             </a>
           </li>
           <li class="nav-item has-treeview">
-            <a href="catsPage.html" class="nav-link">
+            <a href="catsPage.html" class="nav-link superAdmin">
               <i class="iconCat"></i>
                 Categories
             </a>
@@ -122,18 +125,48 @@
           <div class="col-12">
             <!-- Default box -->
             <div class="card">
-              <table>
-                <thead class="disc">
-                </thead>
-                <tbody>
-                </tbody>
-              </table>
+              <div class="card-body table-responsive p-0">
+                <table id="content" class="table table-striped table-valign-middle">
+                  <thead class="disc">
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
               <div class="card-footer">
-                <input type="button" value="Add VM">
+                <input type="button" class="btn btn-primary btn-disc admin" id="addNew" value="Add Disc">
               </div>
               <!-- /.card-footer-->
             </div>
             <!-- /.card -->
+            <div id="addForm" class="col-sm-4 addForm">
+              <div class="card">
+                <div class="card-header disc">
+                  <h3 class="card-title">Add Disc</h3>
+                </div>
+                <form role="form" action="discsPage.html" method="post">
+                  <div class="card-body">
+                    <div class="row">
+                      <label>Name</label>
+                      <input id="iName" type="text" class="form-control" placeholder="Enter name...">
+                      <label id="lType">Type</label>
+                      <select id="iType" class="form-control">
+                        <option value="SSD">SSD</option>
+                        <option value="HDD">HDD</option>
+                      </select>
+                      <label id="lCap">Capacity</label>
+                      <input id="iCap" type="text" class="form-control" placeholder="Enter capacity in GB...">
+                    </div>
+                  </div>
+                  <div class="card-footer">
+                    <input id="submitAdd" type="submit" class="btn btn-primary btn-disc admin" value="Add Disc">
+                    <input id="submitChange" type="submit" class="btn btn-primary btn-disc admin" value="Save changes">
+                    <input id="submitAbort" type="submit" class="btn btn-primary btn-disc user" value="Abort changes">
+                    <input id="submitDelete" type="submit" class="btn btn-primary btn-disc superAdmin" value="Delete Disc">
+                  </div>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
       </div>

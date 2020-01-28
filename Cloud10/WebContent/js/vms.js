@@ -27,11 +27,11 @@ function fillContentTable(allVms) {
 				  '<th>' + "GPU number" + '</th>')
 	$.each(list, function(index, vm) {
 		var row = $('<tr></tr>')
-		row.append('<th>' + vm.name + '</th>' + 
-				   '<th>' + vm.category.name + '</th>' + 
-				   '<th>' + vm.coreNum + '</th>' + 
-				   '<th>' + vm.category.ram + '</th>' + 
-				   '<th>' + vm.category.gpu + '</th>')
+		row.append('<td>' + vm.name + '</td>' + 
+				   '<td>' + vm.category.name + '</td>' + 
+				   '<td>' + vm.coreNum + '</td>' + 
+				   '<td>' + vm.category.ram + '</td>' + 
+				   '<td>' + vm.category.gpu + '</td>')
 		table.append(row)
 	})
 }
@@ -40,7 +40,7 @@ function fillContentTable(allVms) {
 $(document).ready(function() {
 
 	// prikaz forme za dodavanje nove virtuelne masine
-	$('.addVM').click(function() {
+	$('#addNew').click(function() {
 		$('#addForm').show()
 		/*
 		// dobavljanje organizacija
@@ -144,7 +144,6 @@ $(document).ready(function() {
 					"gpu" : vmGpu
 				}),
 				success : function(response){
-					console.log(response)
 					if(response == undefined) {
 						alert("Virtual Machine with specified name already exists!")
 					}

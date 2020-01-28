@@ -6,20 +6,20 @@ public class Disc extends VMResource {
 
 	private DiscType type;
 	private int capacity;
-	private String VM;
+	private String vm;
 	
 	public Disc() {}
 
-	public Disc(String name, DiscType type, int capacity, String vM) {
+	public Disc(String name, DiscType type, int capacity, String vm) {
 		super(name);
 		this.type = type;
 		this.capacity = capacity;
-		VM = vM;
+		this.vm = vm;
 	}
 	
 	@Override
 	public String toString() {
-		return "Disc [name=" + name + ", capacity=" + capacity + ", VM=" + VM + "]";
+		return "Disc [name=" + name + ", capacity=" + capacity + ", VM=" + vm + "]";
 	}
 
 	public String getName() {
@@ -40,10 +40,10 @@ public class Disc extends VMResource {
 	public void setCapacity(int capacity) {
 		this.capacity = capacity;
 	}
-	public String getVM() {
-		return VM;
+	public String getVm() {
+		return vm;
 	}
-	public void setVM(String vM) {
-		VM = vM;
+	public void setVm(String vm) {
+		this.vm = vm;
 	}
 }
