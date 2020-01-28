@@ -8,7 +8,7 @@ public class Organisation {
 	private String description;
 	private String logo;
 	private Collection<String> users;
-	private Collection<VMResource> resources; 
+	private Collection<String> resources; 
 	
 	public Organisation() {}
 	
@@ -17,7 +17,7 @@ public class Organisation {
 	}
 
 	public Organisation(String name, String description, String logo, Collection<String> users,
-			Collection<VMResource> resources) {
+			Collection<String> resources) {
 		this.name = name;
 		this.description = description;
 		this.logo = logo;
@@ -57,10 +57,10 @@ public class Organisation {
 	public void addUser(User user) {
 		this.users.add(user.getEmail());
 	}
-	public Collection<VMResource> getResources() {
+	public Collection<String> getResources() {
 		return resources;
 	}
-	public void setResources(Collection<VMResource> resources) {
+	public void setResources(Collection<String> resources) {
 		this.resources = resources;
 	}
 }

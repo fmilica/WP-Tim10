@@ -1,6 +1,6 @@
 package model;
 
-public abstract class VMResource {
+public class VMResource {
 
 	protected String name;
 	

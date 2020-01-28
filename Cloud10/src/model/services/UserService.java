@@ -18,7 +18,6 @@ import com.google.gson.JsonSyntaxException;
 
 import model.Organisation;
 import model.User;
-import model.VMResource;
 import model.collections.Organisations;
 import model.collections.Users;
 import model.enums.RoleType;
@@ -253,8 +252,8 @@ public class UserService {
 					System.out.println(u);
 				}
 				System.out.println("SADA CE DA ISPISE RESURSE");
-				for (VMResource r : org.getResources()) {
-					System.out.println(r.getName());
+				for (String r : org.getResources()) {
+					System.out.println(r);
 				}
 			}
 			System.out.println("----------------------------------------");

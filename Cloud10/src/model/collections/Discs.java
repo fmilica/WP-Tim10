@@ -49,6 +49,11 @@ public class Discs {
 		discsMap.put(d.getName(), d);
 	}
 	
+	// brisanje diska
+	public void deleteDisc(String name) {
+		discsMap.remove(name);
+	}
+	
 	// ---
 	
 	public HashMap<String, Disc> getDiscsMap() {
