@@ -2,12 +2,30 @@
   "Organisation1" : {
   	"name" : "Organisation1",
   	"description" : "First organisation to exist",
+  	"logo" : "",
   	"users" : [
   		"email2",
   		"email3"
   	],
   	"resources" : [
-  		
+  		"VM1",
+  		"Disc1",
+  		"Disc2",
+  		"Disc6"
   	]
+  },
+  "Organisation2" : {
+  	"name" : "Organisation2",
+  	"description" : "Second organisation to exist",
+  	"logo" : "",
+  	"users" : [
+  		"email4"
+  	],
+  	"resources" : [
+  		"VM2",
+  		"Disc3",
+  		"Disc4",
+  		"Disc5"
+    ]
   }
 }

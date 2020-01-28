@@ -19,5 +19,12 @@
     "name": "Name3",
     "surname": "Surname3",
     "role": "User"
+  },
+  "email4" : {
+  	"email" : "email4",
+  	"password" : "pass4",
+  	"name" : "Name4",
+  	"surname" : "Surname4",
+  	"role" : "User"
   }
 }

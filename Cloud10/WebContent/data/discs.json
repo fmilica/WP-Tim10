@@ -13,8 +13,26 @@
   },
   "Disc3" : {
   	"name" : "Disc3",
-  	"type" : "SSD",
-  	"capacity" : "32",
-  	"vm" : null
+  	"type" : "HDD",
+  	"capacity" : "1024",
+  	"vm" : "VM2"
+  },
+  "Disc4" : {
+  	"name" : "Disc4",
+  	"type" : "SDD",
+  	"capacity" : "128",
+  	"VM" : "VM2"
+  	},
+  "Disc5" : {
+	"name" : "Disc5",
+	"type" : "HDD",
+	"capacity" : "512",
+	"VM" : "VM2"
+	},
+  "Disc6" : {
+  	"name" : "Disc6",
+  	"type" : "HDD",
+  	"capacity" : "256",
+  	"VM" : null
   }
 }
