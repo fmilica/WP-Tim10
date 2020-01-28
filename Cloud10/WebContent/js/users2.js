@@ -8,15 +8,6 @@ var currentType = null
 //plus dobavljanje tipa trenutnog ulogovanog 
 //za prikaz funkcionalnosti
 $(window).on('load', function(){
-	$.ajax({
-		type : 'GET',
-		url : rootURL + "/rest/users/load",
-		dataType : "json",
-		success : showThem,
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("AJAX ERROR: " + errorThrown);
-		}
-    });
     $.ajax({
 		type : 'GET',
 		url : rootURL + "/rest/users/getUserType",
@@ -31,6 +22,15 @@ $(window).on('load', function(){
 			alert("AJAX ERROR: " + errorThrown);
 		}
 	});
+	$.ajax({
+		type : 'GET',
+		url : rootURL + "/rest/users/load",
+		dataType : "json",
+		success : showThem,
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("AJAX ERROR: " + errorThrown);
+		}
+    });
     
 })
 
@@ -111,8 +111,9 @@ function editUser(user){
     $(document).find('input[name="add_name"]').val(user.name)
     $(document).find('input[name="add_surn"]').val(user.surname)
 	//disable za organisation, nije prakticno disable vec jedini izbor
-	$('#selekt').empty();
-	$('#selekt').append(new Option(user.organisation.name));
+	$('#addSelect').empty();
+	$('#addSelect').append(new Option(user.organisation.name));
+	$('#addSelect').attr("disabled", "disabled");
 }
 
 function submitU(){
@@ -138,7 +139,7 @@ function submitU(){
 		    success : function(data) {
                 console.log("user je " + data.email)
 				if(data.email == null){
-					alert("User with email" + email +" already exists!");
+					alert("User with email '" + email +"' already exists!");
 				}
 				else{
 					window.location.href = "usersPage.html";
