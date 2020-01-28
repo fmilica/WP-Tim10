@@ -127,7 +127,7 @@
               <!-- Default box -->
               <div class="card">
                 <div class="card-body table-responsive p-0">
-                  <table id="usersTable">
+                  <table id="usersTable" class="table table-striped table-valign-middle">
                     <thead class="users">
                     </thead>
                     <tbody>
@@ -135,7 +135,7 @@
                   </table>
                 </div>
                 <div class="card-footer">
-                  <input type="button" value="Add User" onclick="addUser()">
+                  <input type="button" value="Add User" onclick="showForm()">
                 </div>
                 <!-- /.card-footer-->
               </div>
@@ -146,7 +146,7 @@
                   <div class="card-header users">
                     <h3 class="card-title">Add User</h3>
                   </div>
-                  <form role="form" id="add" action="/">
+                  <form role="form" id="add" method="post" action="usersPage.html"> <!--  ovde sam uklonila action="usersPage.html" pa mi prvo odradi sve pa ucita stranicu-->
                     <div class="card-body">
                       <div class="row">
                         <label>Email</label>
@@ -159,7 +159,6 @@
                         <input type="text" name="add_surn" class="form-control" placeholder="Enter surname..">
                         <label class="superAdmin">Organisation</label>
                         <select class="form-control superAdmin" id="addSelect" name="selectAdd">
-                          <option></option>
                         </select>
                         <label>Type</label>
                         <select class="form-control" name="selectType">
@@ -168,8 +167,17 @@
                         </select>
                       </div>
                     </div>
-                    <div class="card-footer">
+                    <div class="card-footer addBtn">
                       <input class="btn btn-primary btn-users" type="submit" value="Add User" onclick="add()">
+                    </div>
+					<div class="card-footer editBtn">
+                      <input class="btn btn-primary btn-users" type="submit" value="Submit" onclick="submitU()">
+                    </div>
+					<div class="card-footer editBtn">
+                      <input class="btn btn-primary btn-users" type="submit" value="Delete User" onclick="deleteU()">
+                    </div>
+					<div class="card-footer editBtn">
+                      <input class="btn btn-primary btn-users" type="submit" value="Discard" onclick="discardU()">
                     </div>
                   </form>
                 </div>

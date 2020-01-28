@@ -81,4 +81,12 @@ public class Users {
 	public void removeUser(User u) {
 		usersMap.remove(u.getEmail());
 	}
+	
+	public void changeUser(User current, User modified) {
+		for (User u : usersMap.values()) {
+			if(u.getEmail().equals(current.getEmail())) {
+				u = new User(modified);
+			}
+		}
+	}
 }

@@ -103,17 +103,27 @@ public class UserService {
 		//za tip moze da odabere admin ili korisnik			za tip moze da odabere admin ili korisnik
 		
 		//provera validnosti podataka
-		Users us = getUsers();
-		if(!us.checkUser(p)) {
+		Users us = new Users();
+		Organisation org = new Organisation();
+		User current = getCurrent();
+		if(current.getRole() == RoleType.Admin) {
+			org = current.getOrganisation();
+			us = getAdminUsers();
+		}
+		else {
+			org = getOrganisations().getOrganisationsMap().get(p.getOrganisation().getName());
+			us = getUsers();
+		}
+		if(us.checkUser(p)) {
 			return new User();
 		}
-		
-		Organisation org = getOrganisations().getOrganisationsMap().get(p.getOrganisation().getName());
+		System.out.println(org);
 		p.setOrganisation(org);
-		getOrganisations().getOrganisationsMap().get(p.getOrganisation().getName()).addUser(p);
+		System.out.println(p.getOrganisation().getDescription());
+		getOrganisations().getOrganisationsMap().get(org.getName()).addUser(p);
 		us.addUser(p);
+		
 		ctx.setAttribute("users", us);
-		User current = getCurrent();
 		if(current.getRole() == RoleType.SuperAdmin) {
 			ctx.setAttribute("organisations", getOrganisations());
 		}
@@ -124,57 +134,49 @@ public class UserService {
 	}
 	
 	@POST
-	@Path("/changeuserSA")
+	@Path("/changeUser")
 	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	@Produces(MediaType.APPLICATION_JSON)
-	public User changeuserSA(User p) throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+	public User changeUser(User p) throws JsonIOException, JsonSyntaxException, FileNotFoundException {
 		System.out.println("dodavanje korisnika na serverskoj strani SuperAdmin");
-		//super admin moze da popuni samo 
-		//sifru, ime, prezime i odabere tip za izmenu
-		//EMAIL I ORGANISATION NE MOZE
+		//super admin moze da popuni samo 					admin moze da popuni samo korisnike u njegovoj organizaciji
+		//sifru, ime, prezime i odabere tip za izmenu		sifru, ime, prezime i odabere tip za izmenu
+		//EMAIL I ORGANISATION NE MOZE						EMAIL I ORGANISATION NE MOZE
 		
+		User current = getCurrent();
+		Users us = new Users();
+		if(current.getRole() == RoleType.Admin) {
+			us = getAdminUsers();
+		}
+		else {
+			us = getUsers();
+		}
 		//provera validnosti podataka
-		Users us = getUsers();
 		if(!us.checkUser(p)) {
 			return new User();
 		}
 		
 		us.setUserValues(p);
 		ctx.setAttribute("users", us);
-		
 		return p;
 	}
 	
 	@POST
-	@Path("/changeuserA")
+	@Path("/deleteUser")
 	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	@Produces(MediaType.APPLICATION_JSON)
-	public User changeuserA(User p) throws JsonIOException, JsonSyntaxException, FileNotFoundException {
-		System.out.println("dodavanje korisnika na serverskoj strani SuperAdmin");
-		//admin moze da popuni samo korisnike u njegovoj organizaciji
-		//sifru, ime, prezime i odabere tip za izmenu
-		//EMAIL I ORGANISATION NE MOZE
-		
-		//provera validnosti podataka
-		Users us = getUsers();
-		if(!us.checkUser(p)) {
-			return new User();
-		}
-		
-		us.setUserValues(p);
-		ctx.setAttribute("users", us);
-		
-		return p;
-	}
-	
-	@POST
-	@Path("/deleteuser")
-	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	@Produces(MediaType.APPLICATION_JSON)
-	public User deleteuser(User p) throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+	public User deleteUser(User p) throws JsonIOException, JsonSyntaxException, FileNotFoundException {
 		//admin i super admin mogu da brisu korisnike
 		//naravno one koji su njima vidljivi
-		Users us = getUsers();
+		
+		User current = getCurrent();
+		Users us = new Users();
+		if(current.getRole() == RoleType.Admin) {
+			us = getAdminUsers();
+		}
+		else {
+			us = getUsers();
+		}
 		if(us.checkUser(p)) {
 			us.removeUser(p);
 			ctx.setAttribute("users", us);
@@ -184,16 +186,25 @@ public class UserService {
 	}
 	
 	@POST
-	@Path("/editprofile")
+	@Path("/editProfile")
 	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	@Produces(MediaType.APPLICATION_JSON)
-	public User editprofile(User p) {
+	public User editProfile(User p) throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+		//moze da se menja email, ime, prezime, sifra
+		
 		User current = getCurrent();
+		Users us = getUsers();
+		//validacija
+		if(!p.getEmail().equals(current.getEmail()) && us.checkUser(p)) {
+			return new User();
+		}
 		current.setEmail(p.getEmail());
 		current.setPassword(p.getPassword());
 		current.setName(p.getName());
 		current.setSurname(p.getSurname());
+		us.changeUser(current,p);
 		ctx.setAttribute("curent", current);
+		ctx.setAttribute("users", us);
 		return current;
 	}
 	
@@ -202,6 +213,10 @@ public class UserService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Collection<Organisation> getOrgs() throws JsonIOException, JsonSyntaxException, FileNotFoundException{
 		User current = getCurrent();
+		if(current.getEmail() == null) {
+			System.out.println("JESTE NULL");
+			return null;
+		}
 		Organisations orgs = new Organisations();
 		if(current.getRole() == RoleType.SuperAdmin) {
 			orgs = getOrganisations();
@@ -242,10 +257,12 @@ public class UserService {
 		Users users = (Users) ctx.getAttribute("users");
 		if(users == null){
 			User current = getCurrent();
+			ctx.setAttribute("organisation", current.getOrganisation());
+			
 			users = new Users(ctx.getRealPath(""),current);
-			Organisations o = new Organisations(ctx.getRealPath(""));
-			ctx.setAttribute("organisation", o.getOrganisationsMap().get(current.getOrganisation().getName()));
-			current.setOrganisation((Organisation)ctx.getAttribute("organisation"));
+			Organisations o = new Organisations();
+			o.getOrganisationsMap().put(current.getOrganisation().getName(), current.getOrganisation());
+			ctx.setAttribute("organiations", o);
 			for (User user : users.getUsersMap().values()) {
 				user.setOrganisation((Organisation)ctx.getAttribute("organisation"));
 			}

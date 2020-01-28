@@ -55,6 +55,15 @@ public class User {
 		this.role = role;
 	}
 	
+	public User(User user) {
+		this.email = user.email;
+		this.password = user.password;
+		this.name = user.name;
+		this.surname = user.surname;
+		this.organisation = user.organisation;
+		this.role = user.role;
+	}
+	
 	@Override
 	public String toString() {
 		return "User [email=" + email + ", password=" + password + ", name=" + name + ", surname=" + surname + "]";

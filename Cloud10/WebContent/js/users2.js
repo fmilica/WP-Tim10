@@ -1,7 +1,7 @@
 var rootURL = "../Cloud10"
 
-validation();
 var currentType = null
+//e.preventDefault();
 
 //funkcija za proveru da li prilikom dolaska na mainPage postoji trenutni ulogovani
 //situacija kada posle odjave pritisnemo back
@@ -31,7 +31,6 @@ $(window).on('load', function(){
 			alert("AJAX ERROR: " + errorThrown);
 		}
 	});
-    validation();
     
 })
 
@@ -41,6 +40,10 @@ function loadOrgs(){
 		url : rootURL + "/rest/users/getOrgs",
 		dataType : "json",
 		success : function(data){
+			if(data == null){
+				alert("Action not allowed!!!");
+				window.location.href = "login.html";
+			}
             list = data == null ? [] : (data instanceof Array ? data : [data])
             $.each(list, function(index,org){
                 $('#addSelect').append(new Option(org.name,org.name))
@@ -69,29 +72,138 @@ function showThem(data){
 	
 	$.each(list, function(index,user){
 		if(user.role != "SuperAdmin"){
-            var tr = $('<tr></tr>');
-            var row = '<td>'+user.email+'</td>'+
-                        '<td>'+user.name+'</td>'+
-                        '<td>'+user.surname+'</td>';
+            var tr = $('<tr id="'+index+'" class="edit"></tr>');
+            var row = '<td id="'+index+'">'+user.email+'</td>'+
+                        '<td id="'+index+'">'+user.name+'</td>'+
+                        '<td id="'+index+'">'+user.surname+'</td>';
             
             
             if(currentType == "SuperAdmin"){
-                row += '<td>'+user.organisation.name+'</td>'
+                row += '<td id="'+index+'">'+user.organisation.name+'</td>'
             }
             tr.append(row)
 			table.append(tr);
 		}
+	});
+	
+	$('tr.edit').click(function(e){
+		e.preventDefault();
+		$.each(list, function(index,user){
+			if(index == e.target.id){
+				editUser(user);
+			}
+		})
 	})
 }
 
-$(document).ready(function(){
+function editUser(user){
+	$(document).find('.addForm').show();
+    if(currentType == "SuperAdmin"){
+        $(document).find('.superAdmin').show();
+        $(document).find('.form-control superAdmin').show();
+		$(document).find('.editBtn').show();
+    }
+	//disable za email
+	$(document).find('input[name="add_email"]').val(user.email)
+	$(document).find('input[name="add_email"]').attr("readonly", true)
+	
+    $(document).find('input[name="add_pass"]').val(user.password)
+    $(document).find('input[name="add_name"]').val(user.name)
+    $(document).find('input[name="add_surn"]').val(user.surname)
+	//disable za organisation, nije prakticno disable vec jedini izbor
+	$('#selekt').empty();
+	$('#selekt').append(new Option(user.organisation.name));
+}
+
+function submitU(){
+	var email = $(document).find('input[name="add_email"]').val()
+    var pass = $(document).find('input[name="add_pass"]').val()
+    var name = $(document).find('input[name="add_name"]').val()
+    var surn = $(document).find('input[name="add_surn"]').val()
+    var org = "adminorg"
+    if(currentType == "SuperAdmin"){
+        org = $(document).find('select[name="selectAdd"]').val()
+    }
+    var type = $(document).find('select[name="selectType"]').val()
+    if(!email || !pass || !name || !surn || !org || !type){
+        alert("All of the input boxes must be filled!")
+    }
+    else{
+        $.ajax({
+            type : 'POST',
+		    url : rootURL + "/rest/users/changeUser",
+		    contentType : 'application/json',
+		    dataType : "json",
+		    data : formJSON(email, pass, name, surn, org, type),
+		    success : function(data) {
+                console.log("user je " + data.email)
+				if(data.email == null){
+					alert("User with email" + email +" already exists!");
+				}
+				else{
+					window.location.href = "usersPage.html";
+				}
+		    },
+		    error : function(XMLHttpRequest, textStatus, errorThrown) {
+			    alert("AJAX ERROR: " + errorThrown);
+		    }
+        })
+    }
+}
+
+function deleteU(){
+	var email = $(document).find('input[name="add_email"]').val()
+    var pass = $(document).find('input[name="add_pass"]').val()
+    var name = $(document).find('input[name="add_name"]').val()
+    var surn = $(document).find('input[name="add_surn"]').val()
+    var org = "adminorg"
+    if(currentType == "SuperAdmin"){
+        org = $(document).find('select[name="selectAdd"]').val()
+    }
+    var type = $(document).find('select[name="selectType"]').val()
+	
+	$.ajax({
+		type : 'POST',
+		url : rootURL + "/rest/users/deleteUser",
+		contentType : 'application/json',
+		dataType : "json",
+		data : formJSON(email, pass, name, surn, org, type),
+		success : function(data) {
+			console.log("user je " + data.email)
+			if(data.email == null){
+				alert("User with email" + email +" deleted successfully!");
+			}
+			else{
+				window.location.href = "usersPage.html";
+			}
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("AJAX ERROR: " + errorThrown);
+		}
+	})
     
-})
-function addUser(){
+}
+
+function discardU(){
+	$(document).find('.editDelete').hide();
+    if(currentType == "SuperAdmin"){
+        $(document).find('.superAdmin').hide();
+        $(document).find('.form-control superAdmin').hide();
+    }
+	/* nema poente da ih brisem 
+	$(document).find('input[name="add_email"]').clear()
+    $(document).find('input[name="add_pass"]').clear()
+    $(document).find('input[name="add_name"]').clear()
+    $(document).find('input[name="add_surn"]').clear()
+	*/
+}
+
+function showForm(){
     $(document).find('.addForm').show();
     if(currentType == "SuperAdmin"){
         $(document).find('.superAdmin').show();
         $(document).find('.form-control superAdmin').show();
+		$(document).find('.addBtn').show();
     }
 }
 
@@ -117,7 +229,13 @@ function add(){
 		    dataType : "json",
 		    data : formJSON(email, pass, name, surn, org, type),
 		    success : function(data) {
-                addToTable(data)
+                console.log("user je " + data.email)
+				if(data.email == null){
+					alert("User with email '" + email +"' already exists!");
+				}
+				else{
+					window.location.href = "usersPage.html";
+				}
 		    },
 		    error : function(XMLHttpRequest, textStatus, errorThrown) {
 			    alert("AJAX ERROR: " + errorThrown);
@@ -126,30 +244,6 @@ function add(){
     }
 }
 
-function addToTable(user){
-    var table = $(document).find('#usersTable tbody')
-    var header = $(document).find('table thead')
-    var h = '<tr>'+
-            '<th>'+"Email"+'</th>'+
-            '<th>'+"Name"+'</th>'+
-            '<th>'+"Surname"+'</th>';
-
-    if(currentType == "SuperAdmin"){
-        h += '<th>'+"Organisation"+'</th>';
-    }
-	header.append(h + '</tr>');
-	
-    var tr = $('<tr></tr>');
-    var row = '<td>'+user.email+'</td>'+
-                '<td>'+user.name+'</td>'+
-                '<td>'+user.surname+'</td>';
-    
-    if(currentType == "SuperAdmin"){
-        row += '<td>'+user.organisation.name+'</td>'
-    }
-    tr.append(row)
-    table.append(tr);
-}
 
 function formJSON(email, pass, name, surn, org, type){
     return JSON.stringify({
