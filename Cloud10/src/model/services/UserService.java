@@ -18,6 +18,7 @@ import com.google.gson.JsonSyntaxException;
 
 import model.Organisation;
 import model.User;
+import model.VMResource;
 import model.collections.Organisations;
 import model.collections.Users;
 import model.enums.RoleType;
@@ -44,6 +45,7 @@ public class UserService {
 			return getCurrentUsers().getUsersMap().values();
 		}
 		else {
+			System.out.println("UCITAVA SVE USERE");
 			return (getUsers()).getUsersMap().values();
 		}
 	}
@@ -53,7 +55,8 @@ public class UserService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public User checkCurrent() throws JsonIOException, JsonSyntaxException, FileNotFoundException {
 		System.out.println("---------validacija----------");
-		return getCurrent();
+		User current = getCurrent();
+		return current;
 	}
 	
 	
@@ -230,7 +233,7 @@ public class UserService {
 	@GET
 	@Path("/getUserType")
 	@Produces(MediaType.APPLICATION_JSON)
-	public RoleType getUserType() {
+	public RoleType getUserType() throws JsonIOException, JsonSyntaxException, FileNotFoundException {
 		User current = getCurrent();
 		return current.getRole();
 	}
@@ -239,7 +242,22 @@ public class UserService {
 		Users users = (Users) ctx.getAttribute("users");
 		if(users == null){
 			users = new Users(ctx.getRealPath(""));
+			for (User u : users.getUsersMap().values()) {
+				System.out.println(u);
+			}
 			Organisations o = new Organisations(ctx.getRealPath(""));
+			for (Organisation org : o.getOrganisationsMap().values() ) {
+				System.out.println(org);
+				System.out.println("SADA CE DA ISPISE USERE");
+				for (String u : org.getUsers()) {
+					System.out.println(u);
+				}
+				System.out.println("SADA CE DA ISPISE RESURSE");
+				for (VMResource r : org.getResources()) {
+					System.out.println(r.getName());
+				}
+			}
+			System.out.println("----------------------------------------");
 			ctx.setAttribute("organisations", o);
 			for (Organisation org : o.getOrganisationsMap().values()) {
 				for (String user : org.getUsers()) {

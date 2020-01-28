@@ -25,7 +25,7 @@
   <!-- Srcipt file -->
   <script type="text/javascript" src="js/users.js"></script>
   <!-- Srcipt file -->
-  <script type="text/javascript" src="js/users2.js"></script>
+  <script type="text/javascript" src="js/account.js"></script>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <!-- Site wrapper -->
@@ -74,19 +74,19 @@
                 Discs
             </a>
           </li>
-          <li class="nav-item has-treeview">
+          <li class="nav-item has-treeview admin">
             <a href="organPage.html" class="nav-link">
               <i class="iconOrgan"></i>
                 Organisations
             </a>
           </li>
-          <li class="nav-item has-treeview">
+          <li class="nav-item has-treeview admin">
             <a href="usersPage.html" class="nav-link">
               <i class="iconUsers"></i>
                 Users
             </a>
           </li>
-          <li class="nav-item has-treeview">
+          <li class="nav-item has-treeview superAdmin">
             <a href="catsPage.html" class="nav-link">
               <i class="iconCat"></i>
                 Categories
@@ -163,7 +163,7 @@
                         <select class="form-control superAdmin" id="addSelect" name="selectAdd">
                         </select>
                         <label>Type</label>
-                        <select class="form-control" name="selectType">
+                        <select class="form-control" name="selectType" id="selectType">
                           <option>Admin</option>
                           <option>User</option>
                         </select>

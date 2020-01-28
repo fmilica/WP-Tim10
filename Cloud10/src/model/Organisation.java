@@ -8,7 +8,7 @@ public class Organisation {
 	private String description;
 	private String logo;
 	private Collection<String> users;
-	private Collection<VMResource> resources;
+	private Collection<VMResource> resources; 
 	
 	public Organisation() {}
 	

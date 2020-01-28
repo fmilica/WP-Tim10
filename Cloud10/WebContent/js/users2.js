@@ -102,8 +102,9 @@ function editUser(user){
     if(currentType == "SuperAdmin"){
         $(document).find('.superAdmin').show();
         $(document).find('.form-control superAdmin').show();
-		$(document).find('.editBtn').show();
     }
+    $(document).find('.addBtn').hide();
+    $(document).find('.editBtn').show();
 	
 	//disable za email
 	$(document).find('input[name="add_email"]').val(user.email)
@@ -200,12 +201,15 @@ function discardU(){
 }
 
 function showForm(){
+	$(document).find('h3.card-title').html("Add User");
+	$(document).find('input[name="add_email"]').attr("readonly", false)
     $(document).find('.addForm').show();
     if(currentType == "SuperAdmin"){
         $(document).find('.superAdmin').show();
         $(document).find('.form-control superAdmin').show();
-		$(document).find('.addBtn').show();
     }
+    $(document).find('.editBtn').hide();
+    $(document).find('.addBtn').show();
 }
 
 function add(){

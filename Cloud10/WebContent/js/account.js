@@ -1,8 +1,7 @@
 var rootURL = "../Cloud10"
 
-var currentUser = null;
-
 $(window).on('load', function(){
+	
     $.ajax({
 		type : 'GET',
 		url : rootURL + "/rest/users/checkCurrent",
@@ -13,33 +12,43 @@ $(window).on('load', function(){
 				window.location.href = "login.html";
             }
 			else{
-				currentUser = data
+				showUser(data)
 			}
         },
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			alert("AJAX ERROR: " + errorThrown);
 		}
 	});
-	$(document).find('input[name="add_email"]').val(currentUser.email)
-	$(document).find('input[name="add_pass"]').val(currentUser.pass)
+	
+})
+
+function showUser(user){
+	$(document).find('input[name="add_email"]').val(user.email)
+	$(document).find('input[name="add_pass"]').val(user.pass)
 	$(document).find('input[name="add_repeat"]').val("")
-	$(document).find('input[name="add_name"]').val(currentUser.name)
-	$(document).find('input[name="add_surn"]').val(currentUser.surname)
+	$(document).find('input[name="add_name"]').val(user.name)
+	$(document).find('input[name="add_surn"]').val(user.surname)
 	//disable za organisation
-	$('#addSelect').empty()
-	$('#addSelect').append(new Option(user.organisation.name))
-	$('#addSelect').attr("disabled", "disabled")
+	if(user.role != "SuperAdmin"){
+		$('#addSelect').empty()
+		$('#addSelect').append(new Option(user.organisation.name))
+		$('#addSelect').attr("disabled", "disabled")
+	}
+	else{
+		$('#addSelect').empty()
+		$('#addSelect').attr("disabled", "disabled")
+	}
 	//disable za role
 	$('#selectType').empty()
-	$('#selectType').append(new Option(currentUser.role))
-	$('#addSelect').attr("disabled", "disabled")
+	$('#selectType').append(new Option(user.role))
+	$('#selectType').attr("disabled", "disabled")
+	
 	//prikaz forme za izmenu
 	$(document).find('.addForm').show();
     $(document).find('.superAdmin').show();
     $(document).find('.form-control superAdmin').show();
 	$(document).find('.addBtn').show();
-})
-
+}
 
 function saveChanges(){
 	var email = $(document).find('input[name="add_email"]').val()
@@ -50,7 +59,7 @@ function saveChanges(){
     //nebitni su mi
 	var org = "adminorg"
     var type = $(document).find('select[name="selectType"]').val()
-	if(!email || !pass || !name || !surn || !org || !type){
+	if(!email || !name || !surn || !org || !type){
         alert("All of the input boxes must be filled!")
     }
 	else if(pass != repeat){
@@ -69,7 +78,7 @@ function saveChanges(){
 					alert("User with email '" + email +"' already exists!");
 				}
 				else{
-					window.location.href = "usersPage.html";
+					window.location.href = "acountPage.html";
 				}
 		    },
 		    error : function(XMLHttpRequest, textStatus, errorThrown) {
