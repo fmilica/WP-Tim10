@@ -6,10 +6,18 @@
     display: none;
 }
 
-.user {
+.addBtn {
     display: none;
 }
 
+.editBtn {
+    display: none;
+}
+/*
+.user {
+    display: none;
+}
+*/
 .addForm {
     display: none;
 }

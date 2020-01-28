@@ -1,6 +1,7 @@
 package model.services;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.servlet.ServletContext;
@@ -16,8 +17,10 @@ import javax.ws.rs.core.MediaType;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
+import model.Disc;
 import model.Organisation;
 import model.User;
+import model.VMResource;
 import model.collections.Organisations;
 
 @Path("/organisations")
@@ -44,4 +47,19 @@ public class OrganisationService {
 		
 	}
 	
+	@GET
+	@Path("/getFreeDiscs")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Disc> getDiscs(Organisation o) {
+		ArrayList<Disc> discs = new ArrayList<Disc>();
+		for (VMResource r : o.getResources()) {
+			if(r instanceof Disc) {
+				if(((Disc) r).getVM() == null) {
+					discs.add((Disc)r);
+				}
+			}
+		}
+		return discs;
+	}
 }

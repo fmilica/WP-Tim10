@@ -58,13 +58,47 @@ $(document).ready(function() {
 		$.ajax({
 			type : "GET",
 			url : rootURL + "/rest/categories/getCategories",
-			dataType : "json",
+			contentType : "application/json",
 			success : addCatOptions,
 			error : function(XMLHttpRequest, textStatus, errorThrown) {
 				alert("AJAX ERROR: " + errorThrown)
 			}
 		})
+		// podesavanje u zavisnosti od tipa korisnika
+		// dobavljanje tip trenutno ulogovanog korisnika
+		$.ajax({
+			type : "GET",
+			url : rootURL + "/rest/users/checkCurrent",
+			contentType : "application/json",
+			success : setOrganisation,
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+				alert("AJAX ERROR: " + errorThrown)
+			}
+		})
 	})
+
+	function setOrganisation(user) {
+		if(user.role == "Admin") {
+			$('<option>').val(user.organisation.name).text(user.organisation.name).appendTo('#iOrgan');
+			$('#iOrgan').val(user.organisation.name)
+			$('#iOrgan').attr('disabled','disabled');
+			// dodavanje diskova za tu organizaciju iz koje je admin
+			
+			// NEMOGUCE AKO NE KORISTIMO DODATAN FAJL
+			/*
+			$.ajax({
+				type : "GET",
+				url : rootURL + "/rest/organisations/getFreeDiscs",
+				contentType : "application/json",
+				dataType : "json",
+				success : addDiscsOptions,
+				error : function(XMLHttpRequest, textStatus, errorThrown) {
+					alert("AJAX ERROR: " + errorThrown)
+				}
+			})
+			*/
+		}
+	}
 
 	// postavljanje vrednosti kategorije
 	$('#iCat').on("change", function() {
@@ -91,29 +125,30 @@ $(document).ready(function() {
 			e.preventDefault()
 		}
 		else {
-			var virtualMachine = {
-				"name" : vmName,
-				"category" : currentCat.name,
-				// organisation : organisation
-				"coreNum" : vmCoreNum,
-				"ram" : vmRam,
-				"gpu" : vmGpu
-			}
-			//var obj = { customer: complexObject };
-			//var data2send = JSON.stringify(obj);
-			// dodajemo u listu svih
 			$.ajax({
 				type : "POST",
 				url : rootURL + "/rest/vms/addVM",
-				contentType : "json",
+				contentType : "application/json",
+				dataType : "json",
 				data : JSON.stringify({
 					"name" : vmName,
-					"category" : currentCat.name,
+					"category" : {
+						"name" : currentCat.name,
+						"coreNum" : currentCat.coreNum,
+						"ram" : currentCat.ram,
+						"gpu" : currentCat.gpu
+					},
 					// organisation : organisation
 					"coreNum" : vmCoreNum,
 					"ram" : vmRam,
 					"gpu" : vmGpu
 				}),
+				success : function(response){
+					console.log(response)
+					if(response == undefined) {
+						alert("Virtual Machine with specified name already exists!")
+					}
+				},
 				error : function(XMLHttpRequest, textStatus, errorThrown) {
 					alert("AJAX ERROR: " + errorThrown)
 				}
@@ -121,6 +156,15 @@ $(document).ready(function() {
 		}
 	})
 })
+
+function addDiscsOptions(allDiscs) {
+	var list = allDiscs == null ? [] : (allDiscs instanceof Array ? allDiscs : [allDiscs])
+	$each(list, function(index, disc) {
+		$('#iDisc').append('<option value="' + disc.name + '">' + 
+							disc.name + '</option>')
+	})
+	$('.multiple-discs').select2();
+}
 
 function addOrganOptions(allOrgans) {
 	var list = allOrgans == null ? [] : (allOrgans instanceof Array ? allOrgans : [allOrgans])

@@ -5,6 +5,9 @@
   	"users" : [
   		"email2",
   		"email3"
+  	],
+  	"resources" : [
+  		
   	]
   }
 }

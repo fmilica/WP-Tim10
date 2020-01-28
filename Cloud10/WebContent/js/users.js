@@ -34,13 +34,11 @@ function validation(){
 }
 
 function showTypePage(type) {
-	if (type == "Admin") {
-		$(document).find('#cats').hide()
-	}
-	else if (type == "User") {
-		$(document).find('#cats').hide()
-		$(document).find('#users').hide()
-		$(document).find('#organ').hide()
+	if (type == "SuperAdmin") {
+		$(document).find('.superAdmin').show()
+		$(document).find('.admin').show()
+	} else if (type == "Admin") {
+		$(document).find('.admin').show()
 	}
 }
 

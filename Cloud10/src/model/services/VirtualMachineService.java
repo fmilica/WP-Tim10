@@ -24,41 +24,43 @@ public class VirtualMachineService {
 
 	@Context
 	HttpServletRequest request;
-	
+
 	@Context
 	ServletContext ctx;
-	
+
 	@GET
 	@Path("/getAllVms")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Collection<VirtualMachine> getAllVms() throws JsonIOException, JsonSyntaxException, FileNotFoundException {
 		return getVMs().getVirtualMachinesMap().values();
 	}
-	
+
 	private VirtualMachines getVMs() {
-		VirtualMachines vms = (VirtualMachines)ctx.getAttribute("vms");
+		VirtualMachines vms = (VirtualMachines) ctx.getAttribute("vms");
 		if (vms == null) {
 			vms = new VirtualMachines(ctx.getRealPath(""));
 			ctx.setAttribute("vms", vms);
 		}
 		return vms;
 	}
-	
+
 	@POST
 	@Path("/addVM")
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	// MORA IMATI POVRATNU VREDNOST
 	// AKO JE UNETA VM SA POSTOJECIM IMENOM
-	public void addVM(VirtualMachine vm) {
-		System.out.println("dodavanje virtuelne masine -- server");
+	public VirtualMachine addVM(VirtualMachine vm) {
 		// validacija na serverskoj strani!
-		
+		System.out.println(vm);
 		VirtualMachines vms = getVMs();
-		if(!vms.checkVMName(vm.getName())) {
-			return;
+		// jedinstvenost imena
+		if (!vms.checkVMName(vm.getName())) {
+			return null;
 		}
-		
+
 		vms.addVM(vm);
-		System.out.println("dodali");
+		return vm;
 	}
+
 }

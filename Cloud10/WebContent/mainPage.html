@@ -74,19 +74,19 @@
                 Discs
               </a>
             </li>
-            <li id="organ" class="nav-item has-treeview">
+            <li class="nav-item has-treeview admin">
               <a href="organPage.html" class="nav-link">
                 <i class="iconOrgan"></i>
                 Organisations
               </a>
             </li>
-            <li id="users" class="nav-item has-treeview">
+            <li class="nav-item has-treeview admin">
               <a href="usersPage.html" class="nav-link">
                 <i class="iconUsers"></i>
                 Users
               </a>
             </li>
-            <li id="cats" class="nav-item has-treeview">
+            <li class="nav-item has-treeview superAdmin">
               <a href="catsPage.html" class="nav-link">
                 <i class="iconCat"></i>
                 Categories
@@ -135,7 +135,7 @@
                   </table>
                 </div>
                 <div class="card-footer">
-                  <input type="button" class="addVM" value="Add VM">
+                  <input type="button" class="addVM admin" value="Add VM">
                 </div>
                 <!-- /.card-footer-->
               </div>
@@ -153,6 +153,10 @@
                         <input id="iName" type="text" class="form-control" placeholder="Enter name...">
                         <label id="lOrgan">Organisation</label>
                         <select id="iOrgan" class="form-control">
+                          <!-- JS added options -->
+                        </select>
+                        <label id="lDisc">Discs</label>
+                        <select id="iDisc" class="multiple-discs form-control" name="states[]" multiple="multiple">
                           <!-- JS added options -->
                         </select>
                         <label>Category</label>
