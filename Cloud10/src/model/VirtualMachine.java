@@ -13,24 +13,26 @@ public class VirtualMachine extends VMResource {
 	
 	public VirtualMachine() {}
 	
-	public VirtualMachine(String name, String categoryName, int coreNum, int ram, int gpu) {
-		super(name);
+	public VirtualMachine(String name, String organisation, 
+			String categoryName, int coreNum, int ram, int gpu) {
+		super(name, organisation);
 		this.category = new Category(categoryName);
 		this.coreNum = coreNum;
 		this.ram = ram;
 		this.gpu = gpu;
 	}
 	
-	public VirtualMachine(String name, Category category) {
-		super(name);
+	public VirtualMachine(String name, String organisation, Category category) {
+		super(name, organisation);
 		this.category = new Category(category);
 		this.coreNum = category.getCoreNum();
 		this.ram = category.getRAM();
 		this.gpu = category.getGPU();
 	}
 	
-	public VirtualMachine(String name, Category category, Collection<Activity> activities) {
-		super(name);
+	public VirtualMachine(String name, String organisation, 
+			Category category, Collection<Activity> activities) {
+		super(name, organisation);
 		this.category = category;
 		this.coreNum = category.getCoreNum();
 		this.ram = category.getRAM();
@@ -38,9 +40,10 @@ public class VirtualMachine extends VMResource {
 		this.activities = activities;
 	}
 	
-	public VirtualMachine(String name, Category category, Collection<Disc> discs,
+	public VirtualMachine(String name, String organisation, 
+			Category category, Collection<Disc> discs,
 			Collection<Activity> activities) {
-		super(name);
+		super(name, organisation);
 		this.category = category;
 		this.coreNum = category.getCoreNum();
 		ram = category.getRAM();
@@ -51,7 +54,9 @@ public class VirtualMachine extends VMResource {
 
 	@Override
 	public String toString() {
-		return "VirtualMachine [name=" + name + "category=" + category + ", coreNum=" + coreNum + ", RAM=" + ram + ", GPU=" + gpu + "]";
+		return "VirtualMachine [category=" + category + ", coreNum=" + coreNum + ", ram=" + ram + ", gpu=" + gpu
+				+ ", discs=" + discs + ", activities=" + activities + ", name=" + name + ", organisation="
+				+ organisation + "]";
 	}
 
 	public String getName() {

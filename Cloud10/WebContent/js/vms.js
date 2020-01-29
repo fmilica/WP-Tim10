@@ -1,4 +1,5 @@
 var rootURL = "../Cloud10"
+var vm;
 var categories;
 var currentCat;
 
@@ -41,6 +42,10 @@ $(document).ready(function() {
 
 	// prikaz forme za dodavanje nove virtuelne masine
 	$('#addNew').click(function() {
+		// prikaz forme
+		showForm()
+
+		/*
 		$('#addForm').show()
 		/*
 		// dobavljanje organizacija
@@ -53,7 +58,7 @@ $(document).ready(function() {
 				alert("AJAX ERROR: " + errorThrown)
 			}
 		})
-		*/
+		*//*
 		// dobavljanje kateogrija
 		$.ajax({
 			type : "GET",
@@ -75,8 +80,9 @@ $(document).ready(function() {
 				alert("AJAX ERROR: " + errorThrown)
 			}
 		})
+		*/
 	})
-
+/*
 	function setOrganisation(user) {
 		if(user.role == "Admin") {
 			$('<option>').val(user.organisation.name).text(user.organisation.name).appendTo('#iOrgan');
@@ -96,10 +102,13 @@ $(document).ready(function() {
 					alert("AJAX ERROR: " + errorThrown)
 				}
 			})
-			*/
+			*//*
+		}
+		else if(user.role == "SuperAdmin") {
+			console.log("popuni sve organizacije")
 		}
 	}
-
+*/
 	// postavljanje vrednosti kategorije
 	$('#iCat').on("change", function() {
 		// dobavljanje trenutne kategorije
@@ -125,27 +134,34 @@ $(document).ready(function() {
 			e.preventDefault()
 		}
 		else {
+			// JSON objekat koji se salje
+			vm = {
+				name : vmName,
+				category : {
+					name : currentCat.name,
+					coreNum : currentCat.coreNum,
+					ram : currentCat.ram,
+					gpu : currentCat.gpu
+				},
+				// organisation : organisation
+				coreNum : vmCoreNum,
+				ram : vmRam,
+				gpu : vmGpu
+			}
+
 			$.ajax({
 				type : "POST",
 				url : rootURL + "/rest/vms/addVM",
 				contentType : "application/json",
 				dataType : "json",
-				data : JSON.stringify({
-					"name" : vmName,
-					"category" : {
-						"name" : currentCat.name,
-						"coreNum" : currentCat.coreNum,
-						"ram" : currentCat.ram,
-						"gpu" : currentCat.gpu
-					},
-					// organisation : organisation
-					"coreNum" : vmCoreNum,
-					"ram" : vmRam,
-					"gpu" : vmGpu
-				}),
+				data : JSON.stringify(vm),
 				success : function(response){
 					if(response == undefined) {
 						alert("Virtual Machine with specified name already exists!")
+						showFormError(vm)
+					}
+					else {
+						window.location.href="mainPage.html"
 					}
 				},
 				error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -155,6 +171,69 @@ $(document).ready(function() {
 		}
 	})
 })
+
+function showForm() {
+	$('#addForm').show()
+	/*
+	// dobavljanje organizacija
+	$.ajax({
+		type : "GET",
+		url : rootURL + "/rest/organisations/getOrganisations",
+		dataType : "json",
+		success : addOrganOptions,
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("AJAX ERROR: " + errorThrown)
+		}
+	})
+	*/
+	// dobavljanje kateogrija
+	$.ajax({
+		type : "GET",
+		url : rootURL + "/rest/categories/getCategories",
+		contentType : "application/json",
+		success : addCatOptions,
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("AJAX ERROR: " + errorThrown)
+		}
+	})
+	// podesavanje u zavisnosti od tipa korisnika
+	// dobavljanje tip trenutno ulogovanog korisnika
+	$.ajax({
+		type : "GET",
+		url : rootURL + "/rest/users/checkCurrent",
+		contentType : "application/json",
+		success : setOrganisation,
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("AJAX ERROR: " + errorThrown)
+		}
+	})
+}
+
+function setOrganisation(user) {
+	if(user.role == "Admin") {
+		$('<option>').val(user.organisation.name).text(user.organisation.name).appendTo('#iOrgan');
+		$('#iOrgan').val(user.organisation.name)
+		$('#iOrgan').attr('disabled','disabled');
+		// dodavanje diskova za tu organizaciju iz koje je admin
+		
+		// NEMOGUCE AKO NE KORISTIMO DODATAN FAJL
+		/*
+		$.ajax({
+			type : "GET",
+			url : rootURL + "/rest/organisations/getFreeDiscs",
+			contentType : "application/json",
+			dataType : "json",
+			success : addDiscsOptions,
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+				alert("AJAX ERROR: " + errorThrown)
+			}
+		})
+		*/
+	}
+	else if(user.role == "SuperAdmin") {
+		console.log("popuni sve organizacije")
+	}
+}
 
 function addDiscsOptions(allDiscs) {
 	var list = allDiscs == null ? [] : (allDiscs instanceof Array ? allDiscs : [allDiscs])
@@ -171,6 +250,8 @@ function addOrganOptions(allOrgans) {
 		$('#iOrgan').append('<option value="' + organisation.name + '">' + 
 							organisation.name + '</option>')
 	})
+	// da bi se namestili diskovi u polje
+	$('#iOrgan').trigger("change")
 }
 
 function addCatOptions(allCats) {
@@ -179,5 +260,17 @@ function addCatOptions(allCats) {
 	$.each(list, function(index, category) {
 		$('#iCat').append($("<option></option>").attr("value", category.name).text(category.name))
 	})
-	$('#iCat').trigger("change");
+	// da bi se namestile stavke kategorije u polja
+	$('#iCat').trigger("change")
+}
+
+function showFormError(vm) {
+	// prikazuje formu
+	console.log("helo")
+	showForm()
+	// prikazuje vec unete podatke
+	$('#iName').val(vm['name'])
+	$('#iCat').val(vm['category'])
+	// $('#iOrgan').val(cm['organisation'])
+	// DA LI MOGU DA SE OZNACE SVI DISKOVI POSTO JE MULTI SELEKT ???
 }

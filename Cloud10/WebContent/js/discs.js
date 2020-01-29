@@ -1,5 +1,6 @@
 var rootURL = "../Cloud10"
 var currentUser = null
+var disc = null
 
 window.onload = function() {
     // dobavljanje diskova
@@ -122,7 +123,11 @@ $(document).ready(function() {
 				}),
 				success : function(response){
 					if(response == undefined) {
-						alert("Disc with specified name already exists!")
+                        alert("Disc with specified name already exists!")
+                        showFormError(disc)
+                    }
+                    else {
+                        window.location.href="discs.html"
                     }
 				},
 				error : function(XMLHttpRequest, textStatus, errorThrown) {
