@@ -8,6 +8,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -39,6 +40,14 @@ public class OrganisationService {
 	}
 	
 	@GET
+	@Path("/getOrganisation")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Organisation getOrganisation() throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+		Organisation org = (Organisation) ctx.getAttribute("organisation");
+		return org;
+	}
+	
+	@GET
 	@Path("/getFreeDiscs")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -56,5 +65,46 @@ public class OrganisationService {
 			}
 		}
 		return freeDiscs;
+	}
+	
+	@POST
+	@Path("/addOrganisation")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Organisation addOrganisation(Organisation o) {
+		
+		Organisations orgs = getOrgs();
+		if(orgs.checkOrg(o)) {
+			return new Organisation();
+		}
+		o.setUsers(new ArrayList<String>());
+		o.setResources(new ArrayList<String>());
+		orgs.getOrganisationsMap().put(o.getName(), o);
+		ctx.setAttribute("organisations", orgs);
+		
+		return o;
+	}
+	
+	@POST
+	@Path("/changeOrganisation")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Organisation changeOrganisation(Organisation o) {
+		
+		Organisations orgs = getOrgs();
+		if(!orgs.checkOrg(o)) {
+			return new Organisation();
+		}
+		
+		orgs.changeOrg(o);
+		ctx.setAttribute("organisations", orgs);
+		return o;
+	}
+	
+	
+	
+	private Organisations getOrgs() {
+		Organisations orgs = (Organisations) ctx.getAttribute("organisations");
+		return orgs;
 	}
 }

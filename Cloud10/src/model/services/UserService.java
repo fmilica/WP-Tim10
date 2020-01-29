@@ -88,10 +88,8 @@ public class UserService {
 	@POST
 	@Path("/logout")
 	public void logout() {
-		System.out.println("odjavljivanje");
-		System.out.println(getCurrent());
+		System.out.println("logout - podesavanje na serverskoj strani");
 		setCurrent();
-		System.out.println(getCurrent());
 	}
 	
 	@POST
@@ -117,11 +115,10 @@ public class UserService {
 			us = getUsers();
 		}
 		if(us.checkUser(p)) {
-			return new User();
+			return null;
 		}
-		System.out.println(org);
+		
 		p.setOrganisation(org);
-		System.out.println(p.getOrganisation().getDescription());
 		getOrganisations().getOrganisationsMap().get(org.getName()).addUser(p);
 		us.addUser(p);
 		
@@ -241,22 +238,7 @@ public class UserService {
 		Users users = (Users) ctx.getAttribute("users");
 		if(users == null){
 			users = new Users(ctx.getRealPath(""));
-			for (User u : users.getUsersMap().values()) {
-				System.out.println(u);
-			}
 			Organisations o = new Organisations(ctx.getRealPath(""));
-			for (Organisation org : o.getOrganisationsMap().values() ) {
-				System.out.println(org);
-				System.out.println("SADA CE DA ISPISE USERE");
-				for (String u : org.getUsers()) {
-					System.out.println(u);
-				}
-				System.out.println("SADA CE DA ISPISE RESURSE");
-				for (String r : org.getResources()) {
-					System.out.println(r);
-				}
-			}
-			System.out.println("----------------------------------------");
 			ctx.setAttribute("organisations", o);
 			for (Organisation org : o.getOrganisationsMap().values()) {
 				for (String user : org.getUsers()) {
@@ -275,7 +257,7 @@ public class UserService {
 		if(users == null){
 			User current = getCurrent();
 			ctx.setAttribute("organisation", current.getOrganisation());
-			
+			System.out.println("ADMIN ORGANIZACIJA"+ctx.getAttribute("organisation"));
 			users = new Users(ctx.getRealPath(""),current);
 			Organisations o = new Organisations();
 			o.getOrganisationsMap().put(current.getOrganisation().getName(), current.getOrganisation());
@@ -295,7 +277,6 @@ public class UserService {
 			User current = getCurrent();
 			Organisations o = new Organisations(ctx.getRealPath(""));
 			ctx.setAttribute("organisation", o.getOrganisationsMap().get(current.getOrganisation().getName()));
-			System.out.println((Organisation)ctx.getAttribute("organisation"));
 			current.setOrganisation((Organisation)ctx.getAttribute("organisation"));
 			
 			users = new Users();

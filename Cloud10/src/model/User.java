@@ -98,6 +98,7 @@ public class User {
 	}
 	public void setOrganisation(Organisation organisation) {
 		this.organisation = organisation;
+		System.out.println(this.organisation.getDescription());
 	}
 	public RoleType getRole() {
 		return role;

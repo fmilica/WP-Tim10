@@ -40,4 +40,22 @@ public class Organisations {
 	public void setOrganisationsMap(HashMap<String, Organisation> organisationsMap) {
 		this.organisationsMap = organisationsMap;
 	}
+	
+	public boolean checkOrg(Organisation o) {
+		if(organisationsMap.containsKey(o.getName())) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	public void changeOrg(Organisation o) {
+		for (Organisation org : organisationsMap.values()) {
+			if(org.getName().equals(o.getName())) {
+				org.setDescription(o.getDescription());
+				org.setLogo(o.getLogo());
+			}
+		}
+	}
 }

@@ -78,7 +78,7 @@ function saveChanges(){
 					alert("User with email '" + email +"' already exists!");
 				}
 				else{
-					window.location.href = "acountPage.html";
+					window.location.href = "accountPage.html";
 				}
 		    },
 		    error : function(XMLHttpRequest, textStatus, errorThrown) {

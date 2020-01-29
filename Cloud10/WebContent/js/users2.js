@@ -1,6 +1,7 @@
 var rootURL = "../Cloud10"
 
 var currentType = null
+var retVal = null
 //e.preventDefault();
 
 //funkcija za proveru da li prilikom dolaska na mainPage postoji trenutni ulogovani
@@ -16,12 +17,20 @@ $(window).on('load', function(){
             currentType = data;
             if(currentType == "SuperAdmin"){
                 loadOrgs();
+                //zato sto inace nece u tabeli prikazati kolonu organisations kada se ucita prvi put
+                loadUsersToShow();
+            }
+            else if(currentType == "Admin"){
+            	loadUsersToShow();
             }
         },
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			alert("AJAX ERROR: " + errorThrown);
 		}
 	});
+})
+
+function loadUsersToShow(){
 	$.ajax({
 		type : 'GET',
 		url : rootURL + "/rest/users/load",
@@ -31,8 +40,7 @@ $(window).on('load', function(){
 			alert("AJAX ERROR: " + errorThrown);
 		}
     });
-    
-})
+}
 
 function loadOrgs(){
     $.ajax({
@@ -131,6 +139,7 @@ function submitU(){
     var type = $(document).find('select[name="selectType"]').val()
     if(!email || !pass || !name || !surn || !org || !type){
         alert("All of the input boxes must be filled!")
+        event.preventDefault();
     }
     else{
         $.ajax({
@@ -165,6 +174,10 @@ function deleteU(){
     }
     var type = $(document).find('select[name="selectType"]').val()
 	
+    if(!email){
+    	alert("You need to enter user's email!")
+    	event.preventDefault();
+    }
 	$.ajax({
 		type : 'POST',
 		url : rootURL + "/rest/users/deleteUser",
@@ -173,7 +186,7 @@ function deleteU(){
 		data : formJSON(email, pass, name, surn, org, type),
 		success : function(data) {
 			if(data.email == null){
-				alert("User with email" + email +" deleted successfully!");
+				alert("User with email '" + email +"' deleted successfully!");
 			}
 			else{
 				window.location.href = "usersPage.html";
@@ -203,6 +216,12 @@ function discardU(){
 function showForm(){
 	$(document).find('h3.card-title').html("Add User");
 	$(document).find('input[name="add_email"]').attr("readonly", false)
+	$("#addSelect").removeAttr("disabled");
+	if(currentType == "SuperAdmin"){
+		$('#addSelect').empty();
+		loadOrgs();
+		
+	}
     $(document).find('.addForm').show();
     if(currentType == "SuperAdmin"){
         $(document).find('.superAdmin').show();
@@ -213,7 +232,7 @@ function showForm(){
 }
 
 function add(){
-    var email = $(document).find('input[name="add_email"]').val()
+	var email = $(document).find('input[name="add_email"]').val()
     var pass = $(document).find('input[name="add_pass"]').val()
     var name = $(document).find('input[name="add_name"]').val()
     var surn = $(document).find('input[name="add_surn"]').val()
@@ -222,9 +241,10 @@ function add(){
         org = $(document).find('select[name="selectAdd"]').val()
     }
     var type = $(document).find('select[name="selectType"]').val()
-
+    
     if(!email || !pass || !name || !surn || !org || !type){
         alert("All of the input boxes must be filled!")
+        event.preventDefault();
     }
     else{
         $.ajax({
@@ -234,12 +254,14 @@ function add(){
 		    dataType : "json",
 		    data : formJSON(email, pass, name, surn, org, type),
 		    success : function(data) {
-				if(data.email == null){
-					alert("User with email '" + email +"' already exists!");
-				}
-				else{
-					window.location.href = "usersPage.html";
-				}
+		    	if(data == null){
+		    		alert("User with that email already exists!");
+		    		event.preventDefault()
+		    	}
+		    	else{
+		    		window.location.href = "usersPage.html"
+		    		
+		    	}
 		    },
 		    error : function(XMLHttpRequest, textStatus, errorThrown) {
 			    alert("AJAX ERROR: " + errorThrown);
