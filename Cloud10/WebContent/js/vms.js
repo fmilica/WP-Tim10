@@ -1,5 +1,4 @@
 var rootURL = "../Cloud10"
-var vm;
 var categories;
 var currentCat;
 
@@ -158,7 +157,7 @@ $(document).ready(function() {
 				success : function(response){
 					if(response == undefined) {
 						alert("Virtual Machine with specified name already exists!")
-						showFormError(vm)
+						showForm()
 					}
 					else {
 						window.location.href="mainPage.html"
@@ -262,15 +261,4 @@ function addCatOptions(allCats) {
 	})
 	// da bi se namestile stavke kategorije u polja
 	$('#iCat').trigger("change")
-}
-
-function showFormError(vm) {
-	// prikazuje formu
-	console.log("helo")
-	showForm()
-	// prikazuje vec unete podatke
-	$('#iName').val(vm['name'])
-	$('#iCat').val(vm['category'])
-	// $('#iOrgan').val(cm['organisation'])
-	// DA LI MOGU DA SE OZNACE SVI DISKOVI POSTO JE MULTI SELEKT ???
 }

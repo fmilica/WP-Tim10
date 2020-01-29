@@ -97,6 +97,9 @@ $(document).ready(function() {
         $('#submitChange').hide()
         $('#submitAbort').hide()
         $('#submitDelete').hide()
+        // ciscenje popunjenih podataka
+        $('#iName').val("")
+        $('#iCap').val("")
 
         // prikaz
         $('#submitAdd').show()
@@ -109,22 +112,24 @@ $(document).ready(function() {
         var dType = $('#iType').val()
         var dCap = $('#iCap').val()
 
+        disc = {
+            name : dName,
+            type : dType,
+            capacity : dCap,
+            vm : null
+        }
+
         if (checkInput(e, dName, dCap)) {
             $.ajax({
 				type : "POST",
 				url : rootURL + "/rest/discs/addDisc",
 				contentType : "application/json",
 				dataType : "json",
-				data : JSON.stringify({
-					"name" : dName,
-                    "type" : dType,
-                    "capacity" : dCap,
-                    "vm" : null
-				}),
+				data : JSON.stringify(disc),
 				success : function(response){
 					if(response == undefined) {
                         alert("Disc with specified name already exists!")
-                        showFormError(disc)
+                        showForm()
                     }
                     else {
                         window.location.href="discs.html"

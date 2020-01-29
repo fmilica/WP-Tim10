@@ -122,18 +122,48 @@
           <div class="col-12">
             <!-- Default box -->
             <div class="card">
-              <table>
-                <thead class="cat">
-                </thead>
-                <tbody>
-                </tbody>
-              </table>
+              <div class="card-body table-responsive p-0">
+                <table id="content" class="table table-striped table-valign-middle">
+                  <thead class="cat">
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
               <div class="card-footer">
-                <input type="button" value="Add VM">
+                <input type="button" class="btn btn-primary btn-cat" id="addNew" value="Add Category">
               </div>
               <!-- /.card-footer-->
             </div>
             <!-- /.card -->
+            <!-- Add Category Form -->
+            <div id="addForm" class="col-sm-4 addForm">
+              <div class="card">
+                <div class="card-header cat">
+                  <h3 class="card-title">Add Virtual Machine</h3>
+                </div>
+                <form role="form" action="mainPage.html" method="post">
+                  <div class="card-body">
+                    <div class="row">
+                      <label>Name</label>
+                      <input id="iName" type="text" class="form-control" placeholder="Enter name...">
+                      <label id="lCoreNum">Core Number</label>
+                      <input id="iCoreNum" type="text" class="form-control" placeholder="Enter number of cores...">
+                      <label id="lRam">RAM Capacity</label>
+                      <input id="iRam" type="text" class="form-control" placeholder="Enter RAM capacity...">
+                      <label id="lGpu">GPU Number</label>
+                      <input id="iGpu" type="text" class="form-control" placeholder="Enter number of GPUs..." disabled>
+                    </div>
+                  </div>
+                  <div class="card-footer">
+                    <input id="submitAdd" type="button" class="btn btn-primary btn-cat superAdmin" value="Add Category">
+                    <input id="submitChange" type="button" class="btn btn-primary btn-cat superAdmin" value="Save changes">
+                    <input id="submitAbort" type="button" class="btn btn-primary btn-cat superAdmin" value="Abort changes">
+                    <input id="submitDelete" type="button" class="btn btn-primary btn-cat superAdmin" value="Delete Category">
+                  </div>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
       </div>
