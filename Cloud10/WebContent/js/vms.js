@@ -57,7 +57,7 @@ function fillContentTable(allVms) {
 		header.append('<th>' + "Organisation" + '</th>')
 	}
 	$.each(list, function(index, vm) {
-		var row = $('<tr></tr>')
+		var row = $('<tr id="' + index + '" class="detailedView"></tr>')
 		row.append('<td>' + vm.name + '</td>' + 
 				   '<td>' + vm.category.name + '</td>' + 
 				   '<td>' + vm.coreNum + '</td>' + 
@@ -68,6 +68,16 @@ function fillContentTable(allVms) {
 			row.append('<td>' + vm.organisation + '</td>')
 		}
 		table.append(row)
+	})
+
+	// registrovanje za slusanje dogadjaja klika na red
+	$('tr.detailedView').click(function(e){
+		e.preventDefault();
+		$.each(list, function(index, vm){
+			if(index == $(e.target).parent()["0"].id){
+				editVM(vm)
+			}
+		})
 	})
 }
 
@@ -85,10 +95,41 @@ function setUserType(user) {
     }
 }
 
+function editVM(vm) {
+    // prilagodjavanje forme
+    setUserType(currentUser)
+    $('.card-title').text("Edit VM")
+    $('#submitAdd').hide()
+    // prikaz forme
+    $('#addForm').show();
+
+	// postavljanje trenutnih vrednosti
+	$('#iName').val(vm.name)
+	$('#iOrgan').val(vm.organisation)
+	// NAMESTANJE DISKOVA
+	// IZMENA DISKOVA
+	// ZAJEBANO VRLO
+	// VRLO ZAJEBANO
+	// IZUZETNO ZAJEBANO
+	$('#iDiscs').val(vm.discs)
+	$('#iCore').val(vm.coreNum)
+	$('#iRam').val(vm.ram)
+	$('#iGpu').val(vm.gpu)
+}
+
 $(document).ready(function() {
 
 	// prikaz forme za dodavanje nove virtuelne masine
 	$('#addNew').click(function() {
+		// prilagodjavanje forme
+        $('.card-title').text("Add VM")
+        $('#submitChange').hide()
+        $('#submitAbort').hide()
+        $('#submitDelete').hide()
+        // ciscenje popunjenih podataka
+
+        // prikaz
+        $('#submitAdd').show()
 		// prikaz forme
 		showForm()
 	})
@@ -96,11 +137,9 @@ $(document).ready(function() {
 	// postavljanje vrednosti kategorije u tekst polja ispod
 	$('#iCat').on("change", function() {
 		// dobavljanje trenutne kategorije
-		currentUser = $('#iCat').val()
-		console.log(currentUser)
 		currentCat = jQuery.grep(categories, function(c) {
-							return c.name == $('#iCat').val()
-						})
+			return c.name == $('#iCat').val()
+		})
 		currentCat = currentCat["0"]
 		$('#iCore').val(currentCat.coreNum)
 		$('#iRam').val(currentCat.ram)
@@ -173,6 +212,10 @@ $(document).ready(function() {
 			})
 		}
 	})
+
+	// izmena VM
+	// brisanje VM
+	// filtriranje i pretraga VM !!!!!!!!!!!
 })
 
 function showForm() {
@@ -184,11 +227,17 @@ function showForm() {
 			type : "GET",
 			url : rootURL + "/rest/organisations/getOrganisations",
 			dataType : "json",
-			success : addOrganOptions,
+			success : addOrganOptionsSuper,
 			error : function(XMLHttpRequest, textStatus, errorThrown) {
 				alert("AJAX ERROR: " + errorThrown)
 			}
 		})
+	} else {
+		$('#iOrgan').append($("<option></option>").attr("value", currentUser.organisation.name)
+							.attr("selected", "selected").text(currentUser.organisation.name))
+		$('#iOrgan').attr("disabled", "disabled");
+		// da bi se namestili diskovi u polje
+		$('#iOrgan').trigger("change")
 	}
 
 	// dobavljanje kateogrija
@@ -203,17 +252,12 @@ function showForm() {
 	})
 }
 
-function addOrganOptions(allOrgans) {
-	if (currentUser.role == "SuperAdmin") {
-		var list = allOrgans == null ? [] : (allOrgans instanceof Array ? allOrgans : [allOrgans])
-		$.each(list, function(index, organisation) {
-			$('#iOrgan').append('<option value="' + organisation.name + '">' + 
-								organisation.name + '</option>')
-		})
-	} else {
-		$('#iOrgan').append('<option value="' + currentUser.organisation + '">' + 
-							currentUser.organisation + '</option>')
-	}
+function addOrganOptionsSuper(allOrgans) {
+	var list = allOrgans == null ? [] : (allOrgans instanceof Array ? allOrgans : [allOrgans])
+	$.each(list, function(index, organ) {
+		$('#iOrgan').append($("<option></option>").attr("value", organ.name).text(organ.name))
+	})
+	$('#iOrgan').removeAttr('disabled');
 	// da bi se namestili diskovi u polje
 	$('#iOrgan').trigger("change")
 }
@@ -233,9 +277,9 @@ function getFreeDiscsOptions(currentOrgan) {
 }
 function addDiscOptions(allDiscs) {
 	var list = allDiscs == null ? [] : (allDiscs instanceof Array ? allDiscs : [allDiscs])
+	$('#iDiscs').empty()
 	$.each(list, function(index, disc) {
-		$('#iDiscs').append('<option value="' + disc.name + '">' + 
-							disc.name + '</option>')
+		$('#iDiscs').append($("<option></option>").attr("value", disc.name).text(disc.name))
 	})
 }
 

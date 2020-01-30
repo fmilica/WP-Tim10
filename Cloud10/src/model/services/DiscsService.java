@@ -46,7 +46,7 @@ public class DiscsService {
 	@Path("/getFreeOrganDiscs")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Collection<Disc> getOrganDiscs(Organisation organisation) {
+	public Collection<Disc> getFreeOrganDiscs(Organisation organisation) {
 		ArrayList<Disc> organDiscs = new ArrayList<Disc>();
 		Discs discs = (Discs)ctx.getAttribute("discs");
 		for (Disc d : discs.getDiscsMap().values()) {

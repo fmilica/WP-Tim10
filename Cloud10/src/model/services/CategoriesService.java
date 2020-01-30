@@ -33,9 +33,20 @@ public class CategoriesService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllCategories() throws JsonProcessingException {
 		User current = getCurrent();
+		// uh
+		// ovo je zajebano
+		// ja treba da pristupim kategorijama i kao admin
+		// da ih loudujem
+		// ali ne smem da pristupim izmeni, dodavanju ili slicno
+		// ali kao admin moram da mogu da dodam virtuelnu masinu sa kategorijom
+		// pa me moras spustiti
+		// a onda ne znam kad da mu zabranjujes
+		// hmmm...
+		// ne znam doista
+		/*
 		if(current.getRole() != RoleType.SuperAdmin) {
 			return Response.serverError().entity("Access denied!").build();
-		}
+		}*/
 		Categories cats = getCategories();
 		if(cats == null) {
 	        return Response.status(Response.Status.NOT_FOUND).entity("Categories not found").build();
