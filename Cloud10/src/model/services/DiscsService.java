@@ -1,5 +1,6 @@
 package model.services;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.servlet.ServletContext;
@@ -13,6 +14,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import model.Disc;
+import model.Organisation;
 import model.VirtualMachine;
 import model.collections.Discs;
 import model.collections.VirtualMachines;
@@ -28,10 +30,35 @@ public class DiscsService {
 	ServletContext ctx;
 	
 	@GET
+	@Path("/loadDiscs")
+	public void loadDiscs() {
+		getDiscs();
+	}
+	
+	@GET
 	@Path("/getAllDiscs")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Collection<Disc> getAllDiscs() {
 		return getDiscs().getDiscsMap().values();
+	}
+	
+	@POST
+	@Path("/getFreeOrganDiscs")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Disc> getOrganDiscs(Organisation organisation) {
+		ArrayList<Disc> organDiscs = new ArrayList<Disc>();
+		Discs discs = (Discs)ctx.getAttribute("discs");
+		for (Disc d : discs.getDiscsMap().values()) {
+			if (d.getOrganisation() != null) {
+				if (d.getOrganisation().equals(organisation.getName())) {
+					if (d.getVm() == null) {
+						organDiscs.add(d);	
+					}
+				}
+			}
+		}
+		return organDiscs;
 	}
 	
 	@POST

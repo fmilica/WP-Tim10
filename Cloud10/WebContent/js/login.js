@@ -15,6 +15,14 @@ function ucitaj(){
 		dataType : "json",
 		success : dodajih
 	});
+	// ucitavanje svih resursa na pocetku
+	$.ajax({
+		type : 'GET',
+		url : rootURL + "/rest/discs/loadDiscs",
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("AJAX ERROR: " + errorThrown)
+		}
+	})
 }
 
 //funkcija za ispis ucitanih korisnika ma konzolu (provera cisto)

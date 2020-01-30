@@ -1,6 +1,5 @@
 package model.services;
 
-import java.io.FileNotFoundException;
 import java.util.Collection;
 
 import javax.servlet.ServletContext;
@@ -13,10 +12,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
-
 import model.VirtualMachine;
+import model.collections.Discs;
 import model.collections.VirtualMachines;
 
 @Path("/vms")
@@ -27,11 +24,11 @@ public class VirtualMachineService {
 
 	@Context
 	ServletContext ctx;
-
+	
 	@GET
 	@Path("/getAllVms")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Collection<VirtualMachine> getAllVms() throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+	public Collection<VirtualMachine> getAllVms() {
 		return getVMs().getVirtualMachinesMap().values();
 	}
 
@@ -48,14 +45,25 @@ public class VirtualMachineService {
 	@Path("/addVM")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	// MORA IMATI POVRATNU VREDNOST
-	// AKO JE UNETA VM SA POSTOJECIM IMENOM
 	public VirtualMachine addVM(VirtualMachine vm) {
 		// validacija na serverskoj strani!
 		VirtualMachines vms = getVMs();
 		// jedinstvenost imena
 		if (!vms.checkVMName(vm.getName())) {
 			return null;
+		}
+		// dodavanje diskovima reference na novonapravljenu virtuelnu masinu
+		if (vm.getDiscs() != null) {
+			Discs discs = (Discs)ctx.getAttribute("discs");
+			Collection<String> vmDiscs = vm.getDiscs();
+			for (String discName : vmDiscs) {
+				if (discs.getDiscsMap().containsKey(discName)) {
+					discs.getDiscsMap().get(discName).setVm(vm.getName());
+				} else {
+					// nepostojeci disk!
+					return null;
+				}
+			}	
 		}
 		vms.addVM(vm);
 		return vm;
