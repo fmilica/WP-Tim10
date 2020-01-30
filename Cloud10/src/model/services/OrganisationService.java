@@ -47,7 +47,7 @@ public class OrganisationService {
 		return org;
 	}
 	
-	@GET
+	@POST
 	@Path("/getFreeDiscs")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)

@@ -92,7 +92,7 @@ $(document).ready(function() {
 			// NEMOGUCE AKO NE KORISTIMO DODATAN FAJL
 			/*
 			$.ajax({
-				type : "GET",
+				type : "POST",
 				url : rootURL + "/rest/organisations/getFreeDiscs",
 				contentType : "application/json",
 				dataType : "json",
@@ -218,7 +218,7 @@ function setOrganisation(user) {
 		// NEMOGUCE AKO NE KORISTIMO DODATAN FAJL
 		/*
 		$.ajax({
-			type : "GET",
+			type : "POST",
 			url : rootURL + "/rest/organisations/getFreeDiscs",
 			contentType : "application/json",
 			dataType : "json",

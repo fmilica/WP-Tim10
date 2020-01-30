@@ -7,6 +7,10 @@ public class VMResource {
 	
 	public VMResource() {}
 	
+	public VMResource(String name) {
+		this.name = name;
+	}
+	
 	public VMResource(String name, String organisation) {
 		this.name = name;
 		this.organisation = organisation;

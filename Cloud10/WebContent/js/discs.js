@@ -1,6 +1,8 @@
 var rootURL = "../Cloud10"
 var currentUser = null
 var disc = null
+var oldName = null
+var currentVm = null
 
 window.onload = function() {
     // dobavljanje diskova
@@ -55,6 +57,13 @@ function fillContentTable(allDiscs) {
         e.preventDefault();
         $.each(list, function(index, disc){
             if(index == $(e.target).parent()["0"].id){
+                oldName = disc.name
+                console.log(oldName)
+                // e eva debilu jedan
+                //oldName = $('#' + index + ' td:first-child').text()
+                currentVm = disc.vm
+                console.log(currentVm)
+                //currentVm = $('#' + index + ' td:last-child').text()
                 editDisc(disc)
             }
         })
@@ -132,7 +141,7 @@ $(document).ready(function() {
                         showForm()
                     }
                     else {
-                        window.location.href="discs.html"
+                        window.location.href="discsPage.html"
                     }
 				},
 				error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -140,38 +149,6 @@ $(document).ready(function() {
                 }
             })
         }
-		/*if(!dName) {
-            alert("Name is required!")
-            e.preventDefault()
-        } else if (!dCap) {
-            alert("Capacity is required!")
-            e.preventDefault()
-        } else if (!$.isNumeric(dCap)) {
-            alert("Capacity must be a number!")
-            e.preventDefault()
-        }
-		else {
-			$.ajax({
-				type : "POST",
-				url : rootURL + "/rest/discs/addDisc",
-				contentType : "application/json",
-				dataType : "json",
-				data : JSON.stringify({
-					"name" : dName,
-                    "type" : dType,
-                    "capacity" : dCap,
-                    "vm" : null
-				}),
-				success : function(response){
-					if(response == undefined) {
-						alert("Disc with specified name already exists!")
-                    }
-				},
-				error : function(XMLHttpRequest, textStatus, errorThrown) {
-					alert("AJAX ERROR: " + errorThrown)
-				}
-			})
-		}*/
     })
     
     // izmena diska
@@ -180,24 +157,28 @@ $(document).ready(function() {
         var type = $('#iType').val()
         var capacity = $('#iCap').val()
 
+        var discWithOldName = {
+            newName : name,
+            type : type,
+            capacity : capacity,
+            oldName : oldName
+        }
+
         if(checkInput(e, name, capacity)) {
             $.ajax({
                 type : "POST",
                 url : rootURL + "/rest/discs/editDisc",
-                contentType : "json",
-                dataType : "application/json",
-                data : JSON.stringify({
-                    "name" : name,
-                    "type" : type,
-                    "capacity" : capacity
-                }),
+                contentType : "application/json",
+				dataType : "json",
+                data : JSON.stringify(discWithOldName),
                 success : function(response){
 					if(response == undefined) {
                         alert("Disc with specified name already exists!")
-                        // KORISNIK OSTAJE NA FORMA ZA MENJANJE
+                        showForm()
                     }
-                    // KORISNIKU SE GASI FORMA ZA MENJANJE
-                    $('#addForm').hide()
+                    else {
+                        window.location.href="discsPage.html"
+                    }
                 },
                 error : function(XMLHttpRequest, textStatus, errorThrown) {
 					alert("AJAX ERROR: " + errorThrown)
@@ -210,22 +191,29 @@ $(document).ready(function() {
     // AKO POSTOJI VM ZA KOJI JE ZAKACEN -> VM GUBI VEZU SA NJIM
     $('#submitDelete').click(function(e) {
         var name = $('#iName').val()
+        var type = $('#iType').val()
+        var capacity = $('#iCap').val()
 
+        var disc = {
+            name : name,
+            type : type,
+            capacity : capacity,
+            vm : currentVm
+        }
         $.ajax({
             type : "POST",
             url : rootURL + "/rest/discs/removeDisc",
-            contentType : "json",
-            dataType : "application/json",
-            data : JSON.stringify({
-                "name" : name
-            }),
+            contentType : "application/json",
+            dataType : "json",
+            data : JSON.stringify(disc),
             success : function(response){
                 if(response == undefined) {
                     alert("Disc with specified name doesn't exist!")
-                    // KORISNIK OSTAJE NA FORMA ZA BRISANJE
+                    showForm()
                 }
-                // KORISNIKU SE GASI FORMA ZA BRISANJE
-                $('#addForm').hide()
+                else {
+                    window.location.href="discsPage.html"
+                }
             },
             error : function(XMLHttpRequest, textStatus, errorThrown) {
                 alert("AJAX ERROR: " + errorThrown)
@@ -234,7 +222,7 @@ $(document).ready(function() {
     })
 
     // odustajanje od promene diska
-    $('submitAbort').click(function(e) {
+    $('#submitAbort').click(function(e) {
         // gasi se forma za izmenu i nista se ne menja
         $('#addForm').hide()
     })
@@ -250,6 +238,10 @@ $(document).ready(function() {
             return false
         } else if (!$.isNumeric(dCap)) {
             alert("Capacity must be a number!")
+            e.preventDefault()
+            return false
+        } else if (parseInt(dCap) <= 0) {
+            alert("Capacity must be greater than 0!")
             e.preventDefault()
             return false
         }

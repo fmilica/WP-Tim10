@@ -37,7 +37,7 @@ public class Discs {
 	// funkcije za rad sa mapom
 	
 	// provera da li postoji disk sa unetim imenom
-	public boolean checkDiscName(String name) {
+	public boolean discNameFree(String name) {
 		if(discsMap.containsKey(name)) {
 			return false;
 		}

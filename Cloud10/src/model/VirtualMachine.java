@@ -8,7 +8,7 @@ public class VirtualMachine extends VMResource {
 	private int coreNum;
 	private int ram;
 	private int gpu;
-	private Collection<Disc> discs;
+	private Collection<String> discs;
 	private Collection<Activity> activities;
 	
 	public VirtualMachine() {}
@@ -41,7 +41,7 @@ public class VirtualMachine extends VMResource {
 	}
 	
 	public VirtualMachine(String name, String organisation, 
-			Category category, Collection<Disc> discs,
+			Category category, Collection<String> discs,
 			Collection<Activity> activities) {
 		super(name, organisation);
 		this.category = category;
@@ -89,10 +89,10 @@ public class VirtualMachine extends VMResource {
 	public void setGPU(int gpu) {
 		this.gpu = gpu;
 	}
-	public Collection<Disc> getDiscs() {
+	public Collection<String> getDiscs() {
 		return discs;
 	}
-	public void setDiscs(Collection<Disc> discs) {
+	public void setDiscs(Collection<String> discs) {
 		this.discs = discs;
 	}
 	public Collection<Activity> getActivities() {

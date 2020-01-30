@@ -1,6 +1,7 @@
 {
   "VM1" : {
   	"name" : "VM1",
+  	"organisation" : "Organisation1",
   	"category" : {
   		"name" : "Cat1",
   		"coreNum" : "4",
@@ -11,18 +12,8 @@
   	"ram" : "16",
   	"gpu" : null,
   	"discs" : [
-  		{
-		"name" : "Disc1",
-		"type" : "HDD",
-		"capacity" : "64",
-		"VM" : "VM1"
-  		},
-	  	{
-	  	"name" : "Disc2",
-	  	"type" : "SDD",
-	  	"capacity" : "32",
-	  	"VM" : "VM1"
-	  	}
+  		"Disc1",
+  		"Disc2"
   	],
   	"activities" : [
   		{
@@ -37,6 +28,7 @@
   },
   "VM2" : {
   	"name" : "VM2",
+  	"organisation" : "Organisation2",
   	"category" : {
   		"name" : "Cat2",
   		"coreNum" : "16",
@@ -47,24 +39,9 @@
   	"ram" : "256",
   	"gpu" : null,
   	"discs" : [
-  		{
-		"name" : "Disc3",
-		"type" : "HDD",
-		"capacity" : "1024",
-		"VM" : "VM2"
-  		},
-	  	{
-	  	"name" : "Disc4",
-	  	"type" : "SDD",
-	  	"capacity" : "128",
-	  	"VM" : "VM2"
-	  	},
-	  	{
-		"name" : "Disc5",
-		"type" : "HDD",
-		"capacity" : "512",
-		"VM" : "VM2"
-  		}
+  		"Disc3",
+  		"Disc4",
+  		"Disc5"
   	],
   	"activities" : [
   		{

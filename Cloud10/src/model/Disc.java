@@ -10,6 +10,12 @@ public class Disc extends VMResource {
 	
 	public Disc() {}
 
+	public Disc(String name, DiscType type, int capacity) {
+		super(name);
+		this.type = type;
+		this.capacity = capacity;
+	}
+	
 	public Disc(String name, String organisation, 
 			DiscType type, int capacity, String vm) {
 		super(name, organisation);
