@@ -44,7 +44,6 @@ public class UserService {
 			return getCurrentUsers().getUsersMap().values();
 		}
 		else {
-			System.out.println("UCITAVA SVE USERE");
 			return (getUsers()).getUsersMap().values();
 		}
 	}
@@ -77,6 +76,7 @@ public class UserService {
 		}
 		if(ind) {
 			request.getSession().setAttribute("current", current);
+			ctx.setAttribute("currentUser", current);
 		}
 		else {
 			return "greska404";
@@ -165,6 +165,7 @@ public class UserService {
 	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	@Produces(MediaType.APPLICATION_JSON)
 	public User deleteUser(User p) throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+		System.out.println("brisanje korisnika - provera na serverskoj strani");
 		//admin i super admin mogu da brisu korisnike
 		//naravno one koji su njima vidljivi
 		
@@ -189,6 +190,7 @@ public class UserService {
 	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	@Produces(MediaType.APPLICATION_JSON)
 	public User editProfile(User p) throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+		System.out.println("izmena korisnika - provera na serverskoj strani");
 		//moze da se menja email, ime, prezime, sifra
 		
 		User current = getCurrent();
@@ -299,8 +301,8 @@ public class UserService {
 	
 	private void setCurrent() {
 		User u = new User();
-		System.out.println("PRAZAN USER ->>>> " + u);
 		request.getSession().setAttribute("current", u);
+		ctx.setAttribute("currentUser", null);
 	}
 	
 	private Organisations getOrganisations() throws JsonIOException, JsonSyntaxException, FileNotFoundException {

@@ -56,4 +56,21 @@ public class Category {
 	public void setGPU(int gpu) {
 		this.gpu = gpu;
 	}
+	
+	public boolean hasNull() {
+		 //if(uuid == null || uuid.trim().length() == 0)
+		if(this.name == null || this.name.trim().length() == 0) {
+			return true;
+		}
+		else if(this.coreNum <= 0) {
+			return true;
+		}
+		else if(this.ram <= 0) {
+			return true;
+		}
+		else if(this.gpu < 0) {
+			return true;
+		}
+		return false;
+	}
 }

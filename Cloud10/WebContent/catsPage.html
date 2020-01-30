@@ -22,6 +22,10 @@
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
   <!-- Project style -->
   <link rel="stylesheet" href="html/css/style.css">
+  <!-- Srcipt file -->
+  <script type="text/javascript" src="js/users.js"></script>
+  <!-- Srcipt file -->
+  <script type="text/javascript" src="js/cats.js"></script>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <!-- Site wrapper -->
@@ -106,7 +110,7 @@
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#" onclick="logout()">Logout</a></li>
+              <li class="breadcrumb-item"><a href="#" class="current" onclick="logout()">Logout</a></li>
               <li class="breadcrumb-item">&nbsp;</li>
             </ol>
           </div>
@@ -131,7 +135,7 @@
                 </table>
               </div>
               <div class="card-footer">
-                <input type="button" class="btn btn-primary btn-cat" id="addNew" value="Add Category">
+                <input type="button" class="btn btn-primary btn-cat" id="addNew" value="Add Category" onclick="addcat()">
               </div>
               <!-- /.card-footer-->
             </div>
@@ -142,7 +146,7 @@
                 <div class="card-header cat">
                   <h3 class="card-title">Add Virtual Machine</h3>
                 </div>
-                <form role="form" action="mainPage.html" method="post">
+                <form role="form" action="catsPage.html" method="post">
                   <div class="card-body">
                     <div class="row">
                       <label>Name</label>
@@ -152,14 +156,14 @@
                       <label id="lRam">RAM Capacity</label>
                       <input id="iRam" type="text" class="form-control" placeholder="Enter RAM capacity...">
                       <label id="lGpu">GPU Number</label>
-                      <input id="iGpu" type="text" class="form-control" placeholder="Enter number of GPUs..." disabled>
+                      <input id="iGpu" type="text" class="form-control" placeholder="Enter number of GPUs...">
                     </div>
                   </div>
                   <div class="card-footer">
-                    <input id="submitAdd" type="button" class="btn btn-primary btn-cat superAdmin" value="Add Category">
-                    <input id="submitChange" type="button" class="btn btn-primary btn-cat superAdmin" value="Save changes">
-                    <input id="submitAbort" type="button" class="btn btn-primary btn-cat superAdmin" value="Abort changes">
-                    <input id="submitDelete" type="button" class="btn btn-primary btn-cat superAdmin" value="Delete Category">
+                    <input id="submitAdd" type="button" class="btn btn-primary btn-cat superAdmin addBtn" value="Add Category" onclick="addC()">
+                    <input id="submitChange" type="button" class="btn btn-primary btn-cat superAdmin editBtn" value="Save changes" onclick="submitC()">
+                    <input id="submitAbort" type="button" class="btn btn-primary btn-cat superAdmin editBtn" value="Abort changes" onclick="abortC()">
+                    <input id="submitDelete" type="button" class="btn btn-primary btn-cat superAdmin editBtn" value="Delete Category" onclick="deleteC()">
                   </div>
                 </form>
               </div>

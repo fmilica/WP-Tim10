@@ -40,4 +40,8 @@ public class Categories {
 	public void setCategoriesMap(HashMap<String, Category> categoriesMap) {
 		this.categoriesMap = categoriesMap;
 	}
+	
+	public void addItem(Category cat) {
+		categoriesMap.put(cat.getName(), cat);
+	}
 }

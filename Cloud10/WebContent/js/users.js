@@ -26,6 +26,9 @@ function validation(){
 				if(!data.email){
                     window.location.href = "login.html";
                 }
+				else{
+					$(document).find("a#current").text(data.name + " " + data.surname)
+				}
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			alert("AJAX ERROR: " + errorThrown);
