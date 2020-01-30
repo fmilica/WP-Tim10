@@ -1,8 +1,7 @@
 var rooTURL = "../Cloud10"
 	
 var currentType= null
-
-
+var currentName= null
 window.onload = function() {
     // dobavljanje diskova
 	$.ajax({
@@ -79,6 +78,8 @@ function editCatagory(c) {
     $('#iCoreNum').val(c.coreNum)
     $('#iRam').val(c.ram)
     $('#iGpu').val(c.gpu)
+    
+    currentName = c.name;
 }
 
 function addcat(){
@@ -102,17 +103,19 @@ function addC(){
     var ram = $('#iRam').val()
     var gpu = $('#iGpu').val()
     
-    if(!name || !coreNum || !ram || !gpu){
+    if(!name || !coreNum || !ram){
     	alert("All of the input boxes must be filled!")
     }
     
     if(!name){
     	var name = $('#iName').focus()
     }
-    else if(!coreNum){
+    else if(!coreNum || !($.isNumeric(coreNum)) || parseInt(coreNum) < 0){
+    	alert("Only positive numbers!")
     	$('#iCoreNum').focus();
     }
     else if(!ram || !($.isNumeric(ram)) || parseInt(ram) < 0){
+    	alert("Only positive numbers!")
     	$('#iRam').focus();
     }
     else if(gpu){
@@ -125,14 +128,17 @@ function addC(){
     		$('#iGpu').focus();
     	}
     }
+    else if(!gpu){
+    	gpu = 0;
+    }
     
-    if(name && coreNum && ram && gpu){
+    if(name && coreNum && ram){
     	$.ajax({
     		type: "POST",
     		url: rootURL + "/rest/categories/addCategory",
     		contentType : "application/json",
     		dataType : "json",
-    		data : formJSON(name, coreNum, ram, gpu),
+    		data : formJSONc(name, coreNum, ram, gpu),
     		success: function(data){
     			if(data.name == null){
     				alert("Category with name '"+name+"' already exists!");
@@ -149,19 +155,146 @@ function addC(){
 }
 
 function submitC(){
-	
+	var name = $('#iName').val()
+    var coreNum = $('#iCoreNum').val()
+    var ram = $('#iRam').val()
+    var gpu = $('#iGpu').val()
+    
+    if(!name || !coreNum || !ram){
+    	alert("All of the input boxes must be filled!")
+    }
+    
+    if(!name){
+    	var name = $('#iName').focus()
+    }
+    else if(!coreNum || !($.isNumeric(coreNum)) || parseInt(coreNum) < 0){
+    	alert("Only positive numbers!")
+    	$('#iCoreNum').focus();
+    }
+    else if(!ram || !($.isNumeric(ram)) || parseInt(ram) < 0){
+    	alert("Only positive numbers!")
+    	$('#iRam').focus();
+    }
+    else if(gpu){
+    	if($.isNumeric(gpu)){
+    		if(parseInt(gpu) < 0){
+    			alert("Only positive numbers!")
+    			$('#iGpu').focus();
+    		}
+    	}
+    	else{
+    		alert("Only positive numbers!")
+    		$('#iGpu').focus();
+    	}
+    }
+    else if(!gpu){
+    	gpu = 0;
+    }
+    if(name && coreNum && ram && gpu){
+        $.ajax({
+            type : 'POST',
+		    url : rootURL + "/rest/categories/changeCategory",
+		    contentType : 'application/json',
+		    dataType : "json",
+		    data : formJSON(currentName, name, coreNum, ram, gpu),
+		    success : function(data) {
+				if(data.name == null){
+					alert("Category with name '" + name +"' already exists!");
+				}
+				else{
+					window.location.href = "catsPage.html";
+				}
+		    },
+		    error : function(status, errorThrown) {
+		    	alert("ERROR "+status+": "+ errorThrown);
+		    }
+        })
+    }
 }
 
-function dicardC(){
-	
+function abortC(){
+	// prilagodjavanje forme
+    $('.editBtn').hide()
+    // prikaz forme
+    $('#addForm').hide();
+    $('.addBtn').hide();
+    
+    // postavljanje trenutnih vrednosti
+    $('#iName').val("")
+    $('#iCoreNum').val("")
+    $('#iRam').val("")
+    $('#iGpu').val("")
 }
 
 function deleteC(){
-	
+	var name = $('#iName').val()
+    var coreNum = $('#iCoreNum').val()
+    var ram = $('#iRam').val()
+    var gpu = $('#iGpu').val()
+    
+    if(!name || !coreNum || !ram){
+    	alert("All of the input boxes must be filled!")
+    }
+    
+    if(!name){
+    	var name = $('#iName').focus()
+    }
+    else if(!coreNum || !($.isNumeric(coreNum)) || parseInt(coreNum) < 0){
+    	alert("Only positive numbers!")
+    	$('#iCoreNum').focus();
+    }
+    else if(!ram || !($.isNumeric(ram)) || parseInt(ram) < 0){
+    	alert("Only positive numbers!")
+    	$('#iRam').focus();
+    }
+    else if(gpu){
+    	if($.isNumeric(gpu)){
+    		if(parseInt(gpu) < 0){
+    			$('#iGpu').focus();
+    		}
+    	}
+    	else{
+    		$('#iGpu').focus();
+    	}
+    }
+    else if(!gpu){
+    	gpu = 0;
+    }
+    
+    if(name && coreNum && ram && gpu){
+    	$.ajax({
+    		type : 'POST',
+    		url : rootURL + "/rest/categories/deleteCategory",
+    		contentType : 'application/json',
+    		dataType : "json",
+    		data : formJSONc(name, coreNum, ram, gpu),
+    		success : function(data) {
+    			if(data.name == null){
+    				alert("Category with name '" + name +"' deleted successfully!");
+    			}
+    			else{
+    				window.location.href = "catsPage.html";
+    			}
+    		},
+    		error : function(status, errorThrown){
+    			alert("ERROR "+status+": "+ errorThrown);
+    		}
+    	})
+    }
 };
 
-function formJSON(name, coreNum, ram, gpu){
+function formJSONc(name, coreNum, ram, gpu){
 	return JSON.stringify({
+		"name" : name,
+		"coreNum" : coreNum,
+		"ram" : ram,
+		"gpu" : gpu
+	});
+}
+
+function formJSON(currentName, name, coreNum, ram, gpu){
+	return JSON.stringify({
+		"oldName" : currentName,
 		"name" : name,
 		"coreNum" : coreNum,
 		"ram" : ram,

@@ -1,5 +1,7 @@
 package model;
 
+import model.wrappers.CategoryWrapper;
+
 public class Category {
 
 	private String name;
@@ -25,6 +27,13 @@ public class Category {
 		this.coreNum = coreNum;
 		this.ram = ram;
 		this.gpu = gpu;
+	}
+	
+	public Category(CategoryWrapper cw) {
+		this.name = cw.getName();
+		this.coreNum = cw.getCoreNum();
+		this.ram = cw.getRam();
+		this.gpu= cw.getGpu();
 	}
 	
 	@Override

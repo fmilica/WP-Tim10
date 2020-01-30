@@ -11,6 +11,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import model.Category;
+import model.wrappers.CategoryWrapper;
 
 public class Categories {
 
@@ -43,5 +44,20 @@ public class Categories {
 	
 	public void addItem(Category cat) {
 		categoriesMap.put(cat.getName(), cat);
+	}
+	
+	public void change(CategoryWrapper cw) {
+		for (Category cat : categoriesMap.values()) {
+			if(cat.getName().equals(cw.getOldName())) {
+				cat.setName(cw.getName());
+				cat.setCoreNum(cw.getCoreNum());
+				cat.setRAM(cw.getRam());
+				cat.setGPU(cw.getGpu());
+			}
+		}
+	}
+	
+	public void remove(Category c) {
+		categoriesMap.remove(c.getName());
 	}
 }

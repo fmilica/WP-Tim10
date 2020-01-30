@@ -1,5 +1,7 @@
 package model.services;
 
+import java.io.FileNotFoundException;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -13,11 +15,14 @@ import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 
 import model.Category;
 import model.User;
 import model.collections.Categories;
 import model.enums.RoleType;
+import model.wrappers.CategoryWrapper;
 
 @Path("/categories")
 public class CategoriesService {
@@ -43,10 +48,10 @@ public class CategoriesService {
 		// a onda ne znam kad da mu zabranjujes
 		// hmmm...
 		// ne znam doista
-		/*
-		if(current.getRole() != RoleType.SuperAdmin) {
+		//RESENO sada???
+		if(current.getRole() == RoleType.User || current.getEmail() == null) {
 			return Response.serverError().entity("Access denied!").build();
-		}*/
+		}
 		Categories cats = getCategories();
 		if(cats == null) {
 	        return Response.status(Response.Status.NOT_FOUND).entity("Categories not found").build();
@@ -63,9 +68,7 @@ public class CategoriesService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addCategory(Category c) throws JsonProcessingException {
 		User current = getCurrent();
-		System.out.println("trenutni je " + current);
-		if(current.getRole() == RoleType.User) {
-			System.out.println("nije super admin");
+		if(current.getRole() != RoleType.SuperAdmin || current.getEmail() == null) {
 			return Response.serverError().entity("Access denied!").build();
 		}
 		if(c.hasNull()) {
@@ -77,17 +80,91 @@ public class CategoriesService {
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
 		if(cats.getCategoriesMap().containsKey(c.getName())) {
-			System.out.println("kaze da sadrzi ovu kategoriju vec");
 			json = mapper.writeValueAsString(new Category());
-			System.out.println("ovo je json koji vrati "+json);
+			System.out.println("ovo je json koji vrati "+ json);
 			return Response.ok(json).build();
 		}
 		cats.addItem(c);
 		ctx.setAttribute("categories", cats);
 		json = mapper.writeValueAsString(c);
-		System.out.println("ovde bi trbalo da je sve okej");
 		System.out.println("ovo je json koji vrati "+json);
 	    return Response.ok(json).build();
+	}
+	
+	@POST
+	@Path("/changeCategory")
+	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response changeCategory(CategoryWrapper cw) throws JsonProcessingException {
+		System.out.println("dodavanje kategorije na serverskoj strani ");
+		ObjectMapper mapper = new ObjectMapper();
+		String json = "";
+		User current = getCurrent();
+		//samo admin ima pristup 
+		if(current.getRole() != RoleType.SuperAdmin || current.getEmail() == null) {
+			return Response.serverError().entity("Access denied!").build();
+		}
+
+		Category c = new Category(cw);
+		//ako mu je neki atribut null
+		if(c.hasNull()) {
+			System.out.println("ima kao neki null");
+			return Response.status(Response.Status.NOT_FOUND).entity("Category has null fields!").build();
+		}
+		
+		Categories cats = getCategories();
+		
+		//ako mu staro ime ne postoji u kategorijama
+		if(!cats.getCategoriesMap().containsKey(cw.getOldName())) {
+			System.out.println("izmena nepostojeceg");
+			json = mapper.writeValueAsString(new Category());
+			return Response.ok(json).build();
+		}
+		
+		//ako novo ime vec postoji u kategorijama
+		if(cats.getCategoriesMap().containsKey(cw.getName())) {
+			System.out.println("izmena na postojeceg");
+			json = mapper.writeValueAsString(new Category());
+			return Response.ok(json).build();
+		}
+		cats.change(cw);
+		json = mapper.writeValueAsString(c);
+		return Response.ok(json).build();
+	}
+	
+	@POST
+	@Path("/deleteCategory")
+	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteCategory(Category c) throws JsonProcessingException {
+		System.out.println("dodavanje kategorije na serverskoj strani ");
+		ObjectMapper mapper = new ObjectMapper();
+		String json = "";
+		
+		User current = getCurrent();
+		//samo admin ima pristup 
+		if(current.getRole() != RoleType.SuperAdmin || current.getEmail() == null) {
+			return Response.serverError().entity("Access denied!").build();
+		}
+		
+		//ako mu je neki atribut null
+		if(c.hasNull()) {
+			System.out.println("ima kao neki null");
+			return Response.status(Response.Status.NOT_FOUND).entity("Category has null fields!").build();
+		}
+		
+		Categories cats = getCategories();
+		
+		//ako novo ime ne postoji u kategorijama
+		if(!cats.getCategoriesMap().containsKey(c.getName())) {
+			System.out.println("brisanje nepostojeceg");
+			json = mapper.writeValueAsString(new Category());
+			return Response.ok(json).build();
+		}
+		cats.remove(c);
+		
+		json = mapper.writeValueAsString(c);
+		return Response.ok(json).build();
 	}
 	
 	private Categories getCategories() {

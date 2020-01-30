@@ -23,7 +23,8 @@ function validation(){
 		url : rootURL + "/rest/users/checkCurrent",
 		dataType : "json",
 		success : function(data) {
-				if(!data.email){
+				if(data.email == null){
+					alert("Action not allowed!!!");
                     window.location.href = "login.html";
                 }
 				else{
