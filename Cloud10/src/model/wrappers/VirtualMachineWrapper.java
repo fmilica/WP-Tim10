@@ -8,6 +8,7 @@ import model.Category;
 public class VirtualMachineWrapper {
 
 	private String name;
+	private String organisation;
 	private Category category;
 	private int coreNum;
 	private int ram;
@@ -18,10 +19,11 @@ public class VirtualMachineWrapper {
 	private Collection<String> newDiscs;
 	
 	public VirtualMachineWrapper() {}
-
-	public VirtualMachineWrapper(String name, Category category, int coreNum, int ram, int gpu,
+	
+	public VirtualMachineWrapper(String name, String organisation, Category category, int coreNum, int ram, int gpu,
 			Collection<String> discs, Collection<Activity> activities, String oldName, Collection<String> newDiscs) {
 		this.name = name;
+		this.organisation = organisation;
 		this.category = category;
 		this.coreNum = coreNum;
 		this.ram = ram;
@@ -32,12 +34,11 @@ public class VirtualMachineWrapper {
 		this.newDiscs = newDiscs;
 	}
 
-	
 	@Override
 	public String toString() {
-		return "VirtualMachineWrapper [name=" + name + ", category=" + category + ", coreNum=" + coreNum + ", ram="
-				+ ram + ", gpu=" + gpu + ", discs=" + discs + ", activities=" + activities + ", oldName=" + oldName
-				+ ", newDiscs=" + newDiscs + "]";
+		return "VirtualMachineWrapper [name=" + name + ", organisation=" + organisation + ", category=" + category
+				+ ", coreNum=" + coreNum + ", ram=" + ram + ", gpu=" + gpu + ", discs=" + discs + ", activities="
+				+ activities + ", oldName=" + oldName + ", newDiscs=" + newDiscs + "]";
 	}
 
 	public String getName() {
@@ -46,6 +47,13 @@ public class VirtualMachineWrapper {
 	public void setName(String name) {
 		this.name = name;
 	}
+	public String getOrganisation() {
+		return organisation;
+	}
+	public void setOrganisation(String organisation) {
+		this.organisation = organisation;
+	}
+
 	public Category getCategory() {
 		return category;
 	}

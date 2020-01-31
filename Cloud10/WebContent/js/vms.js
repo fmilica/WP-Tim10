@@ -241,6 +241,7 @@ $(document).ready(function() {
 	// izmena VM
 	$('#submitChange').click(function(e) {
 		var vmName = $('#iName').val()
+		var vmOrganisation = $('#iOrgan').val()
 		var vmDiscs = $('#iDiscs').val()
 		// OMOGUCITI UZIMANJE IZ LISTE SLOBODNIH NOVI DISK
 		// var newDiscs = $('#iNewDisk').val()
@@ -261,6 +262,7 @@ $(document).ready(function() {
 			// JSON objekat koji se salje
 			vm = {
 				name : vmName,
+				organisation : vmOrganisation,
 				category : {
 					name : currentCat.name,
 					coreNum : currentCat.coreNum,

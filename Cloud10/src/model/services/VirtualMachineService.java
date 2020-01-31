@@ -17,6 +17,7 @@ import model.Organisation;
 import model.User;
 import model.VirtualMachine;
 import model.collections.Discs;
+import model.collections.Organisations;
 import model.collections.VirtualMachines;
 import model.enums.RoleType;
 import model.wrappers.VirtualMachineWrapper;
@@ -114,6 +115,18 @@ public class VirtualMachineService {
 			// da li je zauzeto novouneto ime
 			if(!vms.vmNameFree(vmw.getName())) {
 				return null;
+			} else {
+				// promenilo se i slobodno je novo ime
+				// menjamo u organizaciji u listi njenih resursa
+				Organisations orgs = (Organisations)ctx.getAttribute("organisations");
+				// ako postoji organizacija koja je prosledjena
+				if (orgs.getOrganisationsMap().containsKey(vmw.getOrganisation())) {
+					// postoji
+					// brisemo staro ime i dodeljujemo novo u resurse
+					Collection<String> resources = orgs.getOrganisationsMap().get(vmw.getOrganisation()).getResources();
+					resources.remove(vmw.getOldName());
+					resources.add(vmw.getName());
+				}
 			}
 		}
 		VirtualMachine oldVm = vms.getVirtualMachinesMap().get(vmw.getOldName());
@@ -129,19 +142,21 @@ public class VirtualMachineService {
 		//allDiscs.addAll(vmw.getNewDiscs());
 		// za sve diskove stare koje nije oznacio, namesti kod diska da je slobodan
 		Collection<String> oldChosenDiscs = vmw.getDiscs();
-		for (String old : oldVm.getDiscs()) {
-			// iterira kroz stare diskove
-			Discs discs = (Discs)ctx.getAttribute("discs");
-			if (oldChosenDiscs == null) {
-				// nije odabrao nijedan stari
-				// oslobadjamo ih sve
-				discs.getDiscsMap().get(old).setVm(null);
-			}
-			else if (!oldChosenDiscs.contains(old)) {
-				// nije odabrao neki od starih diskova
-				// oslobadjamo ga
-				discs.getDiscsMap().get(old).setVm(null);
-			}
+		if (oldChosenDiscs != null) {
+			for (String old : oldVm.getDiscs()) {
+				// iterira kroz stare diskove
+				Discs discs = (Discs)ctx.getAttribute("discs");
+				if (oldChosenDiscs == null) {
+					// nije odabrao nijedan stari
+					// oslobadjamo ih sve
+					discs.getDiscsMap().get(old).setVm(null);
+				}
+				else if (!oldChosenDiscs.contains(old)) {
+					// nije odabrao neki od starih diskova
+					// oslobadjamo ga
+					discs.getDiscsMap().get(old).setVm(null);
+				}
+			}	
 		}
 		if (vmw.getNewDiscs() != null) {
 			Collection<String> newChosenDiscs = vmw.getNewDiscs();
@@ -168,6 +183,14 @@ public class VirtualMachineService {
 		// provera na serverskoj strani
 		if (!vms.vmNameFree(vm.getName())) {
 			// brise dobar
+			// brise vm iz resursa organizacije
+			Organisations orgs = (Organisations)ctx.getAttribute("organisations");
+			// da li postoji organizacija
+			if (orgs.getOrganisationsMap().containsKey(vm.getOrganisation())) {
+				// da li postoji u resursima
+				Collection<String> resources = orgs.getOrganisationsMap().get(vm.getOrganisation()).getResources();
+				resources.remove(vm.getName());
+			}
 			if (vm.getDiscs() != null) {
 				// ima diskova vezanih za sebe
 				// oslobadja ih
