@@ -1,7 +1,5 @@
 package model.services;
 
-import java.io.FileNotFoundException;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -15,8 +13,6 @@ import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
 
 import model.Category;
 import model.User;

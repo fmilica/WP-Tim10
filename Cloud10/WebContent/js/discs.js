@@ -3,8 +3,28 @@ var currentUser = null
 var disc = null
 var oldName = null
 var currentVm = null
+var change = false
 
 window.onload = function() {
+    // dobavljanje trenutno ulogovanog korisnika
+    $.ajax({
+        type : "GET",
+        url : rootURL + "/rest/users/checkCurrent",
+        contentType : "application/json",
+        success : setupUser,
+        error : function(XMLHttpRequest, textStatus, errorThrown) {
+            alert("AJAX ERROR: " + errorThrown)
+        }
+    })
+}
+
+function setupUser(user) {
+	currentUser = user
+	setUserType(user)
+	getAndFillContentTable()
+}
+
+function getAndFillContentTable() {
     // dobavljanje diskova
 	$.ajax({
 		type : "GET",
@@ -14,16 +34,6 @@ window.onload = function() {
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			alert("AJAX ERROR: " + errorThrown)
 		}
-    })
-    // dobavljanje trenutno ulogovanog korisnika
-    $.ajax({
-        type : "GET",
-        url : rootURL + "/rest/users/checkCurrent",
-        contentType : "application/json",
-        success : setUserType,
-        error : function(XMLHttpRequest, textStatus, errorThrown) {
-            alert("AJAX ERROR: " + errorThrown)
-        }
     })
 }
 
@@ -37,7 +47,11 @@ function fillContentTable(allDiscs) {
 	header.append('<th>' + "Name" + '</th>' + 
 				  '<th>' + "Type" + '</th>' + 
 				  '<th>' + "Capacity" + '</th>' + 
-				  '<th>' + "Virtual Machine" + '</th>')
+                  '<th>' + "Virtual Machine" + '</th>')
+    // ako je superAdmin prikazujemo mu i iz koje je organizacije disk
+	if(currentUser.role == "SuperAdmin") {
+		header.append('<th>' + "Organisation" + '</th>')
+	}
 	$.each(list, function(index, d) {
         var row = $('<tr id="' + index + '" class="detailedView"></tr>')
         if(d.vm == null) {
@@ -48,7 +62,11 @@ function fillContentTable(allDiscs) {
 		row.append('<td>' + d.name + '</td>' + 
 				   '<td>' + d.type + '</td>' + 
 				   '<td>' + d.capacity + '</td>' + 
-				   '<td>' + vm + '</td>')
+                   '<td>' + vm + '</td>')
+        // ako je superAdmin prikazujemo mu i iz koje je organizacije disk
+		if(currentUser.role == "SuperAdmin") {
+			row.append('<td>' + d.organisation + '</td>')
+		}
         table.append(row)
     })
     
@@ -58,11 +76,9 @@ function fillContentTable(allDiscs) {
         $.each(list, function(index, disc){
             if(index == $(e.target).parent()["0"].id){
                 oldName = disc.name
-                console.log(oldName)
                 // e eva debilu jedan
                 //oldName = $('#' + index + ' td:first-child').text()
                 currentVm = disc.vm
-                console.log(currentVm)
                 //currentVm = $('#' + index + ' td:last-child').text()
                 editDisc(disc)
             }
@@ -85,6 +101,7 @@ function setUserType(user) {
 }
 
 function editDisc(disc) {
+    change = true
     // prilagodjavanje forme
     setUserType(currentUser)
     $('.card-title').text("Edit Disk")
@@ -96,11 +113,16 @@ function editDisc(disc) {
     $('#iName').val(disc.name)
     $('#iType').val(disc.type)
     $('#iCap').val(disc.capacity)
+    $('#iOrgan').val(disc.organisation)
+    $('#iVMs').val(disc.vm)
+    showForm()
 }
 
 $(document).ready(function() {
     // prikaz forme za dodavanje novog diska
     $('#addNew').click(function() {
+		// postavljanje globalne promenljive
+        change = false
         // prilagodjavanje forme
         $('.card-title').text("Add Disk")
         $('#submitChange').hide()
@@ -112,20 +134,37 @@ $(document).ready(function() {
 
         // prikaz
         $('#submitAdd').show()
-        $('#addForm').show()
+        showForm()
     })
+
+	// listanje vrednosti virtuelnih masina specificnih za odabranu organizaciju
+	$('#iOrgan').on("change", function() {
+        var currentOrgan = null
+			// ako je admin
+			if (currentUser.role == "Admin") {
+				currentOrgan = currentUser.organisation
+			} else {
+				// ako je super admin
+				// dobavljamo izabranu opciju
+				currentOrgan = $('#iOrgan').val()
+			}
+			getVMOptions(currentOrgan)
+	})
 
     // dobavljanje unetih vrednosti sa forme
 	$('#submitAdd').click(function(e) {
         var dName = $('#iName').val()
         var dType = $('#iType').val()
         var dCap = $('#iCap').val()
+        var dOrgan = $('#iOrgan').val()
+        var dVM = $('#iVMs').val()
 
         disc = {
             name : dName,
             type : dType,
             capacity : dCap,
-            vm : null
+            organisation : dOrgan,
+            vm : dVM
         }
 
         if (checkInput(e, dName, dCap)) {
@@ -153,24 +192,28 @@ $(document).ready(function() {
     
     // izmena diska
     $('#submitChange').click(function(e) {
-        var name = $('#iName').val()
-        var type = $('#iType').val()
-        var capacity = $('#iCap').val()
+        var dName = $('#iName').val()
+        var dType = $('#iType').val()
+        var dCap = $('#iCap').val()
+        var dOrgan = $('#iOrgan').val()
+        var dVM = $('#iVMs').val()
 
-        var discWithOldName = {
-            newName : name,
-            type : type,
-            capacity : capacity,
+        disc = {
+            newName : dName,
+            type : dType,
+            capacity : dCap,
+            organisation : dOrgan,
+            vm : dVM,
             oldName : oldName
         }
 
-        if(checkInput(e, name, capacity)) {
+        if(checkInput(e, dName, dCap)) {
             $.ajax({
                 type : "POST",
                 url : rootURL + "/rest/discs/editDisc",
                 contentType : "application/json",
 				dataType : "json",
-                data : JSON.stringify(discWithOldName),
+                data : JSON.stringify(disc),
                 success : function(response){
 					if(response == undefined) {
                         alert("Disc with specified name already exists!")
@@ -191,13 +234,9 @@ $(document).ready(function() {
     // AKO POSTOJI VM ZA KOJI JE ZAKACEN -> VM GUBI VEZU SA NJIM
     $('#submitDelete').click(function(e) {
         var name = $('#iName').val()
-        var type = $('#iType').val()
-        var capacity = $('#iCap').val()
 
         var disc = {
             name : name,
-            type : type,
-            capacity : capacity,
             vm : currentVm
         }
         $.ajax({
@@ -248,3 +287,67 @@ $(document).ready(function() {
         return true
     }
 })
+
+function showForm() {
+	$('#addForm').show()
+	
+	if (currentUser.role == "SuperAdmin") {
+		if (change == false) {
+			// moze da bira organizaciju AKO NIJE IZMENA
+			$('#iOrgan').removeAttr("disabled")
+		} else {
+			// ne moze da bira organizaciju
+			$('#iOrgan').attr("disabled", "disabled")
+		}
+		// dobavljanje organizacija
+		$.ajax({
+			type : "GET",
+			url : rootURL + "/rest/organisations/getOrganisations",
+			dataType : "json",
+			success : addOrganOptionsSuper,
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+				alert("AJAX ERROR: " + errorThrown)
+			}
+		})
+	} else {
+		$('#iOrgan').append($("<option></option>").attr("value", currentUser.organisation.name)
+							.attr("selected", "selected").text(currentUser.organisation.name))
+		$('#iOrgan').attr("disabled", "disabled");
+		// da bi se namestili virtuelne masine u polje
+		$('#iOrgan').trigger("change")
+	}
+}
+
+function addOrganOptionsSuper(allOrgans) {
+	var list = allOrgans == null ? [] : (allOrgans instanceof Array ? allOrgans : [allOrgans])
+    $('#iOrgan').empty()
+	$.each(list, function(index, organ) {
+		$('#iOrgan').append($("<option></option>").attr("value", organ.name).text(organ.name))
+	})
+	// da bi se namestili virtuelne masine u polje
+	$('#iOrgan').trigger("change")
+}
+
+function getVMOptions(currentOrgan) {
+	$.ajax({
+		type : "POST",
+		url : rootURL + "/rest/vms/getOrganVMs",
+		contentType : "application/json",
+		data : JSON.stringify(currentOrgan),
+		dataType : "json",
+		success : addVMOptions,
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("AJAX ERROR: " + errorThrown)
+		}
+	})
+}
+
+function addVMOptions(allVMs) {
+	var list = allVMs == null ? [] : (allVMs instanceof Array ? allVMs : [allVMs])
+    $('#iVMs').empty()
+    // dodavanje prazne opcije -> ako (super)admin ne zeli da zakaci disk za vm odmah
+    $('#iVMs').append($("<option></option>").attr("value", null).text(""))
+	$.each(list, function(index, vm) {
+		$('#iVMs').append($("<option></option>").attr("value", vm.name).text(vm.name))
+	})
+}

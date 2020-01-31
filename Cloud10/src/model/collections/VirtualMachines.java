@@ -38,7 +38,7 @@ public class VirtualMachines {
 	// funkcije za rad sa mapom
 	
 	// provera da li postoji VM sa unetim imenom
-	public boolean checkVMName(String name) {
+	public boolean vmNameFree(String name) {
 		if(virtualMachinesMap.containsKey(name)) {
 			return false;
 		}
@@ -50,6 +50,10 @@ public class VirtualMachines {
 		virtualMachinesMap.put(vm.getName(), vm);
 	}
 	
+	// brisanje virtuelne masine
+	public void deleteVm(String name) {
+		virtualMachinesMap.remove(name);
+	}
 	// ---
 	
 	

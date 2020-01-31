@@ -15,9 +15,12 @@ import javax.ws.rs.core.MediaType;
 
 import model.Disc;
 import model.Organisation;
+import model.User;
 import model.VirtualMachine;
 import model.collections.Discs;
+import model.collections.Organisations;
 import model.collections.VirtualMachines;
+import model.enums.RoleType;
 import model.wrappers.DiscWrapper;
 
 @Path("/discs")
@@ -39,7 +42,19 @@ public class DiscsService {
 	@Path("/getAllDiscs")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Collection<Disc> getAllDiscs() {
-		return getDiscs().getDiscsMap().values();
+		User current = (User)request.getSession().getAttribute("current");
+		if (current.getRole() == RoleType.SuperAdmin) {
+			return getDiscs().getDiscsMap().values();
+		} else {
+			Organisation o = current.getOrganisation();
+			ArrayList<Disc> orgDiscs = new ArrayList<Disc>();
+			for (Disc d : getDiscs().getDiscsMap().values()) {
+				if (d.getOrganisation().equals(o.getName())) {
+					orgDiscs.add(d);	
+				}
+			}
+			return orgDiscs;
+		}
 	}
 	
 	@POST
@@ -48,7 +63,7 @@ public class DiscsService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Collection<Disc> getFreeOrganDiscs(Organisation organisation) {
 		ArrayList<Disc> organDiscs = new ArrayList<Disc>();
-		Discs discs = (Discs)ctx.getAttribute("discs");
+		Discs discs = getDiscs();
 		for (Disc d : discs.getDiscsMap().values()) {
 			if (d.getOrganisation() != null) {
 				if (d.getOrganisation().equals(organisation.getName())) {
@@ -73,6 +88,32 @@ public class DiscsService {
 			return null;
 		}
 		discs.addDisc(d);
+		// provera da li postoji odabrana organizacija
+		Organisations orgs = (Organisations)ctx.getAttribute("organisations");
+		if (!orgs.getOrganisationsMap().containsKey(d.getOrganisation())) {
+			// ne postoji uneta organizacija
+			// bad request
+			return null;
+		}
+		// postoji
+		// dodajemo joj disk u listu resursa
+		orgs.getOrganisationsMap().get(d.getOrganisation()).getResources().add(d.getName());
+		if (d.getVm() != null && !d.getVm().equals("")) {
+			VirtualMachines vms = (VirtualMachines)ctx.getAttribute("vms");
+			// proveravamo da li postoji odabrana virtuelna masina
+			if (!vms.getVirtualMachinesMap().containsKey(d.getVm())) {
+				// ne postoji
+				// bad request
+				return null;
+			}
+			// postoji
+			// dodajemo joj disk
+			VirtualMachine vm = vms.getVirtualMachinesMap().get(d.getVm());
+			vm.getDiscs().add(d.getName());
+		}
+		// ne zeli da doda disk nijednoj virtuelnoj
+		// slobodan je
+		d.setVm(null);
 		return d;
 	}
 	
@@ -91,11 +132,26 @@ public class DiscsService {
 				return null;
 			}
 		}
+		// PROVERA DA LI ORGANIZACIJA POSTOJI
+		// KAO I SVA OSTALA GOVNA DAL POSTOJE
+		// KOJA I SALJEMO I NE SALJEMO [EOWGWEMEGO
 		Disc oldDisc = discs.getDiscsMap().get(dw.getOldName());
 		discs.deleteDisc(oldDisc.getName());
 		oldDisc.setName(dw.getNewName());
 		oldDisc.setCapacity(dw.getCapacity());
 		oldDisc.setType(dw.getType());
+		if (dw.getVm() != null && !dw.getVm().equals("")) {
+			VirtualMachines vms = (VirtualMachines)ctx.getAttribute("vms");
+			// da li postoji vm koja je prosledjena
+			if (vms.getVirtualMachinesMap().containsKey(dw.getVm())) {
+				// postoji
+				// dodelimo joj disk
+				oldDisc.setVm(dw.getVm());
+				vms.getVirtualMachinesMap().get(dw.getVm()).addDisc(oldDisc.getName());
+			} else {
+				return null;
+			}
+		}
 		discs.addDisc(oldDisc);
 		return dw;
 	}
@@ -111,7 +167,13 @@ public class DiscsService {
 			// brise dobar
 			if(d.getVm() != null) {
 				VirtualMachines vms = (VirtualMachines)ctx.getAttribute("vms");
+				// proverava da li postoji takva vm
 				VirtualMachine vm = vms.getVirtualMachinesMap().get(d.getVm());
+				if (vm == null) {
+					// ne postoji takva vm
+					return null;
+				}
+				// postoji takva vm
 				vm.getDiscs().remove(d.getName());
 			}
 			discs.deleteDisc(d.getName());

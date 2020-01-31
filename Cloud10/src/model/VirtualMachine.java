@@ -59,6 +59,11 @@ public class VirtualMachine extends VMResource {
 				+ organisation + "]";
 	}
 
+	// dodavanje diska virtuelnoj masini
+	public void addDisc(String discName) {
+		this.discs.add(discName);
+	}
+	
 	public String getName() {
 		return name;
 	}
