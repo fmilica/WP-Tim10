@@ -2,7 +2,6 @@ package model.services;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Collection;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +12,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
@@ -37,27 +39,57 @@ public class OrganisationService {
 	@GET
 	@Path("/getOrganisations")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Collection<Organisation> getOrganisations() throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+	public Response getOrganisations() throws JsonIOException, JsonSyntaxException, FileNotFoundException, JsonProcessingException {
+		User current = (User)ctx.getAttribute("currentUser");
+		if(current.getEmail() == null || current.getRole() != RoleType.SuperAdmin) {
+			return Response.serverError().entity("Access denied!").build();
+		}
 		Organisations orgs = (Organisations) ctx.getAttribute("organisations");
-		return orgs.getOrganisationsMap().values();
+		ObjectMapper mapper = new ObjectMapper();
+		String json = mapper.writeValueAsString(orgs.getOrganisationsMap().values());
+		return Response.ok(json).build();
+		//return orgs.getOrganisationsMap().values();
 	}
 	
 	@GET
 	@Path("/getOrganisation")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Collection<Organisation> getOrganisation() throws JsonIOException, JsonSyntaxException, FileNotFoundException {
-		Organisations o = getOrgs();
-		for (Organisation org : o.getOrganisationsMap().values()) {
-			System.out.println(org.getDescription() + " "+ org.getName());
+	public Response getOrganisation() throws JsonIOException, JsonSyntaxException, FileNotFoundException, JsonProcessingException {
+		User current = (User)ctx.getAttribute("currentUser");
+		if(current.getEmail() == null || current.getRole() != RoleType.Admin) {
+			return Response.serverError().entity("Access denied!").build();
 		}
-		return o.getOrganisationsMap().values();
+		Organisations o = getOrgs();
+		ObjectMapper mapper = new ObjectMapper();
+		String json = mapper.writeValueAsString(o.getOrganisationsMap().values());
+		return Response.ok(json).build();
+		//return o.getOrganisationsMap().values();
 	}
 	
 	@POST
 	@Path("/getFreeDiscs")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Collection<Disc> getFreeDiscs(Organisation o) {
+	public Response getFreeDiscs(Organisation o) throws JsonProcessingException {
+		User current = (User) ctx.getAttribute("currentUser");
+		if(current.getEmail() == null) {
+			return Response.serverError().entity("Access denied!").build();
+		}
+		if(!current.getOrganisation().getName().equals(o.getName()) && current.getRole() == RoleType.User) {
+			return Response.serverError().entity("Access denied!").build();
+		}
+		else if(!current.getOrganisation().getName().equals(o.getName()) && current.getRole() == RoleType.Admin) {
+			return Response.serverError().entity("Access denied!").build();
+		}
+		if(o.hasNull()) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("User has null fields!").build();
+		}
+		Organisations orgs = getOrgs();
+		if(!orgs.getOrganisationsMap().containsKey(o.getName())) {
+			return Response.status(Response.Status.NOT_FOUND).entity("User has null fields!").build();
+		}
+		ObjectMapper mapper = new ObjectMapper();
+		String json;
 		ArrayList<Disc> freeDiscs = new ArrayList<Disc>();
 		Discs discs = (Discs)ctx.getAttribute("discs");
 		// je iz te organizacije
@@ -70,66 +102,93 @@ public class OrganisationService {
 				}
 			}
 		}
-		return freeDiscs;
+		json = mapper.writeValueAsString(freeDiscs);
+		return Response.ok(json).build();
+		//return freeDiscs;
 	}
 	
 	@POST
 	@Path("/addOrganisation")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Organisation addOrganisation(Organisation o) {
-		
+	public Response addOrganisation(Organisation o) throws JsonProcessingException {
+		User current = (User) ctx.getAttribute("currentUser");
+		ObjectMapper mapper = new ObjectMapper();
+		String json = "";
+		if(current.getEmail() == null || current.getRole() != RoleType.SuperAdmin) {
+			System.out.println("nedozvoljen pristup");
+			return Response.serverError().entity("Access denied!").build();
+		}
+		if(o.hasNull()) {
+			System.out.println("ima null");
+			return Response.serverError().entity("Access denied!").build();
+		}
 		Organisations orgs = getOrgs();
 		if(orgs.checkOrg(o.getName())) {
-			return new Organisation();
+			json = mapper.writeValueAsString(new Organisation());
+			return Response.ok(json).build();
 		}
+		o.setUsers(new ArrayList<String>());
+		o.setResources(new ArrayList<String>());
 		o.setUsers(new ArrayList<String>());
 		o.setResources(new ArrayList<String>());
 		orgs.getOrganisationsMap().put(o.getName(), o);
 		ctx.setAttribute("organisations", orgs);
-		
-		return o;
+		json = mapper.writeValueAsString(o);
+		return Response.ok(json).build();
 	}
 	
 	@POST
 	@Path("/changeOrganisation")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Organisation changeOrganisation(OrganisationWrapper o) {
+	public Response changeOrganisation(OrganisationWrapper o) throws JsonProcessingException {
 		System.out.println("izmena organizacije - validacija na serveru");
-		System.out.println(o);
-		Organisations orgs = getOrgs();
-		for (Organisation oo : orgs.getOrganisationsMap().values()) {
-			System.out.println(oo.getName() + " - " + oo.getDescription());
+		ObjectMapper mapper = new ObjectMapper();
+		String json = "";
+		User current = (User)ctx.getAttribute("currentUser");
+		if(current.getEmail() == null || current.getRole() == RoleType.User) {
+			System.out.println("nema pristup");
+			return Response.serverError().entity("Access denied!").build();
+		}
+		if(o.hassNull()) {
+			System.out.println("ima kao neki null");
+			return Response.status(Response.Status.BAD_REQUEST).entity("User has null fields!").build();
+		}
+		Organisations orgs = new Organisations();
+		if(current.getRole() == RoleType.SuperAdmin) {
+			orgs = (Organisations) ctx.getAttribute("organisations");
+		}
+		else if(current.getRole() == RoleType.Admin) {
+			ctx.setAttribute("organisation", current.getOrganisation());
+			orgs.getOrganisationsMap().put(current.getOrganisation().getName(),current.getOrganisation());
 		}
 		if(!orgs.checkOrg(o.getOldName())) {
 			System.out.println("pristup nepostojecem");
-			return new Organisation();
+			json = mapper.writeValueAsString(new Organisation());
+			return Response.ok(json).build();
+			//return new Organisation();
 		}
 		if(orgs.checkOrg(o.getName()) && !o.getOldName().equals(o.getName())) {
 			System.out.println("postoji vec ovakav");
-			return new Organisation();
+			json = mapper.writeValueAsString(new Organisation());
+			return Response.ok(json).build();
+			//return new Organisation();
 		}
-		System.out.println("0");
 		Organisation org = getOrgs().getOrganisationsMap().get(o.getOldName());
-		System.out.println("0");
 		org.setName(o.getName());
-		System.out.println("0");
 		org.setDescription(o.getDescription());
-		System.out.println("0");
 		org.setLogo(o.getLogo());
-		System.out.println("0");
 		ctx.setAttribute("organisations", orgs);
-		System.out.println("0");
-		System.out.println(org);
-		return org;
+		json = mapper.writeValueAsString(org);
+		return Response.ok(json).build();
+		//return org;
 	}
 	
 	private Organisations getOrgs() {
+		System.out.println("jel uopste usao ovde jebote");
 		User current = (User) ctx.getAttribute("currentUser");
-		System.out.println(current + "    " + current.getOrganisation().getDescription());
 		Organisations orgs = new Organisations();
-		System.out.println(current.getOrganisation().getDescription());
 		if(current.getRole() == RoleType.SuperAdmin) {
 			orgs = (Organisations) ctx.getAttribute("organisations");
 		}

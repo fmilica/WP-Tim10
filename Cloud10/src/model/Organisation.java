@@ -71,15 +71,7 @@ public class Organisation {
 		else if(this.description == null || this.description.trim().length() == 0) {
 			return true;
 		}
-		else if(this.logo == null || this.logo.trim().length() == 0) {
-			return true;
-		}
-		else if(this.users == null) {
-			return true;
-		}
-		else if(this.resources == null) {
-			return true;
-		}
+		//logo moze da bude null ili prazan kao i liste
 		return false;
 	}
 }

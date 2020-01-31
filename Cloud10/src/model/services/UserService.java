@@ -13,8 +13,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.jasper.tagplugins.jstl.core.ForEach;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonIOException;
@@ -68,7 +66,6 @@ public class UserService {
 	@Path("/checkCurrent")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response checkCurrent() throws JsonIOException, JsonSyntaxException, FileNotFoundException, JsonProcessingException {
-		System.out.println("---------validacija----------");
 		User current = getCurrent();
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
@@ -87,12 +84,14 @@ public class UserService {
 	public Response login(User p) throws JsonIOException, JsonSyntaxException, FileNotFoundException, JsonProcessingException {
 		System.out.println("login - provera na serverskoj strani");
 		//current sme da bude null, tj mora biti
-		User current = getCurrent();
+		User current = new User();
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
 		//moze imati null podatke zato sto se tek loguje pa 
 		//mu ne zanamo nista sem email i lozinke
+		System.out.println(p);
 		if(p.getEmail() == null || p.getPassword() == null) {
+			System.out.println("ovde nije usao");
 			return Response.serverError().entity("Access denied!").build();
 		}
 		boolean ind = false;
@@ -101,15 +100,13 @@ public class UserService {
 			{
 				ind = true;
 				current = k;
+				request.getSession().setAttribute("current", current);
+				ctx.setAttribute("currentUser", current);
 				break;
 			}	
 		}
-		if(ind) {
-			request.getSession().setAttribute("current", current);
-			ctx.setAttribute("currentUser", current);
-		}
-		else {
-	        return Response.status(Response.Status.NOT_FOUND).entity("User not found").build();
+		if(!ind) {
+			return Response.status(Response.Status.NOT_FOUND).entity("User not found").build();
 		}
 		System.out.println("TRENUTNO PRIJAVLJENI JE "+getCurrent().getEmail());
 		json = mapper.writeValueAsString(getCurrent());
@@ -140,12 +137,12 @@ public class UserService {
 		User current = getCurrent();
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
-		if(current == null) {
+		if(current == null || current.getRole() == RoleType.User) {
 			return Response.serverError().entity("Access denied!").build();
 		}
 		if(p.hasNull()) {
 			System.out.println("ima kao neki null");
-			return Response.status(Response.Status.NOT_FOUND).entity("User has null fields!").build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("User has null fields!").build();
 		}
 		if(current.getRole() == RoleType.Admin) {
 			org = current.getOrganisation();
@@ -159,7 +156,8 @@ public class UserService {
 			return Response.serverError().entity("Access denied!").build();
 		}
 		if(us.checkUser(p)) {
-			return null;
+			json = mapper.writeValueAsString(new User());
+			return Response.ok(json).build();
 		}
 		
 		p.setOrganisation(org);
@@ -331,34 +329,23 @@ public class UserService {
 	}
 	
 	private Users getUsers() throws JsonIOException, JsonSyntaxException, FileNotFoundException {
-		System.out.println("uslo u getUsers");
+		System.out.println("getUsers()");
 		Users users = (Users) ctx.getAttribute("users");
 		if(users == null){
-			System.out.println("mora biti null");
 			users = new Users(ctx.getRealPath(""));
-			users.print();
 			Organisations o = new Organisations(ctx.getRealPath(""));
-			System.out.println("sad organizacije");
-			for (Organisation oo : o.getOrganisationsMap().values()) {
-				System.out.println(oo.getName() + "    " + oo.getDescription());
-			}
 			ctx.setAttribute("organisations", o);
 			for (Organisation org : o.getOrganisationsMap().values()) {
-				System.out.println("iteracija org " + org.getDescription());
 				for (String user : org.getUsers()) {
-					System.out.println("ima users "+ user);
 					if(users.getUsersMap().containsKey(user)) {
-						System.out.println("sadrzimo tog usera " + user);
 						users.setOrgForUser(user,org);
 					}
 				}
 			}
-			users.print();
 			ctx.setAttribute("users",users);
-			System.out.println("postavi sve usere na ctx");
-			Users novi = (Users) ctx.getAttribute("users");
-			novi.print();
+			users.print();
 		}
+		users.print();
 		return users;
 	}
 	

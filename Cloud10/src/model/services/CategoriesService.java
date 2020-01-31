@@ -45,7 +45,7 @@ public class CategoriesService {
 		// hmmm...
 		// ne znam doista
 		//RESENO sada???
-		if(current.getRole() == RoleType.User || current.getEmail() == null) {
+		if(current.getEmail() == null) { //current.getRole() == RoleType.User ||  jer i njemu mora da se ucita getCategories valjda zbog js-a
 			return Response.serverError().entity("Access denied!").build();
 		}
 		Categories cats = getCategories();

@@ -37,6 +37,10 @@ function loadO(){
 			alert("AJAX ERROR: " + errorThrown);
 		}
 	});
+	if(currentType == "Admin"){
+		console.log($(document).find("#sakrij").val());
+		$(document).find("#sakrij").hide();
+	}
 }
 
 function loadOrgs(){
@@ -64,9 +68,6 @@ function showOrgs(){
 
 function showThem(data){
 	list = data == null ? [] : (data instanceof Array ? data : [data])
-	if(currentType == "Admin"){
-		$(document).find(".btn btn-primary btn-organ").hide();
-	}
 	var table = $(document).find('#orgsTable tbody')
     var header = $(document).find('table thead')
     var h = '<tr>'+
@@ -77,8 +78,13 @@ function showThem(data){
 	$.each(list, function(index,org){
         var tr = $('<tr id="'+index+'" class="edit"></tr>');
         var row = '<td id="'+index+'">'+org.name+'</td>'+
-                    '<td id="'+index+'">'+org.description+'</td>'+
-                    '<td id="'+index+'"><img src="'+org.logo+'"/></td>';
+                    '<td id="'+index+'">'+org.description+'</td>';
+        if(org.logo != null){
+        	row += '<td id="'+index+'"><img src="'+org.logo+'"/></td>'
+        }
+        else {
+        	row += '<td id="'+index+'"><img src=""/></td>'
+        }
         tr.append(row)
 		table.append(tr);
 	});

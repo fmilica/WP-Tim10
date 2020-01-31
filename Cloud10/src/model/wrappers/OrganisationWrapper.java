@@ -54,4 +54,18 @@ public class OrganisationWrapper {
 		return "OrganisationWrapper [oldName=" + oldName + ", name=" + name + ", description=" + description + ", logo="
 				+ logo + "]";
 	}
+	
+	public boolean hassNull() {
+		if(this.oldName == null || this.oldName.trim().length() == 0) {
+			return true;
+		}
+		else if(this.name == null || this.name.trim().length() == 0) {
+			return true;
+		}
+		else if(this.description == null || this.description.trim().length() == 0) {
+			return true;
+		}
+		//logo moze da bude null a liste su naravno prazne
+		return false;
+	}
 }
