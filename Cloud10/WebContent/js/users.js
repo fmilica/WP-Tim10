@@ -1,5 +1,6 @@
 var rootURL = "../Cloud10"
 
+
 //funkcija za proveru da li prilikom dolaska na mainPage postoji trenutni ulogovani
 //situacija kada posle odjave pritisnemo back
 //plus dobavljanje tipa trenutnog ulogovanog 
@@ -9,12 +10,14 @@ $(window).on('load', function(){
 		type : 'GET',
 		url : rootURL + "/rest/users/getUserType",
 		dataType : "json",
-		success : showTypePage,
+		success : function(data){
+			validation()
+			showTypePage(data)
+		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			alert("AJAX ERROR: " + errorThrown);
 		}
-	});
-	validation();
+	})
 })
 
 function validation(){
@@ -53,7 +56,7 @@ function logout(){
         type : 'POST',
 		url :  rootURL + "/rest/users/logout",
 		success : function() {
-				window.location.href = "login.html";
+			window.location.href = "login.html";
 				
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {

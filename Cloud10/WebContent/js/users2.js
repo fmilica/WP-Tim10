@@ -48,10 +48,10 @@ function loadOrgs(){
 		url : rootURL + "/rest/users/getOrgs",
 		dataType : "json",
 		success : function(data){
-			if(data == null){
+			/*if(data == null){
 				alert("Action not allowed!!!");
 				window.location.href = "login.html";
-			}
+			}*/
             list = data == null ? [] : (data instanceof Array ? data : [data])
             $.each(list, function(index,org){
                 $('#addSelect').append(new Option(org.name,org.name))
@@ -108,7 +108,7 @@ function editUser(user){
 	$(document).find('h3.card-title').html("Edit User");
 	$(document).find('.addForm').show();
     if(currentType == "SuperAdmin"){
-        $(document).find('.superAdmin').show();
+    	$(document).find('.superAdmin').show();
         $(document).find('.form-control superAdmin').show();
     }
     $(document).find('.addBtn').hide();
@@ -125,6 +125,7 @@ function editUser(user){
 	$('#addSelect').empty();
 	$('#addSelect').append(new Option(user.organisation.name));
 	$('#addSelect').attr("disabled", "disabled");
+	$(document).find('select[name="selectType"]').val(user.role)
 }
 
 function submitU(){
@@ -139,9 +140,22 @@ function submitU(){
     var type = $(document).find('select[name="selectType"]').val()
     if(!email || !pass || !name || !surn || !org || !type){
         alert("All of the input boxes must be filled!")
-        event.preventDefault();
     }
-    else{
+    
+    if(!email){
+    	$(document).find('input[name="add_email"]').focus();
+    }
+    else if(!pass){
+    	$(document).find('input[name="add_pass"]').focus();
+    }
+    else if(!name){
+    	$(document).find('input[name="add_name"]').focus();
+    }
+    else if(!surn){
+    	$(document).find('input[name="add_surn"]').focus();
+    }
+    
+    if(email && pass && name && surn && org && type){
         $.ajax({
             type : 'POST',
 		    url : rootURL + "/rest/users/changeUser",
@@ -176,41 +190,34 @@ function deleteU(){
 	
     if(!email){
     	alert("You need to enter user's email!")
-    	event.preventDefault();
+    	$(document).find('input[name="add_email"]').focus()
     }
-	$.ajax({
-		type : 'POST',
-		url : rootURL + "/rest/users/deleteUser",
-		contentType : 'application/json',
-		dataType : "json",
-		data : formJSON(email, pass, name, surn, org, type),
-		success : function(data) {
-			if(data.email == null){
-				alert("User with email '" + email +"' deleted successfully!");
+    if(email){
+		$.ajax({
+			type : 'POST',
+			url : rootURL + "/rest/users/deleteUser",
+			contentType : 'application/json',
+			dataType : "json",
+			data : formJSON(email, pass, name, surn, org, type),
+			success : function(data) {
+				if(data.email == null){
+					alert("User with email '" + email +"' deleted successfully!");
+				}
+				else{
+					window.location.href = "usersPage.html";
+				}
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+				alert("AJAX ERROR: " + errorThrown);
 			}
-			else{
-				window.location.href = "usersPage.html";
-			}
-		},
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("AJAX ERROR: " + errorThrown);
-		}
-	})
-    
+		})
+    }
 }
 
 function discardU(){
-	$(document).find('.editDelete').hide();
-    if(currentType == "SuperAdmin"){
-        $(document).find('.superAdmin').hide();
-        $(document).find('.form-control superAdmin').hide();
-    }
-	/* nema poente da ih brisem 
-	$(document).find('input[name="add_email"]').clear()
-    $(document).find('input[name="add_pass"]').clear()
-    $(document).find('input[name="add_name"]').clear()
-    $(document).find('input[name="add_surn"]').clear()
-	*/
+	$(document).find('.addForm').hide();
+    $(document).find('.addBtn').hide();
+    $(document).find('.editBtn').hide();
 }
 
 function showForm(){
@@ -220,13 +227,17 @@ function showForm(){
 	if(currentType == "SuperAdmin"){
 		$('#addSelect').empty();
 		loadOrgs();
-		
 	}
     $(document).find('.addForm').show();
     if(currentType == "SuperAdmin"){
         $(document).find('.superAdmin').show();
         $(document).find('.form-control superAdmin').show();
     }
+    $(document).find('input[name="add_email"]').val("")
+    $(document).find('input[name="add_pass"]').val("")
+    $(document).find('input[name="add_name"]').val("")
+    $(document).find('input[name="add_surn"]').val("")
+    
     $(document).find('.editBtn').hide();
     $(document).find('.addBtn').show();
 }
@@ -244,9 +255,22 @@ function add(){
     
     if(!email || !pass || !name || !surn || !org || !type){
         alert("All of the input boxes must be filled!")
-        event.preventDefault();
     }
-    else{
+    
+    if(!email){
+    	$(document).find('input[name="add_email"]').focus();
+    }
+    else if(!pass){
+    	$(document).find('input[name="add_pass"]').focus();
+    }
+    else if(!name){
+    	$(document).find('input[name="add_name"]').focus();
+    }
+    else if(!surn){
+    	$(document).find('input[name="add_surn"]').focus();
+    }
+    
+    if(email && pass && name && surn && org && type){
         $.ajax({
             type : 'POST',
 		    url : rootURL + "/rest/users/addUser",

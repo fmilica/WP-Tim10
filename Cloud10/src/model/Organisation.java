@@ -63,4 +63,23 @@ public class Organisation {
 	public void setResources(Collection<String> resources) {
 		this.resources = resources;
 	}
+	
+	public boolean hasNull() {
+		if(this.name == null || this.name.trim().length() == 0) {
+			return true;
+		}
+		else if(this.description == null || this.description.trim().length() == 0) {
+			return true;
+		}
+		else if(this.logo == null || this.logo.trim().length() == 0) {
+			return true;
+		}
+		else if(this.users == null) {
+			return true;
+		}
+		else if(this.resources == null) {
+			return true;
+		}
+		return false;
+	}
 }

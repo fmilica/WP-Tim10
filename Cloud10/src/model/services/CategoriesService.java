@@ -124,6 +124,7 @@ public class CategoriesService {
 			return Response.ok(json).build();
 		}
 		cats.change(cw);
+		ctx.setAttribute("categories", cats);
 		json = mapper.writeValueAsString(c);
 		return Response.ok(json).build();
 	}
@@ -158,7 +159,7 @@ public class CategoriesService {
 			return Response.ok(json).build();
 		}
 		cats.remove(c);
-		
+		ctx.setAttribute("categories", cats);
 		json = mapper.writeValueAsString(c);
 		return Response.ok(json).build();
 	}

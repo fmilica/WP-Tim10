@@ -98,12 +98,33 @@ public class User {
 	}
 	public void setOrganisation(Organisation organisation) {
 		this.organisation = organisation;
-		System.out.println(this.organisation.getDescription());
 	}
 	public RoleType getRole() {
 		return role;
 	}
 	public void setRole(RoleType role) {
 		this.role = role;
+	}
+	
+	public boolean hasNull() {
+		if(this.email == null || this.email.trim().length() == 0) {
+			return true;
+		}
+		else if(this.password == null || this.password.trim().length() == 0) {
+			return true;
+		}
+		else if(this.name == null || this.name.trim().length() == 0) {
+			return true;
+		}
+		else if(this.surname == null || this.surname.trim().length() == 0) {
+			return true;
+		}
+		else if(this.organisation.getName() == null || this.organisation.getName().trim().length() == 0) {
+			return true;
+		}
+		else if(this.role == null) {
+			return true;
+		}
+		return false;
 	}
 }

@@ -45,7 +45,6 @@ function showUser(user){
 	
 	//prikaz forme za izmenu
 	$(document).find('.addForm').show();
-    $(document).find('.superAdmin').show();
     $(document).find('.form-control superAdmin').show();
 	$(document).find('.addBtn').show();
 }
@@ -62,11 +61,23 @@ function saveChanges(){
 	if(!email || !name || !surn || !org || !type){
         alert("All of the input boxes must be filled!")
     }
-	else if(pass != repeat){
-		//fokus na te dve
+	else if(pass != repeat && pass && repeat){
+		$(document).find('input[name="add_pass"]').focus()
+		$(document).find('input[name="add_repeat"]').focus()
 		alert("Password and Repeated password are not the same!");
 	}
-	else{
+	
+	if(!email){
+    	$(document).find('input[name="add_email"]').focus();
+    }
+    else if(!name){
+    	$(document).find('input[name="add_name"]').focus();
+    }
+    else if(!surn){
+    	$(document).find('input[name="add_surn"]').focus();
+    }
+	
+	if(email && pass && name && surn && org && type){
 		$.ajax({
             type : 'POST',
 		    url : rootURL + "/rest/users/editProfile",

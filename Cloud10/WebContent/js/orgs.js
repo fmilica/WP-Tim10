@@ -1,5 +1,7 @@
 var rootURL = "../Cloud10"
+	
 var currentType = null
+var currentName = null
 
 $(window).on('load', function(){
     $.ajax({
@@ -30,10 +32,7 @@ function loadO(){
 		type : 'GET',
 		url : rootURL + "/rest/organisations/getOrganisation",
 		dataType : "json",
-		success : function(data){
-			console.log(data.name + " " + data.description)
-            editOrg(data);   
-        },
+		success : showThem,
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			alert("AJAX ERROR: " + errorThrown);
 		}
@@ -54,7 +53,10 @@ function loadOrgs(){
 
 function showOrgs(){
 	$(document).find('h3.card-title').html("Add Organisation");
+	$(document).find('input[name="add_name"]').val("")
 	$(document).find('input[name="add_name"]').attr("readonly", false)
+	$(document).find('input[name="add_desc"]').val("")
+    $(document).find('input[name="add_logo"]').val("")
     $(document).find('.addForm').show();
     $(document).find('.editBtn').hide();
     $(document).find('.addBtn').show();
@@ -62,6 +64,9 @@ function showOrgs(){
 
 function showThem(data){
 	list = data == null ? [] : (data instanceof Array ? data : [data])
+	if(currentType == "Admin"){
+		$(document).find(".btn btn-primary btn-organ").hide();
+	}
 	var table = $(document).find('#orgsTable tbody')
     var header = $(document).find('table thead')
     var h = '<tr>'+
@@ -73,7 +78,7 @@ function showThem(data){
         var tr = $('<tr id="'+index+'" class="edit"></tr>');
         var row = '<td id="'+index+'">'+org.name+'</td>'+
                     '<td id="'+index+'">'+org.description+'</td>'+
-                    '<td id="'+index+'">'+org.logo+'</td>';
+                    '<td id="'+index+'"><img src="'+org.logo+'"/></td>';
         tr.append(row)
 		table.append(tr);
 	});
@@ -90,14 +95,16 @@ function showThem(data){
 
 function editOrg(org){
 	$(document).find('input[name="add_name"]').val(org.name)
-	$(document).find('input[name="add_name"]').attr("readonly", true)
+	$(document).find('input[name="add_name"]').attr("readonly", false)
     $(document).find('input[name="add_desc"]').val(org.description)
-    $(document).find('input[name="add_logo"]').val(org.logo)
+    $(document).find('.imgUpload').val(org.logo)
 	
     $(document).find('h3.card-title').html("Edit Organisation");
 	$(document).find('.addForm').show();
     $(document).find('.addBtn').hide();
     $(document).find('.editBtn').show();
+    
+    currentName = org.name;
 }
 
 function addO(){
@@ -105,11 +112,19 @@ function addO(){
     var desc = $(document).find('input[name="add_desc"]').val()
     var logo = $(document).find('input[name="add_logo"]').val()
     
-    if(!name || !desc || !logo){
+    if(!name || !desc){
         alert("All of the input boxes must be filled!")
         event.preventDefault();
     }
-    else{
+	
+	if(!name){
+		$(document).find('input[name="add_name"]').focus()
+	}
+	else if(!desc){
+		$(document).find('input[name="add_desc"]').focus()
+	}
+	
+    if(name && desc){
         $.ajax({
             type : 'POST',
 		    url : rootURL + "/rest/organisations/addOrganisation",
@@ -133,23 +148,32 @@ function addO(){
 }
 
 function submitO(){
+	
 	var name = $(document).find('input[name="add_name"]').val()
     var desc = $(document).find('input[name="add_desc"]').val()
-    var logo = $(document).find('input[name="add_logo"]').val()
-    
-    if(!name || !desc || !logo){
+    var logo = $(document).find('.imgUpload').val()
+    console.log(logo)
+    if(!name || !desc){
         alert("All of the input boxes must be filled!")
         event.preventDefault();
     }
-    else{
+	
+	if(!name){
+		$(document).find('input[name="add_name"]').focus()
+	}
+	else if(!desc){
+		$(document).find('input[name="add_desc"]').focus()
+	}
+	
+    if(name && desc){
         $.ajax({
             type : 'POST',
 		    url : rootURL + "/rest/organisations/changeOrganisation",
 		    contentType : 'application/json',
 		    dataType : "json",
-		    data : formJSON(name, desc, logo),
+		    data : formJSONc(currentName, name, desc, logo),
 		    success : function(data) {
-				if(data.email == null){
+				if(data.name == null){
 					alert("Organisation with name '" + name +"' already exists!");
 				}
 				else{
@@ -164,11 +188,22 @@ function submitO(){
 }
 
 function discardO(){
-	loadO();
+	$(document).find('.addForm').hide();
+    $(document).find('.addBtn').hide();
+    $(document).find('.editBtn').hide();
 }
 
 function formJSON(name, desc, logo){
     return JSON.stringify({
+        "name" : name,
+        "description" : desc,
+        "logo" : logo
+	});
+}
+
+function formJSONc(currentName, name, desc, logo){
+    return JSON.stringify({
+    	"oldName" : currentName,
         "name" : name,
         "description" : desc,
         "logo" : logo

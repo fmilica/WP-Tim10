@@ -2,7 +2,7 @@
   "Organisation1" : {
   	"name" : "Organisation1",
   	"description" : "First organisation to exist",
-  	"logo" : "",
+  	"logo" : "images/little.png",
   	"users" : [
   		"email2",
   		"email3"

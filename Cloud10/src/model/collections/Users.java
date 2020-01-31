@@ -56,7 +56,10 @@ public class Users {
 	
 	public void setOrgForUser(String user, Organisation organisation) {
 		if(usersMap.get(user).getRole() != RoleType.SuperAdmin) {
+			System.out.println("nije super admin");
 			usersMap.get(user).setOrganisation(organisation);
+			
+			System.out.println("userova " + user +" postavljena org " + usersMap.get(user).getOrganisation().getDescription());
 		}
 	}
 	
@@ -87,6 +90,21 @@ public class Users {
 			if(u.getEmail().equals(current.getEmail())) {
 				u = new User(modified);
 			}
+		}
+	}
+	
+	public boolean userChanged(User u) {
+		User old = getUsersMap().get(u.getEmail());
+		if(!old.getOrganisation().getName().equals(u.getOrganisation().getName())) {
+			return true;
+		}
+		return false;
+	}
+	
+	public void print() {
+		System.out.println("ispisujem ucitane usere");
+		for (User u : usersMap.values()) {
+			System.out.println(u);
 		}
 	}
 }

@@ -16,7 +16,9 @@ public class Organisations {
 
 	private HashMap<String, Organisation> organisationsMap;
 	
-	public Organisations() {}
+	public Organisations() {
+		organisationsMap = new HashMap<String, Organisation>();
+	}
 	
 	public Organisations(String filePath) {
 		String sep = File.separator;
@@ -41,8 +43,8 @@ public class Organisations {
 		this.organisationsMap = organisationsMap;
 	}
 	
-	public boolean checkOrg(Organisation o) {
-		if(organisationsMap.containsKey(o.getName())) {
+	public boolean checkOrg(String o) {
+		if(organisationsMap.containsKey(o)) {
 			return true;
 		}
 		else {
@@ -57,5 +59,9 @@ public class Organisations {
 				org.setLogo(o.getLogo());
 			}
 		}
+	}
+	
+	public void addItem(Organisation o) {
+		organisationsMap.put(o.getName(), o);
 	}
 }
