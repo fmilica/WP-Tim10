@@ -3,14 +3,17 @@ var rooTURL = "../Cloud10"
 var currentType= null
 var currentName= null
 window.onload = function() {
-    // dobavljanje diskova
+    // dobavljanje kategorija
 	$.ajax({
 		type : "GET",
 		url : rootURL + "/rest/categories/getCategories",
 		dataType : "json",
 		success : fillContentTable,
-		error : function(status, errorThrown) {
-			alert("ERROR "+ status +": " + errorThrown)
+		error : function(response) {
+			alert(response.responseText);
+			if (response.responseText.includes("No logged in user!")) {
+				window.location.href = "login.html"
+			}
 		}
     })
     // dobavljanje trenutno ulogovanog korisnika
@@ -19,18 +22,17 @@ window.onload = function() {
         url : rootURL + "/rest/users/checkCurrent",
         contentType : "application/json",
         success : setUserType,
-        error : function(XMLHttpRequest, textStatus, errorThrown) {
-            alert("AJAX ERROR: " + errorThrown)
-        }
+		error : function(response) {
+			alert(response.responseText)
+			if (response.responseText.includes("No logged in user!")) {
+				window.location.href = "login.html"
+			}
+		}
     })
 }
 
 function setUserType(data){
 	currentType = data;
-	if(data == null){
-		alert("Action not allowed!!!");
-		window.location.href = "login.html";
-	}
 }
 
 // popunjavanje tabele za prikaz diskova
@@ -140,16 +142,14 @@ function addC(){
     		dataType : "json",
     		data : formJSONc(name, coreNum, ram, gpu),
     		success: function(data){
-    			if(data.name == null){
-    				alert("Category with name '"+name+"' already exists!");
-    			}
-    			else{
-    				window.location.href = "catsPage.html";
-    			}
+    			window.location.href = "catsPage.html";
     		},
-    		error : function(status, errorThrown){
-    			alert("ERROR "+status+": "+ errorThrown);
-    		}
+			error : function(response) {
+				alert(response.responseText);
+				if (response.responseText.includes("No logged in user!")) {
+					window.location.href = "login.html"
+				}
+			}
     	})
     }
 }
@@ -195,19 +195,16 @@ function submitC(){
             type : 'POST',
 		    url : rootURL + "/rest/categories/changeCategory",
 		    contentType : 'application/json',
-		    dataType : "json",
 		    data : formJSON(currentName, name, coreNum, ram, gpu),
 		    success : function(data) {
-				if(data.name == null){
-					alert("Category with name '" + name +"' already exists!");
-				}
-				else{
-					window.location.href = "catsPage.html";
-				}
+				window.location.href = "catsPage.html";
 		    },
-		    error : function(status, errorThrown) {
-		    	alert("ERROR "+status+": "+ errorThrown);
-		    }
+			error : function(response) {
+				alert(response.responseText);
+				if (response.responseText.includes("No logged in user!")) {
+					window.location.href = "login.html"
+				}
+			}
         })
     }
 }
@@ -269,16 +266,21 @@ function deleteC(){
     		dataType : "json",
     		data : formJSONc(name, coreNum, ram, gpu),
     		success : function(data) {
-    			if(data.name == null){
-    				alert("Category with name '" + name +"' deleted successfully!");
-    			}
-    			else{
+    			//if(data.name == null){
+					//da bi imala ovaj alert moras vracati kroz response da posaljes kategoriju
+					// i da dobavis njeno ime
+					//alert("Category with name '" + name +"' deleted successfully!");
+    			//}
+    			//else{
     				window.location.href = "catsPage.html";
-    			}
+    			//}
     		},
-    		error : function(status, errorThrown){
-    			alert("ERROR "+status+": "+ errorThrown);
-    		}
+			error : function(response) {
+				alert(response.responseText);
+				if (response.responseText.includes("No logged in user!")) {
+					window.location.href = "login.html"
+				}
+			}
     	})
     }
 };

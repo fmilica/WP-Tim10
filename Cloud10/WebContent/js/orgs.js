@@ -16,13 +16,12 @@ $(window).on('load', function(){
             else if(currentType == "Admin"){
             	loadO();
             }
-            else if(currentType == null){
-            	alert("Action not allowed!!!");
-				window.location.href = "login.html";
-            }
         },
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("AJAX ERROR: " + errorThrown);
+		error : function(response) {
+			alert(response.responseText);
+			if (response.responseText.includes("No logged in user!")) {
+				window.location.href = "login.html"
+			}
 		}
 	});
 })
@@ -33,8 +32,11 @@ function loadO(){
 		url : rootURL + "/rest/organisations/getOrganisation",
 		dataType : "json",
 		success : showThem,
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("AJAX ERROR: " + errorThrown);
+		error : function(response) {
+			alert(response.responseText);
+			if (response.responseText.includes("No logged in user!")) {
+				window.location.href = "login.html"
+			}
 		}
 	});
 	if(currentType == "Admin"){
@@ -49,8 +51,11 @@ function loadOrgs(){
 		url : rootURL + "/rest/organisations/getOrganisations",
 		dataType : "json",
 		success : showThem,
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("AJAX ERROR: " + errorThrown);
+		error : function(response) {
+			alert(response.responseText);
+			if (response.responseText.includes("No logged in user!")) {
+				window.location.href = "login.html"
+			}
 		}
     })
 }
@@ -138,17 +143,14 @@ function addO(){
 		    dataType : "json",
 		    data : formJSON(name, desc, logo),
 		    success : function(data) {
-		    	if(data == null){
-		    		alert("Organisation with name '"+ name +"' already exists!");
-		    		event.preventDefault();
-		    	}
-		    	else{
-		    		window.location.href = "organPage.html";
-		    	}
+		    	window.location.href = "organPage.html";
 		    },
-		    error : function(XMLHttpRequest, textStatus, errorThrown) {
-			    alert("AJAX ERROR: " + errorThrown);
-		    }
+			error : function(response) {
+				alert(response.responseText);
+				if (response.responseText.includes("No logged in user!")) {
+					window.location.href = "login.html"
+				}
+			}
         })
     }
 }
@@ -179,16 +181,14 @@ function submitO(){
 		    dataType : "json",
 		    data : formJSONc(currentName, name, desc, logo),
 		    success : function(data) {
-				if(data.name == null){
-					alert("Organisation with name '" + name +"' already exists!");
-				}
-				else{
-					window.location.href = "organPage.html";
-				}
+				window.location.href = "organPage.html";
 		    },
-		    error : function(XMLHttpRequest, textStatus, errorThrown) {
-			    alert("AJAX ERROR: " + errorThrown);
-		    }
+			error : function(response) {
+				alert(response.responseText);
+				if (response.responseText.includes("No logged in user!")) {
+					window.location.href = "login.html"
+				}
+			}
         })
     }
 }

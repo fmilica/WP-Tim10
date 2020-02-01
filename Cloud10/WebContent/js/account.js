@@ -7,16 +7,13 @@ $(window).on('load', function(){
 		url : rootURL + "/rest/users/checkCurrent",
 		dataType : "json",
 		success : function(data){
-            if(data.role == null){
-                alert("Action not allowed!!!");
-				window.location.href = "login.html";
-            }
-			else{
-				showUser(data)
-			}
+			showUser(data)
         },
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("AJAX ERROR: " + errorThrown);
+		error : function(response) {
+			alert(response.responseText);
+			if (response.responseText.includes("No logged in user!")) {
+				window.location.href = "login.html"
+			}
 		}
 	});
 	
@@ -85,16 +82,14 @@ function saveChanges(){
 		    dataType : "json",
 		    data : formJSON(email, pass, name, surn, org, type),
 		    success : function(data) {
-				if(data.email == null){
-					alert("User with email '" + email +"' already exists!");
-				}
-				else{
-					window.location.href = "accountPage.html";
-				}
+				window.location.href = "accountPage.html";
 		    },
-		    error : function(XMLHttpRequest, textStatus, errorThrown) {
-			    alert("AJAX ERROR: " + errorThrown);
-		    }
+			error : function(response) {
+				alert(response.responseText);
+				if (response.responseText.includes("No logged in user!")) {
+					window.location.href = "login.html"
+				}
+			}
         })
 	}
 }

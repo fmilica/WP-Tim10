@@ -20,18 +20,33 @@ public class Users {
 	
 	public Users() {}
 	
-	public Users(String filePath) throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+	public Users(String filePath) {
 		String sep = File.separator;
 		Gson gson = new Gson();
-		HashMap<String, User> users = gson.fromJson(new FileReader(filePath + sep+ "data"+ sep + "users.json"), new TypeToken<HashMap<String, User>>(){}.getType());
-		this.usersMap = users;
+		HashMap<String, User> users;
+		try {
+			users = gson.fromJson(new FileReader(filePath + sep+ "data"+ sep + "users.json"), new TypeToken<HashMap<String, User>>(){}.getType());
+			this.usersMap = users;
+		} catch (JsonIOException | JsonSyntaxException | FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public Users(String filePath,User u) throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+	public Users(String filePath,User u) {
 		String sep = File.separator;
 		Gson gson = new Gson();
-		HashMap<String, User> us = gson.fromJson(new FileReader(filePath + sep+ "data"+ sep + "users.json"), new TypeToken<HashMap<String, User>>(){}.getType());
-		HashMap<String, User> users = gson.fromJson(new FileReader(filePath + sep+ "data"+ sep + "users.json"), new TypeToken<HashMap<String, User>>(){}.getType());
+		HashMap<String, User> us = new HashMap<String, User>();
+		try {
+			us = gson.fromJson(new FileReader(filePath + sep+ "data"+ sep + "users.json"), new TypeToken<HashMap<String, User>>(){}.getType());
+		} catch (JsonIOException | JsonSyntaxException | FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		HashMap<String, User> users = new HashMap<String, User>();
+		try {
+			users = gson.fromJson(new FileReader(filePath + sep+ "data"+ sep + "users.json"), new TypeToken<HashMap<String, User>>(){}.getType());
+		} catch (JsonIOException | JsonSyntaxException | FileNotFoundException e) {
+			e.printStackTrace();
+		}
 		for (User user : us.values()) {
 			if(user.getOrganisation().getName().equals(u.getOrganisation().getName())) {
 				users.put(user.getEmail(), user);
@@ -68,6 +83,15 @@ public class Users {
 	}
 	
 	public void setUserValues(User u) {
+		// mapa je
+		// mozes da ga getujes samo, ne moras da prolazis
+		User user = usersMap.get(u.getEmail());
+		user.setPassword(u.getPassword());
+		user.setName(u.getName());
+		user.setSurname(u.getSurname());
+		user.setRole(u.getRole());
+		// ja bih bar rekla da moze ovako
+		/*
 		for (User user : usersMap.values()) {
 			if(user.getEmail().equals(u.getEmail())) {
 				user.setPassword(u.getPassword());
@@ -75,7 +99,7 @@ public class Users {
 				user.setSurname(u.getSurname());
 				user.setRole(u.getRole());
 			}
-		}
+		}*/
 	}
 	
 	public void removeUser(User u) {

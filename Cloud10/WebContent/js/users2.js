@@ -24,8 +24,11 @@ $(window).on('load', function(){
             	loadUsersToShow();
             }
         },
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("AJAX ERROR: " + errorThrown);
+		error : function(response) {
+			alert(response.responseText);
+			if (response.responseText.includes("No logged in user!")) {
+				window.location.href = "login.html"
+			}
 		}
 	});
 })
@@ -34,10 +37,10 @@ function loadUsersToShow(){
 	$.ajax({
 		type : 'GET',
 		url : rootURL + "/rest/users/load",
-		dataType : "json",
+		// dataType : "json",
 		success : showThem,
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("AJAX ERROR: " + errorThrown);
+		error : function(response) {
+			alert(response.responseText);
 		}
     });
 }
@@ -57,8 +60,11 @@ function loadOrgs(){
                 $('#addSelect').append(new Option(org.name,org.name))
             })
         },
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("AJAX ERROR: " + errorThrown);
+		error : function(response) {
+			alert(response.responseText);
+			if (response.responseText.includes("No logged in user!")) {
+				window.location.href = "login.html"
+			}
 		}
     })
 }
@@ -163,16 +169,14 @@ function submitU(){
 		    dataType : "json",
 		    data : formJSON(email, pass, name, surn, org, type),
 		    success : function(data) {
-				if(data.email == null){
-					alert("User with email '" + email +"' already exists!");
-				}
-				else{
-					window.location.href = "usersPage.html";
-				}
+				window.location.href = "usersPage.html";
 		    },
-		    error : function(XMLHttpRequest, textStatus, errorThrown) {
-			    alert("AJAX ERROR: " + errorThrown);
-		    }
+			error : function(response) {
+				alert(response.responseText);
+				if (response.responseText.includes("No logged in user!")) {
+					window.location.href = "login.html"
+				}
+			}
         })
     }
 }
@@ -200,15 +204,20 @@ function deleteU(){
 			dataType : "json",
 			data : formJSON(email, pass, name, surn, org, type),
 			success : function(data) {
+				// isto kao za brisanje kategorija
+				/*
 				if(data.email == null){
 					alert("User with email '" + email +"' deleted successfully!");
 				}
-				else{
+				else{*/
 					window.location.href = "usersPage.html";
-				}
+				//}
 			},
-			error : function(XMLHttpRequest, textStatus, errorThrown) {
-				alert("AJAX ERROR: " + errorThrown);
+			error : function(response) {
+				alert(response.responseText);
+				if (response.responseText.includes("No logged in user!")) {
+					window.location.href = "login.html"
+				}
 			}
 		})
     }
@@ -278,18 +287,14 @@ function add(){
 		    dataType : "json",
 		    data : formJSON(email, pass, name, surn, org, type),
 		    success : function(data) {
-		    	if(data == null){
-		    		alert("User with that email already exists!");
-		    		event.preventDefault()
-		    	}
-		    	else{
-		    		window.location.href = "usersPage.html"
-		    		
-		    	}
+		    	window.location.href = "usersPage.html"
 		    },
-		    error : function(XMLHttpRequest, textStatus, errorThrown) {
-			    alert("AJAX ERROR: " + errorThrown);
-		    }
+			error : function(response) {
+				alert(response.responseText);
+				if (response.responseText.includes("No logged in user!")) {
+					window.location.href = "login.html"
+				}
+			}
         })
     }
 }

@@ -12,19 +12,23 @@ function ucitaj(){
 	$.ajax({
 		type: 'GET',
 		url: rootURL + "/rest/users/load",
-		dataType : "json",
-		success : dodajih
+		// ne sem da bude tu inace ne ume da parsira -> glup je
+		//dataType : "json",
+		error : function(response) {
+			alert(response.responseText)
+		}
+		//success : dodajih
 	});
 	// ucitavanje svih resursa na pocetku
 	$.ajax({
 		type : 'GET',
 		url : rootURL + "/rest/discs/loadDiscs",
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("AJAX ERROR: " + errorThrown)
-		}
+		/*error : function(response) {
+			alert(response.responseText)
+		}*/
 	})
 }
-
+/*
 //funkcija za ispis ucitanih korisnika ma konzolu (provera cisto)
 function dodajih(data){
 	var list = data == null ? [] : (data instanceof Array ? data : [ data ]);
@@ -33,7 +37,7 @@ function dodajih(data){
 		console.log(korisnik.email);
 	})
 }
-
+*/
 //poziv funkcije kada se okine event za submit na stranici
 //posto je jedini submit na stranici pisem ga bez drugog parametra posle 'submit'
 $(document).on('submit', function(e) {
@@ -59,17 +63,19 @@ $(document).on('submit', function(e) {
 			dataType : "text",
 			data : formToJSON(email, password),
 			success : function(data) {
-				if(data=="greska404"){
-					alert("Nije dobra kombinacija email-a i lozinke!");
-					//ocisti tekstualna polja!!
+				window.location.href = "mainPage.html";
+			},
+			error : function(response) {
+				alert(response.responseText)
+				if (response.responseText.includes("No logged in user!")) {
+					window.location.href = "login.html"
+				}
+				if (response.responseText.includes("doesn't exist")) {
+					// slucaj kada je kombinacija nevalidna
+					// ocisti tekstualna polja!
 					$("input[name=\"log\"]").val("");
 					$("input[name=\"passw\"]").val("");
-				}else{
-					window.location.href = "mainPage.html";
 				}
-			},
-			error : function(XMLHttpRequest, textStatus, errorThrown) {
-				alert("AJAX ERROR: " + errorThrown);
 			}
 		});
 	}

@@ -3,14 +3,15 @@ package model.collections;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.text.ParseException;
 import java.util.HashMap;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
+import model.Activity;
 import model.VirtualMachine;
 
 public class VirtualMachines {
@@ -21,11 +22,21 @@ public class VirtualMachines {
 	
 	public VirtualMachines(String filePath) {
 		String sep = File.separator;
-		Gson gson = new GsonBuilder().setDateFormat("dd-MM-yyyy HH:mm").create();
+		Gson gson = new Gson();
 		HashMap<String, VirtualMachine> vms;
 		try {
 			vms = gson.fromJson(new FileReader(filePath + sep+ "data"+ sep + "virtualMachines.json"), new TypeToken<HashMap<String, VirtualMachine>>(){}.getType());
 			this.virtualMachinesMap = vms;
+			for (VirtualMachine vm : vms.values()) {
+				for(Activity a : vm.getActivities()) {
+					try {
+						a.setOnTime(Activity.formater.parse(a.getOn()));
+						a.setOffTime(Activity.formater.parse(a.getOff()));
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+				}
+			}
 		} catch (JsonIOException | JsonSyntaxException | FileNotFoundException e) {
 			e.printStackTrace();
 		}

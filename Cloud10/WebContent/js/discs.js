@@ -12,9 +12,12 @@ window.onload = function() {
         url : rootURL + "/rest/users/checkCurrent",
         contentType : "application/json",
         success : setupUser,
-        error : function(XMLHttpRequest, textStatus, errorThrown) {
-            alert("AJAX ERROR: " + errorThrown)
-        }
+		error : function(response) {
+			alert(response.responseText);
+			if (response.responseText.includes("No logged in user!")) {
+				window.location.href = "login.html"
+			}
+		}
     })
 }
 
@@ -31,8 +34,11 @@ function getAndFillContentTable() {
 		url : rootURL + "/rest/discs/getAllDiscs",
 		dataType : "json",
 		success : fillContentTable,
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("AJAX ERROR: " + errorThrown)
+		error : function(response) {
+			alert(response.responseText);
+			if (response.responseText.includes("No logged in user!")) {
+				window.location.href = "login.html"
+			}
 		}
     })
 }
@@ -183,8 +189,11 @@ $(document).ready(function() {
                         window.location.href="discsPage.html"
                     }
 				},
-				error : function(XMLHttpRequest, textStatus, errorThrown) {
-					alert("AJAX ERROR: " + errorThrown)
+                error : function(response) {
+                    alert(response.responseText);
+                    if (response.responseText.includes("No logged in user!")) {
+                        window.location.href = "login.html"
+                    }
                 }
             })
         }
@@ -223,9 +232,12 @@ $(document).ready(function() {
                         window.location.href="discsPage.html"
                     }
                 },
-                error : function(XMLHttpRequest, textStatus, errorThrown) {
-					alert("AJAX ERROR: " + errorThrown)
-				}
+                error : function(response) {
+                    alert(response.responseText);
+                    if (response.responseText.includes("No logged in user!")) {
+                        window.location.href = "login.html"
+                    }
+                }
             })
         }
     })
@@ -254,8 +266,11 @@ $(document).ready(function() {
                     window.location.href="discsPage.html"
                 }
             },
-            error : function(XMLHttpRequest, textStatus, errorThrown) {
-                alert("AJAX ERROR: " + errorThrown)
+            error : function(response) {
+                alert(response.responseText);
+                if (response.responseText.includes("No logged in user!")) {
+                    window.location.href = "login.html"
+                }
             }
         })
     })
@@ -305,9 +320,12 @@ function showForm() {
 			url : rootURL + "/rest/organisations/getOrganisations",
 			dataType : "json",
 			success : addOrganOptionsSuper,
-			error : function(XMLHttpRequest, textStatus, errorThrown) {
-				alert("AJAX ERROR: " + errorThrown)
-			}
+            error : function(response) {
+                alert(response.responseText);
+                if (response.responseText.includes("No logged in user!")) {
+                    window.location.href = "login.html"
+                }
+            }
 		})
 	} else {
 		$('#iOrgan').append($("<option></option>").attr("value", currentUser.organisation.name)
@@ -336,8 +354,11 @@ function getVMOptions(currentOrgan) {
 		data : JSON.stringify(currentOrgan),
 		dataType : "json",
 		success : addVMOptions,
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("AJAX ERROR: " + errorThrown)
+		error : function(response) {
+			alert(response.responseText);
+			if (response.responseText.includes("No logged in user!")) {
+				window.location.href = "login.html"
+			}
 		}
 	})
 }

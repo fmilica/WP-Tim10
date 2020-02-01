@@ -98,35 +98,37 @@ public class CategoriesService {
 		User current = getCurrent();
 		//samo admin ima pristup 
 		if(current.getRole() != RoleType.SuperAdmin || current.getEmail() == null) {
-			return Response.serverError().entity("Access denied!").build();
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
 		}
 
 		Category c = new Category(cw);
 		//ako mu je neki atribut null
 		if(c.hasNull()) {
 			System.out.println("ima kao neki null");
-			return Response.status(Response.Status.NOT_FOUND).entity("Category has null fields!").build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("Category has null fields!").build();
 		}
 		
 		Categories cats = getCategories();
 		
 		//ako mu staro ime ne postoji u kategorijama
+		// zasto je ovo dobro?
 		if(!cats.getCategoriesMap().containsKey(cw.getOldName())) {
 			System.out.println("izmena nepostojeceg");
 			json = mapper.writeValueAsString(new Category());
 			return Response.ok(json).build();
 		}
 		
-		//ako novo ime vec postoji u kategorijama
 		if(cats.getCategoriesMap().containsKey(cw.getName())) {
 			System.out.println("izmena na postojeceg");
-			json = mapper.writeValueAsString(new Category());
-			return Response.ok(json).build();
+			cats.change(cw);
+			// ne moras da vracas kategoriju, samo reload stranicu i bice u tabeli
+			//json = mapper.writeValueAsString(new Category());
+			return Response.ok().build();
 		}
 		cats.change(cw);
 		ctx.setAttribute("categories", cats);
-		json = mapper.writeValueAsString(c);
-		return Response.ok(json).build();
+		//json = mapper.writeValueAsString(c);
+		return Response.ok().build();
 	}
 	
 	@POST

@@ -12,8 +12,11 @@ window.onload = function() {
 		url : rootURL + "/rest/categories/getCategories",
 		contentType : "application/json",
 		success : addCatOptions,
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("AJAX ERROR: " + errorThrown)
+		error : function(response) {
+			alert(response.responseText);
+			if (response.responseText.includes("No logged in user!")) {
+				window.location.href = "login.html"
+			}
 		}
 	})
 
@@ -23,8 +26,11 @@ window.onload = function() {
 		url : rootURL + "/rest/users/checkCurrent",
 		contentType : "application/json",
 		success : setupUser,
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("AJAX ERROR: " + errorThrown)
+		error : function(response) {
+			alert(response.responseText);
+			if (response.responseText.includes("No logged in user!")) {
+				window.location.href = "login.html"
+			}
 		}
 	})
 }
@@ -41,8 +47,11 @@ function getAndFillContentTable() {
 		url : rootURL + "/rest/vms/getAllVms",
 		dataType : "json",
 		success : fillContentTable,
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("AJAX ERROR: " + errorThrown)
+		error : function(response) {
+			alert(response.responseText);
+			if (response.responseText.includes("No logged in user!")) {
+				window.location.href = "login.html"
+			}
 		}
 	})
 }
@@ -121,6 +130,12 @@ function editVM(vm) {
 	$('#iDiscs').empty()
 	$.each(list, function(list, disc) {
 		$('#iDiscs').append($("<option></option>").attr("value", disc).text(disc))
+	})
+	var list1 = vm.activities
+	$.each(list1, function(list1, activity) {
+		$('#iActives').append($("<option></option>")
+						.attr("value", activity.on + " - " + activity.off)
+						.text(activity.on + " - " + activity.off))
 	})
 	// NAMESTANJE DISKOVA
 	// IZMENA DISKOVA
@@ -231,8 +246,11 @@ $(document).ready(function() {
 						window.location.href="mainPage.html"
 					}
 				},
-				error : function(XMLHttpRequest, textStatus, errorThrown) {
-					alert("AJAX ERROR: " + errorThrown)
+				error : function(response) {
+					alert(response.responseText);
+					if (response.responseText.includes("No logged in user!")) {
+						window.location.href = "login.html"
+					}
 				}
 			})
 		}
@@ -292,8 +310,11 @@ $(document).ready(function() {
 						window.location.href="mainPage.html"
 					}
 				},
-				error : function(XMLHttpRequest, textStatus, errorThrown) {
-					alert("AJAX ERROR: " + errorThrown)
+				error : function(response) {
+					alert(response.responseText);
+					if (response.responseText.includes("No logged in user!")) {
+						window.location.href = "login.html"
+					}
 				}
 			})
 		}
@@ -316,24 +337,27 @@ $(document).ready(function() {
 				name : vmName,
 				discs : vmDiscs
 			}
-        $.ajax({
-            type : "POST",
-            url : rootURL + "/rest/vms/removeVM",
-            contentType : "application/json",
-            dataType : "json",
-            data : JSON.stringify(vm),
-            success : function(response){
-                if(response == undefined) {
-                    alert("VM with specified name doesn't exist!")
-                    showForm()
-                }
-                else {
-                    window.location.href="mainPage.html"
-                }
-            },
-            error : function(XMLHttpRequest, textStatus, errorThrown) {
-                alert("AJAX ERROR: " + errorThrown)
-            	}
+			$.ajax({
+				type : "POST",
+				url : rootURL + "/rest/vms/removeVM",
+				contentType : "application/json",
+				dataType : "json",
+				data : JSON.stringify(vm),
+				success : function(response){
+					if(response == undefined) {
+						alert("VM with specified name doesn't exist!")
+						showForm()
+					}
+					else {
+						window.location.href="mainPage.html"
+					}
+				},
+				error : function(response) {
+					alert(response.responseText);
+					if (response.responseText.includes("No logged in user!")) {
+						window.location.href = "login.html"
+					}
+				}
 			})
 		}
     })
@@ -364,8 +388,11 @@ function showForm() {
 			url : rootURL + "/rest/organisations/getOrganisations",
 			dataType : "json",
 			success : addOrganOptionsSuper,
-			error : function(XMLHttpRequest, textStatus, errorThrown) {
-				alert("AJAX ERROR: " + errorThrown)
+			error : function(response) {
+				alert(response.responseText);
+				if (response.responseText.includes("No logged in user!")) {
+					window.location.href = "login.html"
+				}
 			}
 		})
 	} else {
@@ -395,8 +422,11 @@ function getFreeDiscsOptions(currentOrgan) {
 		data : JSON.stringify(currentOrgan),
 		dataType : "json",
 		success : addDiscOptions,
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("AJAX ERROR: " + errorThrown)
+		error : function(response) {
+			alert(response.responseText);
+			if (response.responseText.includes("No logged in user!")) {
+				window.location.href = "login.html"
+			}
 		}
 	})
 }

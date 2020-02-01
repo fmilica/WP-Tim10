@@ -107,6 +107,19 @@ public class User {
 	}
 	
 	public boolean hasNull() {
+		if (hasNullSuperAdmin()) {
+			return true;
+		}
+		else if(this.organisation == null || this.organisation.getName() == null || this.organisation.getName().trim().length() == 0) {
+			return true;
+		}
+		else if(this.role == null) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean hasNullSuperAdmin() {
 		if(this.email == null || this.email.trim().length() == 0) {
 			return true;
 		}
@@ -117,9 +130,6 @@ public class User {
 			return true;
 		}
 		else if(this.surname == null || this.surname.trim().length() == 0) {
-			return true;
-		}
-		else if(this.organisation.getName() == null || this.organisation.getName().trim().length() == 0) {
 			return true;
 		}
 		else if(this.role == null) {

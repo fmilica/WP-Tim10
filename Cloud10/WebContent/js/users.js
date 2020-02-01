@@ -14,8 +14,11 @@ $(window).on('load', function(){
 			validation()
 			showTypePage(data)
 		},
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("AJAX ERROR: " + errorThrown);
+		error : function(response) {
+			alert(response.responseText);
+			if (response.responseText.includes("No logged in user!")) {
+				window.location.href = "login.html"
+			}
 		}
 	})
 })
@@ -26,16 +29,13 @@ function validation(){
 		url : rootURL + "/rest/users/checkCurrent",
 		dataType : "json",
 		success : function(data) {
-				if(data.email == null){
-					alert("Action not allowed!!!");
-                    window.location.href = "login.html";
-                }
-				else{
-					$(document).find("a#current").text(data.name + " " + data.surname)
-				}
+			$(document).find("a#current").text(data.name + " " + data.surname)
 		},
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("AJAX ERROR: " + errorThrown);
+		error : function(response) {
+			alert(response.responseText);
+			if (response.responseText.includes("No logged in user!")) {
+				window.location.href = "login.html"
+			}
 		}
     });
 }
@@ -53,14 +53,13 @@ function showTypePage(type) {
 function logout(){
     console.log("odjavljivanje..");
     $.ajax({
-        type : 'POST',
+        type : 'GET',
 		url :  rootURL + "/rest/users/logout",
 		success : function() {
 			window.location.href = "login.html";
-				
 		},
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("AJAX ERROR: " + errorThrown);
+		error : function(response) {
+			alert(response.responseText);
 		}
     });
 }
