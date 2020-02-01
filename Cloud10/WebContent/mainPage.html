@@ -140,48 +140,75 @@
                 <!-- /.card-footer-->
               </div>
               <!-- /.card -->
-              <!-- Add Virtual Machine Form -->
-              <div id="addForm" class="col-sm-4 addForm">
-                <div class="card">
-                  <div class="card-header vm">
-                    <h3 class="card-title">Add Virtual Machine</h3>
-                  </div>
-                  <form role="form" action="mainPage.html" method="post">
-                    <div class="card-body">
-                      <div class="row">
-                        <label>Name</label>
-                        <input id="iName" type="text" class="form-control" placeholder="Enter name...">
-                        <label id="lOrgan">Organisation</label>
-                        <select id="iOrgan" class="form-control">
-                          <!-- JS added options -->
-                        </select>
-                        <label id="lDiscs">Discs</label>
-                        <select id="iDiscs" class="multiple-discs form-control" multiple="multiple">
-                          <!-- JS added options -->
-                        </select>
-                        <label id="lActives">Activities</label>
-                        <select id="iActives" class="multiple-actives form-control" multiple="multiple">
-                          <!-- JS added options -->
-                        </select>
-                        <label id="lCat">Category</label>
-                        <select id="iCat" class="form-control">
-                          <!-- JS added options -->
-                        </select>
-                        <label id="lCoreNum">Core Number</label>
-                        <input id="iCore" type="text" class="form-control" placeholder="JS added text" disabled>
-                        <label id="lRam">RAM Capacity</label>
-                        <input id="iRam" type="text" class="form-control" placeholder="JS added text" disabled>
-                        <label id="lGpu">GPU Number</label>
-                        <input id="iGpu" type="text" class="form-control" placeholder="JS added text" disabled>
+            </div>
+          </div>
+          <div class="row">
+            <!-- Add Virtual Machine Form -->
+            <div id="addForm" class="col-sm-5 addForm">
+              <div class="card">
+                <div class="card-header vm">
+                  <h3 id="mainForm" class="card-title">Add Virtual Machine</h3>
+                </div>
+                <form class="form-horizontal" action="mainPage.html" method="post">
+                  <div class="card-body">
+                    <div class="row">
+                      <label>Name</label>
+                      <input id="iName" type="text" class="form-control" placeholder="Enter name...">
+                      <label id="lOrgan">Organisation</label>
+                      <select id="iOrgan" class="form-control">
+                        <!-- JS added options -->
+                      </select>
+                      <label id="lDiscs">Discs</label>
+                      <select id="iDiscs" class="multiple-discs form-control" multiple="multiple">
+                        <!-- JS added options -->
+                      </select>
+                      <label id="lActives">Activities</label>
+                      <div class="table-responsive p-0">
+                        <table id="actives" class="table table-striped table-valign-middle">
+                          <thead class="actives">
+                          </thead>
+                          <tbody>
+                          </tbody>
+                        </table>
+                        <input id="editActives" type="button" class="btn btn-primary btn-actives superAdmin" value="Edit Activities">
+                      </div>
+                      <label id="lCat">Category</label>
+                      <select id="iCat" class="form-control">
+                        <!-- JS added options -->
+                      </select>
+                      <label id="lCoreNum">Core Number</label>
+                      <input id="iCore" type="text" class="form-control" placeholder="JS added text" disabled>
+                      <label id="lRam">RAM Capacity</label>
+                      <input id="iRam" type="text" class="form-control" placeholder="JS added text" disabled>
+                      <label id="lGpu">GPU Number</label>
+                      <input id="iGpu" type="text" class="form-control" placeholder="JS added text" disabled>
+                      <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                        <input type="checkbox" class="custom-control-input" id="on-off">
+                        <label class="custom-control-label" for="on-off">Off/On</label>
                       </div>
                     </div>
-                    <div class="card-footer">
+                  </div>
+                  <div class="card-footer">
+                    <div>
                       <input id="submitAdd" type="button" class="btn btn-primary btn-vm admin" value="Add VM">
-                      <input id="submitChange" type="button" class="btn btn-primary btn-vm admin" value="Save changes">
-                      <input id="submitAbort" type="button" class="btn btn-primary btn-vm user" value="Abort changes">
-                      <input id="submitDelete" type="button" class="btn btn-primary btn-vm admin" value="Delete VM">
+                      <input id="submitChange" type="button" class="btn btn-primary btn-vm admin" value="Save changes">  
                     </div>
-                  </form>
+                    <div class="row-btns">
+                      <input id="submitDelete" type="button" class="btn btn-primary btn-vm admin" value="Delete VM">
+                      <input id="submitAbort" type="button" class="btn btn-primary btn-vm float-right user" value="Abort changes">
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <!-- Edit Activities Form -->
+            <div id="editActivesForm" class="col-sm-5 editActivesForm">
+              <div class="card">
+                <div class="card-header vm">
+                  <h3 class="card-title">Edit Virtual Machine Activities</h3>
+                </div>
+                <div class="card-body">
+
                 </div>
               </div>
             </div>

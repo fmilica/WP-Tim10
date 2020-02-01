@@ -31,7 +31,9 @@ public class VirtualMachines {
 				for(Activity a : vm.getActivities()) {
 					try {
 						a.setOnTime(Activity.formater.parse(a.getOn()));
-						a.setOffTime(Activity.formater.parse(a.getOff()));
+						if (a.getOff() != null) {
+							a.setOffTime(Activity.formater.parse(a.getOff()));	
+						}
 					} catch (ParseException e) {
 						e.printStackTrace();
 					}

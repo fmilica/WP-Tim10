@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Activity {
-	static public DateFormat formater = new SimpleDateFormat("dd.mm.yyyy hh:mm");
+	static public DateFormat formater = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 	private Date onTime;
 	private String on;
 	private Date offTime;
@@ -13,6 +13,11 @@ public class Activity {
 	
 	public Activity() {}
 
+	public Activity(Date onTime) {
+		this.onTime = onTime;
+		this.on = formater.format(onTime);
+	}
+	
 	public Activity(Date onTime, Date offTime) {
 		this.onTime = onTime;
 		this.on = formater.format(onTime);
@@ -43,11 +48,13 @@ public class Activity {
 	}
 	public void setOnTime(Date onTime) {
 		this.onTime = onTime;
+		this.on = formater.format(onTime);
 	}
 	public Date getOffTime() {
 		return offTime;
 	}
 	public void setOffTime(Date offTime) {
 		this.offTime = offTime;
+		this.off = formater.format(offTime);
 	}
 }

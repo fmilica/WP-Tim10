@@ -2,6 +2,7 @@ package model.services;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import model.Activity;
 import model.Organisation;
 import model.User;
 import model.VirtualMachine;
@@ -156,7 +158,7 @@ public class VirtualMachineService {
 					// oslobadjamo ga
 					discs.getDiscsMap().get(old).setVm(null);
 				}
-			}	
+			}
 		}
 		if (vmw.getNewDiscs() != null) {
 			Collection<String> newChosenDiscs = vmw.getNewDiscs();
@@ -170,6 +172,22 @@ public class VirtualMachineService {
 		// DODAJEMO UNIJU OBE LISTE
 		oldVm.setDiscs(vmw.getDiscs());
 		// oldVm.setActivities(vmw.getActivities());
+		Activity last = oldVm.getActivities().get(oldVm.getActivities().size() - 1);
+		Date d = new Date();
+		if (last.getOff() == null) {
+			// bila je upaljena
+			if (!vmw.isStatus()) {
+				// poslao je da zeli da je ugasi
+				last.setOffTime(d);
+			}
+		} else {
+			// bila je ugasena
+			if (vmw.isStatus()) {
+				// poslao je da zeli da je upali
+				Activity a = new Activity(d);
+				oldVm.getActivities().add(a);
+			}
+		}
 		vms.addVM(oldVm);
 		return vmw;
 	}

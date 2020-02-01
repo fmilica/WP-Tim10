@@ -166,17 +166,13 @@
                         </select>
                       </div>
                     </div>
-                    <div class="card-footer addBtn">
-                      <input class="btn btn-primary btn-users" type="button" value="Add User" onclick="add()">
-                    </div>
-					<div class="card-footer editBtn">
-                      <input class="btn btn-primary btn-users" type="button" value="Submit" onclick="submitU()">
-                    </div>
-					<div class="card-footer editBtn">
-                      <input class="btn btn-primary btn-users" type="button" value="Delete User" onclick="deleteU()">
-                    </div>
-					<div class="card-footer editBtn">
-                      <input class="btn btn-primary btn-users" type="button" value="Discard" onclick="discardU()">
+                    <div class="card-footer">
+                      <input class="btn btn-primary btn-users addBtn" type="button" value="Add User" onclick="add()">
+                      <input class="btn btn-primary btn-users editBtn" type="button" value="Submit" onclick="submitU()">
+                      <div class="row-btns">
+                        <input class="btn btn-primary btn-users editBtn" type="button" value="Delete User" onclick="deleteU()">
+                        <input class="btn btn-primary btn-users editBtn float-right" type="button" value="Discard" onclick="discardU()">
+                      </div>
                     </div>
                   </form>
                 </div>

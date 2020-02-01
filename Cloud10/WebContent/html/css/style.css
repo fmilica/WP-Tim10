@@ -18,6 +18,10 @@
     display: none;
 }
 
+.editActivesForm {
+    display: none;
+}
+
 .btn-acc {
     background-color: #f5a15d;
     border-color: #f5a15d;
@@ -36,6 +40,16 @@
 .btn-vm:hover {
     background-color: #5899df;
     border-color: #5899df;
+}
+
+.btn-actives {
+    background-color: #9caec2;
+    border-color: #9caec2;
+}
+
+.btn-actives:hower {
+    background-color: #8394a5;
+    border-color: #8394a5;
 }
 
 .btn-disc {
@@ -88,6 +102,11 @@
     background: #6caff7;
 }
 
+.actives {
+    color: #ffffff;
+    background: #798797;
+}
+
 .disc {
     color: #ffffff;
     background: #eecb62;
@@ -106,6 +125,10 @@
 .cat {
     color: #ffffff;
     background: #ce0015b0;
+}
+
+.row-btns {
+    margin-top: 0.5rem;
 }
 
 .iconAccount {
@@ -148,4 +171,8 @@
     height: 20px;
     width: 20px;
     display: block;
+}
+
+label {
+    margin-top: 0.5rem;
 }

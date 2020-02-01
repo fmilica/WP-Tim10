@@ -16,12 +16,14 @@ public class VirtualMachineWrapper {
 	private Collection<String> discs;
 	private Collection<Activity> activities;
 	private String oldName;
+	private boolean status;
 	private Collection<String> newDiscs;
 	
 	public VirtualMachineWrapper() {}
 	
 	public VirtualMachineWrapper(String name, String organisation, Category category, int coreNum, int ram, int gpu,
-			Collection<String> discs, Collection<Activity> activities, String oldName, Collection<String> newDiscs) {
+			Collection<String> discs, Collection<Activity> activities, String oldName, boolean status,
+			Collection<String> newDiscs) {
 		this.name = name;
 		this.organisation = organisation;
 		this.category = category;
@@ -31,6 +33,7 @@ public class VirtualMachineWrapper {
 		this.discs = discs;
 		this.activities = activities;
 		this.oldName = oldName;
+		this.status = status;
 		this.newDiscs = newDiscs;
 	}
 
@@ -38,7 +41,7 @@ public class VirtualMachineWrapper {
 	public String toString() {
 		return "VirtualMachineWrapper [name=" + name + ", organisation=" + organisation + ", category=" + category
 				+ ", coreNum=" + coreNum + ", ram=" + ram + ", gpu=" + gpu + ", discs=" + discs + ", activities="
-				+ activities + ", oldName=" + oldName + ", newDiscs=" + newDiscs + "]";
+				+ activities + ", oldName=" + oldName + ", status=" + status + ", newDiscs=" + newDiscs + "]";
 	}
 
 	public String getName() {
@@ -101,5 +104,11 @@ public class VirtualMachineWrapper {
 	}
 	public void setNewDiscs(Collection<String> newDiscs) {
 		this.newDiscs = newDiscs;
+	}
+	public boolean isStatus() {
+		return status;
+	}
+	public void setStatus(boolean status) {
+		this.status = status;
 	}
 }

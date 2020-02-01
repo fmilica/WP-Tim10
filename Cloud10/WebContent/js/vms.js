@@ -114,9 +114,11 @@ function setUserType(user) {
 function editVM(vm) {
 	// postavljanje globalne promenljive da je rec o izmeni
 	change = true
+	// pretpostavljamo da je ugasena (poslednja aktivnost nema null)
+	$('#on-off').prop("checked", false);
     // prilagodjavanje forme
     setUserType(currentUser)
-    $('.card-title').text("Edit VM")
+    $('#mainForm').text("Edit VM")
     $('#submitAdd').hide()
 
 	// prikaz forme
@@ -126,16 +128,31 @@ function editVM(vm) {
 	$('#iName').val(vm.name)
 	$('#iOrgan').append($("<option></option>").attr("value", vm.organisation).text(vm.organisation))
 	$('#iOrgan').attr("disabled", "disabled")
-	var list = vm.discs
 	$('#iDiscs').empty()
+	var list = vm.discs == null ? [] : (vm.discs instanceof Array ? vm.discs : [vm.discs])
 	$.each(list, function(list, disc) {
 		$('#iDiscs').append($("<option></option>").attr("value", disc).text(disc))
 	})
 	var list1 = vm.activities
+	var activesTable = $(document).find('#actives')
+	var header = $(document).find('#actives thead')
+	activesTable.empty()
+	header.empty()
+	header.append('<td>' + "VM power on time" + '</td>' + 
+				  '<td>' + "VM power off time" + '</td>')
+	activesTable.append(header)
 	$.each(list1, function(list1, activity) {
-		$('#iActives').append($("<option></option>")
-						.attr("value", activity.on + " - " + activity.off)
-						.text(activity.on + " - " + activity.off))
+		var row = $('<tr></tr>')
+		row.append($('<td>' + activity.on + '</td>'))
+		var off = ""
+		if (activity.off != null) {
+			off = activity.off
+		} else {
+			// ipak je upaljena, poslednja aktivnost ima vrednost null
+			$('#on-off').prop("checked", true);
+		}
+		row.append($('<td>' + off + '</td>'))
+		activesTable.append(row)
 	})
 	// NAMESTANJE DISKOVA
 	// IZMENA DISKOVA
@@ -147,7 +164,11 @@ function editVM(vm) {
 	$('#iCore').val(vm.coreNum)
 	$('#iRam').val(vm.ram)
 	$('#iGpu').val(vm.gpu)
-
+	if (currentUser.role == "Admin") {
+		$('#on-off').removeAttr("disabled")
+	} else {
+		$('#on-off').attr("disabled", "disabled")
+	}
 }
 
 $(document).ready(function() {
@@ -157,13 +178,16 @@ $(document).ready(function() {
 		// postavljanje globalne promenljive
 		change = false
 		// prilagodjavanje forme
-        $('.card-title').text("Add VM")
+        $('#mainForm').text("Add VM")
         $('#submitChange').hide()
         $('#submitAbort').hide()
         $('#submitDelete').hide()
         // ciscenje popunjenih podataka
 		$('#iName').val("")
 		$('#iDiscs').empty()
+		// kada se dodaje uvek je ugasena
+		$('#on-off').prop("checked", false);
+		$('#on-off').attr("disabled", "disabled")
 
         // prikaz
         $('#submitAdd').show()
@@ -199,6 +223,11 @@ $(document).ready(function() {
 			}
 			getFreeDiscsOptions(currentOrgan)
 		}
+	})
+
+	// otvaranje detaljnog prikaza aktivnosti
+	$('#editActives').click(function(e) {
+		$('#editActivesForm').show()
 	})
 
 	// dobavljanje unetih vrednosti sa forme
@@ -267,10 +296,16 @@ $(document).ready(function() {
 		// PORED SVAKE AKTIVNOSTI OMOGUCITI (X) ZA BRISANJE
 		// ZA SVAKU POCETNU/KRAJNJU OMOGUCITI POPAP DA BIRA DATUM I VREME
 		// MOZE BITI I TABELICA SA UNOSOM STAVKI DATUMA I VREMENA
-		//var vmActives = $('#iActives').val()
+		
+		// aktivnosti se ne menjaju tu, pa uzmemo sve
+		var vmActives = $.map($('#iActives option') ,function(option) {
+			return option.value
+		})
 		var vmCoreNum = $('#iCore').val()
 		var vmRam = $('#iRam').val()
 		var vmGpu = $('#iGpu').val()
+		// da li ju je upalio/ugasio
+		var vmStatus = $('#on-off').is(":checked")
 
 		if(!vmName) {
 			alert("Name is required")
@@ -291,8 +326,9 @@ $(document).ready(function() {
 				ram : vmRam,
 				gpu : vmGpu,
 				discs : vmDiscs,
-				//activities : activities,
-				oldName : vmOldName
+				activities : vmActives,
+				oldName : vmOldName,
+				status : vmStatus
 			}
 
 			$.ajax({

@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class VirtualMachine extends VMResource {
@@ -9,7 +10,7 @@ public class VirtualMachine extends VMResource {
 	private int ram;
 	private int gpu;
 	private Collection<String> discs;
-	private Collection<Activity> activities;
+	private ArrayList<Activity> activities;
 	
 	public VirtualMachine() {}
 	
@@ -31,7 +32,7 @@ public class VirtualMachine extends VMResource {
 	}
 	
 	public VirtualMachine(String name, String organisation, 
-			Category category, Collection<Activity> activities) {
+			Category category, ArrayList<Activity> activities) {
 		super(name, organisation);
 		this.category = category;
 		this.coreNum = category.getCoreNum();
@@ -42,7 +43,7 @@ public class VirtualMachine extends VMResource {
 	
 	public VirtualMachine(String name, String organisation, 
 			Category category, Collection<String> discs,
-			Collection<Activity> activities) {
+			ArrayList<Activity> activities) {
 		super(name, organisation);
 		this.category = category;
 		this.coreNum = category.getCoreNum();
@@ -100,10 +101,10 @@ public class VirtualMachine extends VMResource {
 	public void setDiscs(Collection<String> discs) {
 		this.discs = discs;
 	}
-	public Collection<Activity> getActivities() {
+	public ArrayList<Activity> getActivities() {
 		return activities;
 	}
-	public void setActivities(Collection<Activity> activities) {
+	public void setActivities(ArrayList<Activity> activities) {
 		this.activities = activities;
 	}
 }
