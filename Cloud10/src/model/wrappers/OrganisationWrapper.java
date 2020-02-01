@@ -55,7 +55,7 @@ public class OrganisationWrapper {
 				+ logo + "]";
 	}
 	
-	public boolean hassNull() {
+	public boolean hasNull() {
 		if(this.oldName == null || this.oldName.trim().length() == 0) {
 			return true;
 		}
