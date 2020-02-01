@@ -40,7 +40,6 @@ function loadO(){
 		}
 	});
 	if(currentType == "Admin"){
-		console.log($(document).find("#sakrij").val());
 		$(document).find("#sakrij").hide();
 	}
 }
@@ -85,7 +84,7 @@ function showThem(data){
         var row = '<td id="'+index+'">'+org.name+'</td>'+
                     '<td id="'+index+'">'+org.description+'</td>';
         if(org.logo != null){
-        	row += '<td id="'+index+'"><img src="'+org.logo+'"/></td>'
+        	row += '<td id="'+index+'"><img src="'+org.logo+'" id="output" width="100"/></td>'
         }
         else {
         	row += '<td id="'+index+'"><img src=""/></td>'
@@ -197,6 +196,11 @@ function discardO(){
 	$(document).find('.addForm').hide();
     $(document).find('.addBtn').hide();
     $(document).find('.editBtn').hide();
+}
+
+function loadImage(event){
+	var image = $(document).find("#output");
+	image.src = event.target.files[0]
 }
 
 function formJSON(name, desc, logo){

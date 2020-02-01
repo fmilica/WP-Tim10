@@ -151,7 +151,7 @@ public class OrganisationService {
 			System.out.println("nema pristup");
 			return Response.serverError().entity("Access denied!").build();
 		}
-		if(o.hassNull()) {
+		if(o.hasNull()) {
 			System.out.println("ima kao neki null");
 			return Response.status(Response.Status.BAD_REQUEST).entity("User has null fields!").build();
 		}
@@ -175,7 +175,9 @@ public class OrganisationService {
 			return Response.ok(json).build();
 			//return new Organisation();
 		}
-		Organisation org = getOrgs().getOrganisationsMap().get(o.getOldName());
+		System.out.println(o.getLogo());
+		Organisation org = orgs.getOrganisationsMap().get(o.getOldName());
+		System.out.println(org);
 		org.setName(o.getName());
 		org.setDescription(o.getDescription());
 		org.setLogo(o.getLogo());
@@ -186,7 +188,6 @@ public class OrganisationService {
 	}
 	
 	private Organisations getOrgs() {
-		System.out.println("jel uopste usao ovde jebote");
 		User current = (User) ctx.getAttribute("currentUser");
 		Organisations orgs = new Organisations();
 		if(current.getRole() == RoleType.SuperAdmin) {
