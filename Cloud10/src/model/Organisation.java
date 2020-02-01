@@ -48,23 +48,28 @@ public class Organisation {
 		return logo;
 	}
 	public void setLogo(String logo) {
-		String sep = File.separator;
-		StringTokenizer st = new StringTokenizer(logo, sep);
-		String file = "";
-		while(st.hasMoreTokens()) {
-			file = st.nextToken();
-		}
-		String path = "images/png/";
-		st = new StringTokenizer(file, ".");
-		String name = st.nextToken();
-		String ext = st.nextToken();
-		if(ext.equals("jpg") || ext.equals("png") || ext.equals("gif")) {
-			path += name + "." + ext;
-			this.logo = path;
-			System.out.println(this.logo);
+		if(logo == null || logo.trim().length() == 0) {
+			this.logo = "";
 		}
 		else {
-			this.logo = "";
+			String sep = File.separator;
+			StringTokenizer st = new StringTokenizer(logo, sep);
+			String file = "";
+			while(st.hasMoreTokens()) {
+				file = st.nextToken();
+			}
+			String path = "images/png/";
+			st = new StringTokenizer(file, ".");
+			String name = st.nextToken();
+			String ext = st.nextToken();
+			if(ext.equals("jpg") || ext.equals("png") || ext.equals("gif")) {
+				path += name + "." + ext;
+				this.logo = path;
+				System.out.println(this.logo);
+			}
+			else {
+				this.logo = "";
+			}
 		}
 	}
 	public Collection<String> getUsers() {

@@ -67,7 +67,6 @@ public class Category {
 	}
 	
 	public boolean hasNull() {
-		 //if(uuid == null || uuid.trim().length() == 0)
 		if(this.name == null || this.name.trim().length() == 0) {
 			return true;
 		}

@@ -13,6 +13,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import model.Activity;
 import model.Organisation;
@@ -36,10 +40,16 @@ public class VirtualMachineService {
 	@GET
 	@Path("/getAllVms")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Collection<VirtualMachine> getAllVms() {
+	public Response getAllVms() throws JsonProcessingException {
 		User current = (User)request.getSession().getAttribute("current");
+		ObjectMapper mapper = new ObjectMapper();
+		String json = "";
+		if(current == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
 		if (current.getRole() == RoleType.SuperAdmin) {
-			return getVMs().getVirtualMachinesMap().values();
+			json = mapper.writeValueAsString(getVMs().getVirtualMachinesMap().values());
+			return Response.ok(json).build();
 		} else {
 			Organisation o = current.getOrganisation();
 			ArrayList<VirtualMachine> orgVms = new ArrayList<VirtualMachine>();
@@ -48,7 +58,8 @@ public class VirtualMachineService {
 					orgVms.add(vm);
 				}
 			}
-			return orgVms;
+			json = mapper.writeValueAsString(orgVms);
+			return Response.ok(json).build();
 		}
 	}
 
@@ -56,7 +67,11 @@ public class VirtualMachineService {
 	@Path("/getOrganVMs")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Collection<VirtualMachine> getOrganVMs(Organisation organisation) {
+	public Response getOrganVMs(Organisation organisation) throws JsonProcessingException {
+		User current = (User) ctx.getAttribute("currentUser");
+		if(current == null || current.getRole() == RoleType.User) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
 		ArrayList<VirtualMachine> organVMs = new ArrayList<VirtualMachine>();
 		VirtualMachines vms = getVMs();
 		for (VirtualMachine vm : vms.getVirtualMachinesMap().values()) {
@@ -64,7 +79,9 @@ public class VirtualMachineService {
 				organVMs.add(vm);
 			}
 		}
-		return organVMs;
+		ObjectMapper mapper = new ObjectMapper();
+		String json = mapper.writeValueAsString(organVMs);
+		return Response.ok(json).build();
 	}
 	
 	private VirtualMachines getVMs() {
@@ -80,12 +97,24 @@ public class VirtualMachineService {
 	@Path("/addVM")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public VirtualMachine addVM(VirtualMachine vm) {
+	public Response addVM(VirtualMachine vm) throws JsonProcessingException {
+		User current = (User) ctx.getAttribute("currentUser");
+		ObjectMapper mapper = new ObjectMapper();
+		String json = "";
+		if(current == null || current.getRole() == RoleType.User) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(vm == null) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("No VM sent!").build();
+		}
+		if(vm.hasNull()) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("Some of VM fields are empty!").build();
+		}
 		// validacija na serverskoj strani!
 		VirtualMachines vms = getVMs();
 		// jedinstvenost imena
 		if (!vms.vmNameFree(vm.getName())) {
-			return null;
+			return Response.status(Response.Status.BAD_REQUEST).entity("VM with specified name already exists!").build();
 		}
 		// dodavanje diskovima reference na novonapravljenu virtuelnu masinu
 		if (vm.getDiscs() != null) {
@@ -96,19 +125,29 @@ public class VirtualMachineService {
 					discs.getDiscsMap().get(discName).setVm(vm.getName());
 				} else {
 					// nepostojeci disk!
-					return null;
+					return Response.status(Response.Status.BAD_REQUEST).entity("VM with specified name doesn't exist!").build();
 				}
 			}	
 		}
 		vms.addVM(vm);
-		return vm;
+		json = mapper.writeValueAsString(vm);
+		return Response.ok(json).build();
 	}
 
 	@POST
 	@Path("/editVM")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public VirtualMachineWrapper editVM(VirtualMachineWrapper vmw) {
+	public Response editVM(VirtualMachineWrapper vmw) throws JsonProcessingException {
+		User current = (User) ctx.getAttribute("currentUser");
+		ObjectMapper mapper = new ObjectMapper();
+		String json = "";
+		if(current == null || current.getRole() == RoleType.User) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(vmw == null) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("No user sent!").build();
+		}
 		VirtualMachines vms = getVMs();
 		// validacija na serverskoj strani
 		// da li vec postoji vm sa uneetim NOVIM imenom
@@ -116,7 +155,7 @@ public class VirtualMachineService {
 			// uneto novo ime
 			// da li je zauzeto novouneto ime
 			if(!vms.vmNameFree(vmw.getName())) {
-				return null;
+				return Response.status(Response.Status.BAD_REQUEST).entity("VM with specified name already exists!").build();
 			} else {
 				// promenilo se i slobodno je novo ime
 				// menjamo u organizaciji u listi njenih resursa
@@ -189,14 +228,27 @@ public class VirtualMachineService {
 			}
 		}
 		vms.addVM(oldVm);
-		return vmw;
+		json = mapper.writeValueAsString(vmw);
+		return Response.ok(json).build();
 	}
 	
 	@POST
 	@Path("/removeVM")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public VirtualMachine removeVM(VirtualMachine vm) {
+	public Response removeVM(VirtualMachine vm) throws JsonProcessingException {
+		User current = (User) ctx.getAttribute("currentUser");
+		ObjectMapper mapper = new ObjectMapper();
+		String json = "";
+		if(current == null || current.getRole() == RoleType.User) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(vm == null) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("No VM sent!").build();
+		}
+		if(vm.getName() == null) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("No VM sent!").build();
+		}
 		VirtualMachines vms = getVMs();
 		// provera na serverskoj strani
 		if (!vms.vmNameFree(vm.getName())) {
@@ -224,9 +276,10 @@ public class VirtualMachineService {
 			}
 			// brisemo ga
 			vms.deleteVm(vm.getName());
-			return vm;
+			json = mapper.writeValueAsString(vm);
+			return Response.ok(json).build();
 		}
 		// brise nepostojecu
-		return null;
+		return Response.status(Response.Status.BAD_REQUEST).entity("VM with specified name doesn't exist!").build();
 	}
 }

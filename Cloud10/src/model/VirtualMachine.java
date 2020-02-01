@@ -107,4 +107,26 @@ public class VirtualMachine extends VMResource {
 	public void setActivities(ArrayList<Activity> activities) {
 		this.activities = activities;
 	}
+	
+	public boolean hasNull() {
+		if(this.category.hasNull()) {
+			return true;
+		}
+		else if(this.name == null || this.name.trim().length() == 0) {
+			return true;
+		}
+		else if(this.organisation == null || this.name.trim().length() == 0) {
+			return true;
+		}
+		else if(this.coreNum <= 0) {
+			return true;
+		}
+		else if(this.ram <= 0) {
+			return true;
+		}
+		else if(this.gpu < 0) {
+			return true;
+		}
+		return false;
+	}
 }

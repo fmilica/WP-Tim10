@@ -46,12 +46,9 @@ public class CategoriesService {
 		// ne znam doista
 		//RESENO sada???
 		if(current.getEmail() == null) { //current.getRole() == RoleType.User ||  jer i njemu mora da se ucita getCategories valjda zbog js-a
-			return Response.serverError().entity("Access denied!").build();
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
 		Categories cats = getCategories();
-		if(cats == null) {
-	        return Response.status(Response.Status.NOT_FOUND).entity("Categories not found").build();
-	    }
 		ObjectMapper mapper = new ObjectMapper();
 	    String json = mapper.writeValueAsString(cats.getCategoriesMap().values());
 	    System.out.println("load katrgorija\n" + json);
@@ -64,12 +61,15 @@ public class CategoriesService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addCategory(Category c) throws JsonProcessingException {
 		User current = getCurrent();
-		if(current.getRole() != RoleType.SuperAdmin || current.getEmail() == null) {
-			return Response.serverError().entity("Access denied!").build();
+		if(current == null || current.getRole() != RoleType.SuperAdmin || current.getEmail() == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(c == null) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("No category sent!").build();
 		}
 		if(c.hasNull()) {
 			System.out.println("ima kao neki null");
-			return Response.status(Response.Status.NOT_FOUND).entity("Category has null fields!").build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("Category has null fields!").build();
 		}
 		
 		Categories cats = getCategories();
@@ -77,8 +77,7 @@ public class CategoriesService {
 		String json = "";
 		if(cats.getCategoriesMap().containsKey(c.getName())) {
 			json = mapper.writeValueAsString(new Category());
-			System.out.println("ovo je json koji vrati "+ json);
-			return Response.ok(json).build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("Category with specified name already exists!").build();
 		}
 		cats.addItem(c);
 		ctx.setAttribute("categories", cats);
@@ -98,14 +97,16 @@ public class CategoriesService {
 		User current = getCurrent();
 		//samo admin ima pristup 
 		if(current.getRole() != RoleType.SuperAdmin || current.getEmail() == null) {
-			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
-
+		if(cw == null) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("No category sent!").build();
+		}
 		Category c = new Category(cw);
 		//ako mu je neki atribut null
 		if(c.hasNull()) {
 			System.out.println("ima kao neki null");
-			return Response.status(Response.Status.BAD_REQUEST).entity("Category has null fields!").build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("User has null fields!").build();
 		}
 		
 		Categories cats = getCategories();
@@ -114,8 +115,7 @@ public class CategoriesService {
 		// zasto je ovo dobro?
 		if(!cats.getCategoriesMap().containsKey(cw.getOldName())) {
 			System.out.println("izmena nepostojeceg");
-			json = mapper.writeValueAsString(new Category());
-			return Response.ok(json).build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("Can't edit category that doesn't exist!").build();
 		}
 		
 		if(cats.getCategoriesMap().containsKey(cw.getName())) {
@@ -123,7 +123,7 @@ public class CategoriesService {
 			cats.change(cw);
 			// ne moras da vracas kategoriju, samo reload stranicu i bice u tabeli
 			//json = mapper.writeValueAsString(new Category());
-			return Response.ok().build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("New category name already exists!").build();
 		}
 		cats.change(cw);
 		ctx.setAttribute("categories", cats);
@@ -143,13 +143,18 @@ public class CategoriesService {
 		User current = getCurrent();
 		//samo admin ima pristup 
 		if(current.getRole() != RoleType.SuperAdmin || current.getEmail() == null) {
-			return Response.serverError().entity("Access denied!").build();
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
-		
+		if(c == null) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("No category sent!").build();
+		}
+		if(c.getName() == null) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("No category sent!").build();
+		}
 		//ako mu je neki atribut null
 		if(c.hasNull()) {
 			System.out.println("ima kao neki null");
-			return Response.status(Response.Status.NOT_FOUND).entity("Category has null fields!").build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("User has null fields!").build();
 		}
 		
 		Categories cats = getCategories();
@@ -157,8 +162,7 @@ public class CategoriesService {
 		//ako novo ime ne postoji u kategorijama
 		if(!cats.getCategoriesMap().containsKey(c.getName())) {
 			System.out.println("brisanje nepostojeceg");
-			json = mapper.writeValueAsString(new Category());
-			return Response.ok(json).build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("Category with specified name doesn't exist!").build();
 		}
 		cats.remove(c);
 		ctx.setAttribute("categories", cats);

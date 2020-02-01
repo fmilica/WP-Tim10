@@ -132,6 +132,9 @@ public class User {
 		else if(this.surname == null || this.surname.trim().length() == 0) {
 			return true;
 		}
+		else if(this.organisation.getName() == null || this.organisation.getName().trim().length() == 0) {
+			return true;
+		}
 		else if(this.role == null) {
 			return true;
 		}

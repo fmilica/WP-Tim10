@@ -54,4 +54,23 @@ public class Disc extends VMResource {
 	public void setVm(String vm) {
 		this.vm = vm;
 	}
+	
+	public boolean hasNull() {
+		if(this.name == null || this.name.trim().length() == 0) {
+			return true;
+		}
+		else if(this.organisation == null || this.organisation.trim().length() == 0) {
+			return true;
+		}
+		/*else if(this.type == null) {
+			return true;
+		}*/
+		else if(this.capacity <= 0) {
+			return true;
+		}
+		else if(this.vm == null || this.vm.trim().length() == 0) {
+			return true;
+		}
+		return false;
+	}
 }

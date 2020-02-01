@@ -65,4 +65,26 @@ public class DiscWrapper {
 	public void setOldName(String oldName) {
 		this.oldName = oldName;
 	}
+	
+	public boolean hasNull() {
+		if(this.oldName == null || this.oldName.trim().length() == 0) {
+			return true;
+		}
+		else if(this.newName == null || this.newName.trim().length() == 0) {
+			return true;
+		}
+		else if(this.organisation == null || this.organisation.trim().length() == 0) {
+			return true;
+		}
+		else if(this.type == null) {
+			return true;
+		}
+		else if(this.capacity <= 0) {
+			return true;
+		}
+		else if(this.vm == null || this.vm.trim().length() == 0) {
+			return true;
+		}
+		return false;
+	}
 }

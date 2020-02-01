@@ -1,7 +1,6 @@
 package model.services;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +11,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import model.Disc;
 import model.Organisation;
@@ -41,10 +44,16 @@ public class DiscsService {
 	@GET
 	@Path("/getAllDiscs")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Collection<Disc> getAllDiscs() {
+	public Response getAllDiscs() throws JsonProcessingException {
 		User current = (User)request.getSession().getAttribute("current");
+		ObjectMapper mapper = new ObjectMapper();
+		String json = "";
+		if(current == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
 		if (current.getRole() == RoleType.SuperAdmin) {
-			return getDiscs().getDiscsMap().values();
+			json = mapper.writeValueAsString(getDiscs().getDiscsMap().values());
+			return Response.ok(json).build();
 		} else {
 			Organisation o = current.getOrganisation();
 			ArrayList<Disc> orgDiscs = new ArrayList<Disc>();
@@ -53,7 +62,8 @@ public class DiscsService {
 					orgDiscs.add(d);	
 				}
 			}
-			return orgDiscs;
+			json = mapper.writeValueAsString(orgDiscs);
+			return Response.ok(json).build();
 		}
 	}
 	
@@ -61,7 +71,16 @@ public class DiscsService {
 	@Path("/getFreeOrganDiscs")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Collection<Disc> getFreeOrganDiscs(Organisation organisation) {
+	public Response getFreeOrganDiscs(Organisation organisation) throws JsonProcessingException {
+		User current = (User)request.getSession().getAttribute("current");
+		ObjectMapper mapper = new ObjectMapper();
+		String json = "";
+		if(current == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(organisation.getName() == null) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("No Organisation sent!").build();
+		}
 		ArrayList<Disc> organDiscs = new ArrayList<Disc>();
 		Discs discs = getDiscs();
 		for (Disc d : discs.getDiscsMap().values()) {
@@ -73,19 +92,33 @@ public class DiscsService {
 				}
 			}
 		}
-		return organDiscs;
+		json = mapper.writeValueAsString(organDiscs);
+		return Response.ok(json).build();
 	}
 	
 	@POST
 	@Path("/addDisc")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Disc addDisc(Disc d) {
+	public Response addDisc(Disc d) throws JsonProcessingException {
+		User current = (User)request.getSession().getAttribute("current");
+		ObjectMapper mapper = new ObjectMapper();
+		String json = "";
+		System.out.println(d);
+		if(current == null  || current.getRole() == RoleType.User) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(d == null) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("No Disc sent!").build();
+		}
+		if(d.hasNull()) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("Some of Disc fields are empty!").build();
+		}
 		Discs discs = getDiscs();
 		// validacija na serverskoj strani
 		// da li postoji vec disk sa unetim imenom
 		if(!discs.discNameFree(d.getName())) {
-			return null;
+			return Response.status(Response.Status.BAD_REQUEST).entity("Disc with specified name already exists!").build();
 		}
 		discs.addDisc(d);
 		// provera da li postoji odabrana organizacija
@@ -93,7 +126,7 @@ public class DiscsService {
 		if (!orgs.getOrganisationsMap().containsKey(d.getOrganisation())) {
 			// ne postoji uneta organizacija
 			// bad request
-			return null;
+			return Response.status(Response.Status.BAD_REQUEST).entity("Organisation with specified name doesn't exist!").build();
 		}
 		// postoji
 		// dodajemo joj disk u listu resursa
@@ -104,7 +137,7 @@ public class DiscsService {
 			if (!vms.getVirtualMachinesMap().containsKey(d.getVm())) {
 				// ne postoji
 				// bad request
-				return null;
+				return Response.status(Response.Status.BAD_REQUEST).entity("VM with specified name doesn't exist!").build();
 			}
 			// postoji
 			// dodajemo joj disk
@@ -114,14 +147,27 @@ public class DiscsService {
 		// ne zeli da doda disk nijednoj virtuelnoj
 		// slobodan je
 		d.setVm(null);
-		return d;
+		json = mapper.writeValueAsString(d);
+		return Response.ok(json).build();
 	}
 	
 	@POST
 	@Path("/editDisc")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public DiscWrapper editDisc(DiscWrapper dw) {
+	public Response editDisc(DiscWrapper dw) throws JsonProcessingException {
+		User current = (User) ctx.getAttribute("currentUser");
+		ObjectMapper mapper = new ObjectMapper();
+		String json = "";
+		if(current == null || current.getRole() == RoleType.User) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(dw == null) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("No user sent!").build();
+		}
+		if(dw.hasNull()) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("Some of Disc fields are empty!").build();
+		}
 		Discs discs = getDiscs();
 		// validacija na serverskoj strani
 		// da li vec postoji disk sa uneetim NOVIM imenom
@@ -129,7 +175,7 @@ public class DiscsService {
 			// uneto novo ime
 			// da li je zauzeto novouneto ime
 			if(!discs.discNameFree(dw.getNewName())) {
-				return null;
+				return Response.status(Response.Status.BAD_REQUEST).entity("Disc with specified name already exists!").build();
 			}
 		}
 		// PROVERA DA LI ORGANIZACIJA POSTOJI
@@ -149,18 +195,28 @@ public class DiscsService {
 				oldDisc.setVm(dw.getVm());
 				vms.getVirtualMachinesMap().get(dw.getVm()).addDisc(oldDisc.getName());
 			} else {
-				return null;
+				return Response.status(Response.Status.BAD_REQUEST).entity("VM with specified name doesn't exist!").build();
 			}
 		}
 		discs.addDisc(oldDisc);
-		return dw;
+		json = mapper.writeValueAsString(dw);
+		return Response.ok(json).build();
 	}
 	
 	@POST
 	@Path("/removeDisc")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Disc removeDisc(Disc d) {
+	public Response removeDisc(Disc d) throws JsonProcessingException {
+		User current = (User) ctx.getAttribute("currentUser");
+		ObjectMapper mapper = new ObjectMapper();
+		String json = "";
+		if(current == null || current.getRole() != RoleType.SuperAdmin) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(d.getName() == null) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("No user sent!").build();
+		}
 		Discs discs = getDiscs();
 		// provera na serverskoj strani
 		if (!discs.discNameFree(d.getName())) {
@@ -171,15 +227,16 @@ public class DiscsService {
 				VirtualMachine vm = vms.getVirtualMachinesMap().get(d.getVm());
 				if (vm == null) {
 					// ne postoji takva vm
-					return null;
+					return Response.status(Response.Status.BAD_REQUEST).entity("VM with specified name doesn't exist!").build();
 				}
 				// postoji takva vm
 				vm.getDiscs().remove(d.getName());
 			}
 			discs.deleteDisc(d.getName());
-			return d;
+			json = mapper.writeValueAsString(d);
+			return Response.ok(json).build();
 		}
-		return null;
+		return Response.status(Response.Status.BAD_REQUEST).entity("Disc with specified name already exists!").build();
 	}
 	
 	private Discs getDiscs() {

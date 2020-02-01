@@ -42,13 +42,12 @@ public class OrganisationService {
 	public Response getOrganisations() throws JsonIOException, JsonSyntaxException, FileNotFoundException, JsonProcessingException {
 		User current = (User)ctx.getAttribute("currentUser");
 		if(current.getEmail() == null || current.getRole() != RoleType.SuperAdmin) {
-			return Response.serverError().entity("Access denied!").build();
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
 		Organisations orgs = (Organisations) ctx.getAttribute("organisations");
 		ObjectMapper mapper = new ObjectMapper();
 		String json = mapper.writeValueAsString(orgs.getOrganisationsMap().values());
 		return Response.ok(json).build();
-		//return orgs.getOrganisationsMap().values();
 	}
 	
 	@GET
@@ -57,13 +56,12 @@ public class OrganisationService {
 	public Response getOrganisation() throws JsonIOException, JsonSyntaxException, FileNotFoundException, JsonProcessingException {
 		User current = (User)ctx.getAttribute("currentUser");
 		if(current.getEmail() == null || current.getRole() != RoleType.Admin) {
-			return Response.serverError().entity("Access denied!").build();
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
 		Organisations o = getOrgs();
 		ObjectMapper mapper = new ObjectMapper();
 		String json = mapper.writeValueAsString(o.getOrganisationsMap().values());
 		return Response.ok(json).build();
-		//return o.getOrganisationsMap().values();
 	}
 	
 	@POST
@@ -73,20 +71,22 @@ public class OrganisationService {
 	public Response getFreeDiscs(Organisation o) throws JsonProcessingException {
 		User current = (User) ctx.getAttribute("currentUser");
 		if(current.getEmail() == null) {
-			return Response.serverError().entity("Access denied!").build();
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
-		if(!current.getOrganisation().getName().equals(o.getName()) && current.getRole() == RoleType.User) {
-			return Response.serverError().entity("Access denied!").build();
+		if(current.getRole() != RoleType.SuperAdmin) {
+			if(!current.getOrganisation().getName().equals(o.getName()) && current.getRole() == RoleType.User) {
+				return Response.status(Response.Status.FORBIDDEN).entity("Access denied! Users can't call this method!").build();
+			}
+			else if(!current.getOrganisation().getName().equals(o.getName()) && current.getRole() == RoleType.Admin) {
+				return Response.status(Response.Status.FORBIDDEN).entity("Access denied! Admins can't call this method!").build();
+			}
 		}
-		else if(!current.getOrganisation().getName().equals(o.getName()) && current.getRole() == RoleType.Admin) {
-			return Response.serverError().entity("Access denied!").build();
-		}
-		if(o.hasNull()) {
-			return Response.status(Response.Status.BAD_REQUEST).entity("User has null fields!").build();
+		if(o == null || o.getName() == null) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("No Organisation sent!").build();
 		}
 		Organisations orgs = getOrgs();
 		if(!orgs.getOrganisationsMap().containsKey(o.getName())) {
-			return Response.status(Response.Status.NOT_FOUND).entity("User has null fields!").build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("Organisation with specified name does't exists!").build();
 		}
 		ObjectMapper mapper = new ObjectMapper();
 		String json;
@@ -104,7 +104,6 @@ public class OrganisationService {
 		}
 		json = mapper.writeValueAsString(freeDiscs);
 		return Response.ok(json).build();
-		//return freeDiscs;
 	}
 	
 	@POST
@@ -117,21 +116,22 @@ public class OrganisationService {
 		String json = "";
 		if(current.getEmail() == null || current.getRole() != RoleType.SuperAdmin) {
 			System.out.println("nedozvoljen pristup");
-			return Response.serverError().entity("Access denied!").build();
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(o == null) {
+			System.out.println("ima null");
+			return Response.status(Response.Status.BAD_REQUEST).entity("No organisation sent!").build();
 		}
 		if(o.hasNull()) {
-			System.out.println("ima null");
-			return Response.serverError().entity("Access denied!").build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("Organiation has null fields!").build();
 		}
 		Organisations orgs = getOrgs();
 		if(orgs.checkOrg(o.getName())) {
-			json = mapper.writeValueAsString(new Organisation());
-			return Response.ok(json).build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("Organisation with specified name already exists!").build();
 		}
 		o.setUsers(new ArrayList<String>());
 		o.setResources(new ArrayList<String>());
-		o.setUsers(new ArrayList<String>());
-		o.setResources(new ArrayList<String>());
+		o.setLogo(o.getLogo());
 		orgs.getOrganisationsMap().put(o.getName(), o);
 		ctx.setAttribute("organisations", orgs);
 		json = mapper.writeValueAsString(o);
@@ -149,7 +149,10 @@ public class OrganisationService {
 		User current = (User)ctx.getAttribute("currentUser");
 		if(current.getEmail() == null || current.getRole() == RoleType.User) {
 			System.out.println("nema pristup");
-			return Response.serverError().entity("Access denied!").build();
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(o == null) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("No user sent!").build();
 		}
 		if(o.hasNull()) {
 			System.out.println("ima kao neki null");
@@ -165,15 +168,11 @@ public class OrganisationService {
 		}
 		if(!orgs.checkOrg(o.getOldName())) {
 			System.out.println("pristup nepostojecem");
-			json = mapper.writeValueAsString(new Organisation());
-			return Response.ok(json).build();
-			//return new Organisation();
+			return Response.status(Response.Status.BAD_REQUEST).entity("Can't edit organisation that doesn't exist!").build();
 		}
 		if(orgs.checkOrg(o.getName()) && !o.getOldName().equals(o.getName())) {
 			System.out.println("postoji vec ovakav");
-			json = mapper.writeValueAsString(new Organisation());
-			return Response.ok(json).build();
-			//return new Organisation();
+			return Response.status(Response.Status.BAD_REQUEST).entity("New organisation name already exists!").build();
 		}
 		System.out.println(o.getLogo());
 		Organisation org = orgs.getOrganisationsMap().get(o.getOldName());
@@ -184,7 +183,6 @@ public class OrganisationService {
 		ctx.setAttribute("organisations", orgs);
 		json = mapper.writeValueAsString(org);
 		return Response.ok(json).build();
-		//return org;
 	}
 	
 	private Organisations getOrgs() {

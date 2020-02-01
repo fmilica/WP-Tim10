@@ -147,12 +147,13 @@ public class UserService {
 		//za tip moze da odabere admin ili korisnik			za tip moze da odabere admin ili korisnik
 		
 		//provera validnosti podataka
+		System.out.println(p);
 		Users us = new Users();
 		Organisation org = new Organisation();
 		User current = getCurrent();
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
-		if(current == null) {
+		if(current == null || current.getRole() == RoleType.User) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
 		if (p == null) {
@@ -213,7 +214,7 @@ public class UserService {
 		User current = getCurrent();
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
-		if(current == null) {
+		if(current == null || current.getRole() == RoleType.User) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
 		if (p == null) {
@@ -274,13 +275,14 @@ public class UserService {
 		User current = getCurrent();
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
-		if(current == null) {
+		if(current == null || current.getRole() == RoleType.User) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
 		if (p == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("No user sent!").build();
 		}
-		if(p.hasNull()) {
+		if(p.getEmail() == null) { 
+			//ne treba da stoji hasNull vec da proveri da li je email null
 			System.out.println("ima kao neki null");
 			return Response.status(Response.Status.BAD_REQUEST).entity("User has null fields!").build();
 		}
