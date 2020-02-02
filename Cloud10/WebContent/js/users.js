@@ -46,6 +46,7 @@ function showTypePage(type) {
 		$(document).find('.admin').show()
 	} else if (type == "Admin") {
 		$(document).find('.admin').show()
+		$(document).find('.adminOnly').show()
 	}
 }
 

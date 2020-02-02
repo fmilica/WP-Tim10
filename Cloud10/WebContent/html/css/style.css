@@ -101,6 +101,16 @@
     border-color: #bd1122b0;
 }
 
+.btn-bill {
+    background-color: #383333f1;
+    border-color: #383333f1;
+}
+
+.btn-bill:hover {
+    background-color: #3d3838;
+    border-color: #3d3838;
+}
+
 .account {
     color: #ffffff;
     background: #f5a15d;
@@ -134,6 +144,11 @@
 .cat {
     color: #ffffff;
     background: #ce0015b0;
+}
+
+.bill {
+    color: #ffffff;
+    background: #383333;
 }
 
 .row-btns {
@@ -177,6 +192,13 @@
 
 .iconCat {
     content: url('../../images/png/category.png');
+    height: 20px;
+    width: 20px;
+    display: block;
+}
+
+.iconBill {
+    content: url('../../images/png/bill.png');
     height: 20px;
     width: 20px;
     display: block;

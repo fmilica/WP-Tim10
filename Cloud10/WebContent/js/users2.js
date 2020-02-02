@@ -21,6 +21,7 @@ $(window).on('load', function(){
                 loadUsersToShow();
             }
             else if(currentType == "Admin"){
+				$('.adminOnly').show()
             	loadUsersToShow();
             }
         },

@@ -27,6 +27,9 @@ function showUser(user){
 	$(document).find('input[name="add_surn"]').val(user.surname)
 	//disable za organisation
 	if(user.role != "SuperAdmin"){
+		if (user.role == "Admin") {
+			$('.adminOnly').show()
+		}
 		$('#addSelect').empty()
 		$('#addSelect').append(new Option(user.organisation.name))
 		$('#addSelect').attr("disabled", "disabled")

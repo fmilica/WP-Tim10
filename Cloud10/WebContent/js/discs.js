@@ -101,6 +101,7 @@ function setUserType(user) {
     } else if(user.role == "Admin") {
         $('.admin').show()
         $('.user').show()
+        $('.adminOnly').show()
     } else {
         $('.user').show()
     }

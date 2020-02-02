@@ -41,6 +41,7 @@ function loadO(){
 	});
 	if(currentType == "Admin"){
 		$(document).find("#sakrij").hide();
+		$('.adminOnly').show()
 	}
 }
 
