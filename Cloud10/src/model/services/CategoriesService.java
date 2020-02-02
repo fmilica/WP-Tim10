@@ -92,8 +92,6 @@ public class CategoriesService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response changeCategory(CategoryWrapper cw) throws JsonProcessingException {
 		System.out.println("dodavanje kategorije na serverskoj strani ");
-		ObjectMapper mapper = new ObjectMapper();
-		String json = "";
 		User current = getCurrent();
 		//samo admin ima pristup 
 		if(current.getRole() != RoleType.SuperAdmin || current.getEmail() == null) {

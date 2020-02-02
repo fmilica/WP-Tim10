@@ -107,7 +107,7 @@ function editOrg(org){
 	$(document).find('input[name="add_name"]').val(org.name)
 	$(document).find('input[name="add_name"]').attr("readonly", false)
     $(document).find('input[name="add_desc"]').val(org.description)
-    $(document).find('.imgUpload').val(org.logo)
+    //$(document).find('.imgUpload').val(org.logo)
 	
     $(document).find('h3.card-title').html("Edit Organisation");
 	$(document).find('.addForm').show();

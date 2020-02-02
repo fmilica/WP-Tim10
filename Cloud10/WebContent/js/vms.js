@@ -4,6 +4,7 @@ var currentCat = null
 var vmOldName = null
 var currentUser
 var change = false
+var currentVM
 
 window.onload = function() {
 	// dobavljanje kateogrija
@@ -90,6 +91,7 @@ function fillContentTable(allVms) {
 		e.preventDefault();
 		$.each(list, function(index, vm){
 			if(index == $(e.target).parent()["0"].id){
+				currentVM = vm
 				vmOldName = vm.name
 				editVM(vm)
 			}
@@ -117,7 +119,9 @@ function editVM(vm) {
 	// pretpostavljamo da je ugasena (poslednja aktivnost nema null)
 	$('#on-off').prop("checked", false);
     // prilagodjavanje forme
-    setUserType(currentUser)
+	setUserType(currentUser)
+	// sklanjanje detaljnog prikaza aktivnosti
+	$('#editActivesForm').hide()
     $('#mainForm').text("Edit VM")
     $('#submitAdd').hide()
 
@@ -133,7 +137,11 @@ function editVM(vm) {
 	$.each(list, function(list, disc) {
 		$('#iDiscs').append($("<option></option>").attr("value", disc).text(disc))
 	})
-	var list1 = vm.activities
+	$('#lActives').show()
+	if (currentUser.role == "SuperAdmin") {
+		$('#editActives').show()
+	}
+	var list1 = vm.activities == null ? [] : (vm.activities instanceof Array ? vm.activities : [vm.activities])
 	var activesTable = $(document).find('#actives')
 	var header = $(document).find('#actives thead')
 	activesTable.empty()
@@ -154,11 +162,6 @@ function editVM(vm) {
 		row.append($('<td>' + off + '</td>'))
 		activesTable.append(row)
 	})
-	// NAMESTANJE DISKOVA
-	// IZMENA DISKOVA
-	// ZAJEBANO VRLO
-	// VRLO ZAJEBANO
-	// IZUZETNO ZAJEBANO
 	addCatOptions(categories)
 	$('#iCat').val(vm.category.name)
 	$('#iCore').val(vm.coreNum)
@@ -185,6 +188,9 @@ $(document).ready(function() {
         // ciscenje popunjenih podataka
 		$('#iName').val("")
 		$('#iDiscs').empty()
+		$('#lActives').hide()
+		$('#actives').empty()
+		$('#editActives').hide()
 		// kada se dodaje uvek je ugasena
 		$('#on-off').prop("checked", false);
 		$('#on-off').attr("disabled", "disabled")
@@ -215,7 +221,7 @@ $(document).ready(function() {
 			var currentOrgan = null
 			// ako je admin
 			if (currentUser.role == "Admin") {
-				currentOrgan = currentUser.organisation
+				currentOrgan = currentUser.organisation.name
 			} else {
 				// ako je super admin
 				// dobavljamo izabranu opciju
@@ -228,6 +234,54 @@ $(document).ready(function() {
 	// otvaranje detaljnog prikaza aktivnosti
 	$('#editActives').click(function(e) {
 		$('#editActivesForm').show()
+		var editActivesTable = $('#editActivesTable tbody')
+		var list2 = currentVM.activities == null ? [] : (currentVM.activities instanceof Array ? currentVM.activities : [currentVM.activities])
+		editActivesTable.empty()
+		$.each(list2, function(index, activity) {
+			var row = $('<tr id="' + index + '"></tr>')
+			row.append($('<td><input id="on' + index + '" type="text" value="' + activity.on + '"></td>'))
+			var off = ""
+			if (activity.off != null) {
+				off = activity.off
+			}
+			row.append($('<td><input id="off' + index + '" type="text" value="' + off + '"></td>'))
+			// checkBox za brisanje aktivnosti
+			row.append($('<td class="center"><input id="delete' + index + '" type="checkbox"></td>'))
+			editActivesTable.append(row)
+		})
+	})
+
+	// odustajanje od promene aktivnosti
+	$('#submitAbortActives').click(function(e) {
+		$('#editActivesForm').hide()
+	})
+
+	// potvrdjivanje promene aktivnosti
+	$('#submitEditActives').click(function(e) {
+		var activitiesNotDelete = []
+		$('#editActivesTable tbody tr').each(function(index, row) {
+			if (!($('#delete' + index).is(":checked"))) {
+				var activityNew =  {on : $('#on' + index).val(), 
+									off : $('#off' + index).val()}
+				activitiesNotDelete.push(activityNew)
+			}
+		})
+		// slanje svih aktivnosti na server
+		var vmActivities = { vmName : currentVM.name,
+						activities : activitiesNotDelete }
+		$.ajax({
+			type : "POST",
+			url : rootURL + "/rest/vms/editVMActivities",
+			data : JSON.stringify(vmActivities),
+			contentType : "application/json",
+			success : window.location.href="mainPage.html",
+			error : function(response) {
+				alert(response.responseText);
+				if (response.responseText.includes("No logged in user!")) {
+					window.location.href = "login.html"
+				}
+			}
+		})
 	})
 
 	// dobavljanje unetih vrednosti sa forme

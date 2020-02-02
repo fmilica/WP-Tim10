@@ -148,7 +148,7 @@ $(document).ready(function() {
         var currentOrgan = null
 			// ako je admin
 			if (currentUser.role == "Admin") {
-				currentOrgan = currentUser.organisation
+				currentOrgan = currentUser.organisation.name
 			} else {
 				// ako je super admin
 				// dobavljamo izabranu opciju

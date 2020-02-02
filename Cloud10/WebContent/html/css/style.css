@@ -6,6 +6,10 @@
     display: none;
 }
 
+.adminOnly {
+    display: none;
+}
+
 .addBtn {
     display: none;
 }
@@ -20,6 +24,11 @@
 
 .editActivesForm {
     display: none;
+}
+
+.center {
+    text-align: center;
+    vertical-align: middle;
 }
 
 .btn-acc {
@@ -47,7 +56,7 @@
     border-color: #9caec2;
 }
 
-.btn-actives:hower {
+.btn-actives:hover {
     background-color: #8394a5;
     border-color: #8394a5;
 }

@@ -1,6 +1,7 @@
 package model;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -25,11 +26,43 @@ public class Activity {
 		this.off = formater.format(offTime);
 	}
 
+	public Activity(String on) {
+		this.on = on;
+		try {
+			this.onTime = formater.parse(on);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public Activity(String on, String off) {
+		this.on = on;
+		try {
+			this.onTime = formater.parse(on);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		this.off = off;
+		try {
+			this.offTime = formater.parse(off);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	public String toString() {
 		return "Activity [onTime=" + on + ", offTime=" + off + "]";
 	}
 
+	public static boolean checkDate(String date) {
+		try {
+			formater.parse(date);
+			return true;
+		} catch (ParseException e) {
+			return false;
+		}
+	}
 	
 	public String getOn() {
 		return on;

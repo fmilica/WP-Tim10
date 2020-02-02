@@ -26,6 +26,8 @@ import model.collections.Discs;
 import model.collections.Organisations;
 import model.collections.VirtualMachines;
 import model.enums.RoleType;
+import model.wrappers.ActivityHelper;
+import model.wrappers.VirtualMachineActivities;
 import model.wrappers.VirtualMachineWrapper;
 
 @Path("/vms")
@@ -281,5 +283,83 @@ public class VirtualMachineService {
 		}
 		// brise nepostojecu
 		return Response.status(Response.Status.BAD_REQUEST).entity("VM with specified name doesn't exist!").build();
+	}
+	
+	@POST
+	@Path("/editVMActivities")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response editVMActivities(VirtualMachineActivities vma) {
+		User current = (User) ctx.getAttribute("currentUser");
+		// pravo pristupa //
+		// niko nije ulogovan
+		if (current == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		// samo superAdmin ima pristup ovoj metodi
+		if (current.getRole() != RoleType.SuperAdmin) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
+		}
+		
+		// sadrzaj poziva //
+		// nije poslao nista
+		if (vma == null) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("Nothing sent!").build();
+		}
+		// null virtuelna masina
+		if (vma.getVmName() == null) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("No VM sent!").build();
+		}
+		// nepostojeca virtuelna masina
+		VirtualMachines vms = getVMs();
+		if (!vms.getVirtualMachinesMap().containsKey(vma.getVmName())) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("VM with such name doesn't exist!").build();
+		}
+		VirtualMachine oldVm = vms.getVirtualMachinesMap().get(vma.getVmName());
+		// obrisao je sve aktivnosti
+		if (vma.getActivities() == null) {
+			// okej poziv
+			// kreiramo praznu listu aktivnosti i dodeljujemo je toj vm
+			oldVm.setActivities(new ArrayList<Activity>());
+			return Response.ok().build();
+		}
+		// postoji bar jedna aktivnost
+		// validacija unetih datuma //
+		ArrayList<Activity> newActivities = new ArrayList<Activity>();
+		for (ActivityHelper a : vma.getActivities()) {
+			// aktivnost mora imati pocetak da bi bila aktivnost
+			// kraj moze i ne mora da ima
+			if (a.getOn() == null || a.getOn().equals("")) {
+				return Response.status(Response.Status.BAD_REQUEST).entity("Activity must have start time!").build(); 
+			}
+			// ima pocetak
+			if (Activity.checkDate(a.getOn())) {
+				// ima validan pocetak
+				if (a.getOff() != null && !a.getOff().equals("")) {
+					// ima kraj
+					if (Activity.checkDate(a.getOff())) {
+						// ima validan kraj
+						if (a.getOff().compareTo(a.getOn()) >= 0) {
+							// kraj aktivnosti je posle pocetka
+							newActivities.add(new Activity(a.getOn(), a.getOff()));
+						}else {
+							return Response.status(Response.Status.BAD_REQUEST).entity("End time can't be before start time!").build();	
+						}
+						} else {
+						// nevalidan kraj
+						return Response.status(Response.Status.BAD_REQUEST).entity("Incorrect end time!").build(); 
+					}
+				} else {
+					// nema kraj
+					newActivities.add(new Activity(a.getOn()));
+				}
+			} else {
+				// nevalidan pocetak
+				return Response.status(Response.Status.BAD_REQUEST).entity("Incorrect start time!").build(); 
+			}
+		}
+		// kreirali smo sve aktivnosti
+		oldVm.setActivities(newActivities);
+		return Response.ok().build();
 	}
 }
