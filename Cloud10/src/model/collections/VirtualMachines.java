@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.text.ParseException;
 import java.util.HashMap;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
@@ -75,5 +76,15 @@ public class VirtualMachines {
 	}
 	public void setVirtualMachinesMap(HashMap<String, VirtualMachine> virtualMachinesMap) {
 		this.virtualMachinesMap = virtualMachinesMap;
+	}
+	
+	public void writeVMs(String filePath) {
+		String sep = File.separator;
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+            mapper.writeValue(new File(filePath + sep + "data" + sep + "virtualMachines.json"), virtualMachinesMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 	}
 }

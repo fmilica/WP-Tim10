@@ -134,6 +134,7 @@ public class OrganisationService {
 		o.setLogo(o.getLogo());
 		orgs.getOrganisationsMap().put(o.getName(), o);
 		ctx.setAttribute("organisations", orgs);
+		orgs.writeOrganisations(ctx.getRealPath(""));
 		json = mapper.writeValueAsString(o);
 		return Response.ok(json).build();
 	}
@@ -181,6 +182,7 @@ public class OrganisationService {
 		org.setDescription(o.getDescription());
 		org.setLogo(o.getLogo());
 		ctx.setAttribute("organisations", orgs);
+		orgs.writeOrganisations(ctx.getRealPath(""));
 		json = mapper.writeValueAsString(org);
 		return Response.ok(json).build();
 	}

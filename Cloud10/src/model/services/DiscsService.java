@@ -143,10 +143,13 @@ public class DiscsService {
 			// dodajemo joj disk
 			VirtualMachine vm = vms.getVirtualMachinesMap().get(d.getVm());
 			vm.getDiscs().add(d.getName());
+			vms.writeVMs(ctx.getRealPath(""));
 		}
 		// ne zeli da doda disk nijednoj virtuelnoj
 		// slobodan je
 		d.setVm(null);
+		discs.writeDiscs(ctx.getRealPath(""));
+		orgs.writeOrganisations(ctx.getRealPath(""));
 		json = mapper.writeValueAsString(d);
 		return Response.ok(json).build();
 	}
@@ -194,12 +197,14 @@ public class DiscsService {
 				// dodelimo joj disk
 				oldDisc.setVm(dw.getVm());
 				vms.getVirtualMachinesMap().get(dw.getVm()).addDisc(oldDisc.getName());
+				vms.writeVMs(ctx.getRealPath(""));
 			} else {
 				return Response.status(Response.Status.BAD_REQUEST).entity("VM with specified name doesn't exist!").build();
 			}
 		}
 		discs.addDisc(oldDisc);
 		json = mapper.writeValueAsString(dw);
+		discs.writeDiscs(ctx.getRealPath(""));
 		return Response.ok(json).build();
 	}
 	
@@ -214,8 +219,8 @@ public class DiscsService {
 		if(current == null || current.getRole() != RoleType.SuperAdmin) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
-		if(d.getName() == null) {
-			return Response.status(Response.Status.BAD_REQUEST).entity("No user sent!").build();
+		if(d == null || d.getName() == null || d.getName().trim().length()==0) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("No disc sent!").build();
 		}
 		Discs discs = getDiscs();
 		// provera na serverskoj strani
@@ -231,8 +236,22 @@ public class DiscsService {
 				}
 				// postoji takva vm
 				vm.getDiscs().remove(d.getName());
+				vms.writeVMs(ctx.getRealPath(""));
 			}
 			discs.deleteDisc(d.getName());
+			// da li ima organizaciju
+			if(d.getOrganisation() == null || d.getOrganisation().equals("")) {
+				return Response.status(Response.Status.BAD_REQUEST).entity("No organisation specified!").build();
+			}
+			// da li je validna organizacija
+			Organisations orgs = (Organisations)ctx.getAttribute("organisations");
+			if(!orgs.getOrganisationsMap().containsKey(d.getOrganisation())) {
+				return Response.status(Response.Status.BAD_REQUEST).entity("Disc with specified organisation doesn't exist!").build();
+			}
+			Organisation organ = orgs.getOrganisationsMap().get(d.getOrganisation());
+			organ.getResources().remove(d.getName());
+			orgs.writeOrganisations(ctx.getRealPath(""));
+			discs.writeDiscs(ctx.getRealPath(""));
 			json = mapper.writeValueAsString(d);
 			return Response.ok(json).build();
 		}

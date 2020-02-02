@@ -118,6 +118,12 @@ public class VirtualMachineService {
 		if (!vms.vmNameFree(vm.getName())) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("VM with specified name already exists!").build();
 		}
+		Organisations orgs = (Organisations) ctx.getAttribute("organisations");
+		if(!orgs.getOrganisationsMap().containsKey(vm.getOrganisation())) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("Organisation with specified name doesn't exist!").build();
+		}
+		Organisation org = orgs.getOrganisationsMap().get(vm.getOrganisation());
+		org.addResource(vm.getName());
 		// dodavanje diskovima reference na novonapravljenu virtuelnu masinu
 		if (vm.getDiscs() != null) {
 			Discs discs = (Discs)ctx.getAttribute("discs");
@@ -129,9 +135,11 @@ public class VirtualMachineService {
 					// nepostojeci disk!
 					return Response.status(Response.Status.BAD_REQUEST).entity("VM with specified name doesn't exist!").build();
 				}
-			}	
+			}
 		}
 		vms.addVM(vm);
+		vms.writeVMs(ctx.getRealPath(""));
+		orgs.writeOrganisations(ctx.getRealPath(""));
 		json = mapper.writeValueAsString(vm);
 		return Response.ok(json).build();
 	}
@@ -170,6 +178,7 @@ public class VirtualMachineService {
 					resources.remove(vmw.getOldName());
 					resources.add(vmw.getName());
 				}
+				orgs.writeOrganisations(ctx.getRealPath(""));
 			}
 		}
 		VirtualMachine oldVm = vms.getVirtualMachinesMap().get(vmw.getOldName());
@@ -230,6 +239,7 @@ public class VirtualMachineService {
 			}
 		}
 		vms.addVM(oldVm);
+		vms.writeVMs(ctx.getRealPath(""));
 		json = mapper.writeValueAsString(vmw);
 		return Response.ok(json).build();
 	}
@@ -278,6 +288,8 @@ public class VirtualMachineService {
 			}
 			// brisemo ga
 			vms.deleteVm(vm.getName());
+			vms.writeVMs(ctx.getRealPath(""));
+			orgs.writeOrganisations(ctx.getRealPath(""));
 			json = mapper.writeValueAsString(vm);
 			return Response.ok(json).build();
 		}

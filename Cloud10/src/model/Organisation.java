@@ -87,6 +87,9 @@ public class Organisation {
 	public void setResources(Collection<String> resources) {
 		this.resources = resources;
 	}
+	public void addResource(String resource) {
+		this.resources.add(resource);
+	}
 	
 	public boolean hasNull() {
 		if(this.name == null || this.name.trim().length() == 0) {

@@ -186,16 +186,19 @@ public class UserService {
 		}
 		
 		p.setOrganisation(org);
-		getOrganisations().getOrganisationsMap().get(org.getName()).addUser(p);
+		Organisations orgs = getOrganisations();
+		orgs.getOrganisationsMap().get(org.getName()).addUser(p);
 		us.addUser(p);
 		
 		ctx.setAttribute("users", us);
 		if(current.getRole() == RoleType.SuperAdmin) {
-			ctx.setAttribute("organisations", getOrganisations());
+			ctx.setAttribute("organisations", orgs);
 		}
 		else if(current.getRole() == RoleType.Admin) {
 			ctx.setAttribute("organisation", org);
 		}
+		us.writeUsers(ctx.getRealPath(""));
+		orgs.writeOrganisations(ctx.getRealPath(""));
 		json = mapper.writeValueAsString(p);
 		return Response.ok(json).build();
 	}
@@ -245,6 +248,7 @@ public class UserService {
 			// ne moze da menja ime pa mora biti isto
 			json = mapper.writeValueAsString(new User());
 			// da li onda ovde treba da se pozove da bi promenio vrednosti pre nego sto se okonca
+			us.writeUsers(ctx.getRealPath(""));
 			us.setUserValues(p);
 			return Response.ok(json).build();
 		}
@@ -304,7 +308,17 @@ public class UserService {
 			json = mapper.writeValueAsString(new User());
 			// da li ti ovo vrsi brisanje iz svih?
 			// da li na kontekstu vise nece biti vidljiv obrisan user?
+			Organisations orgs = getOrganisations();
+			
 			us.removeUser(p);
+			orgs.removeUser(p);
+			
+			ctx.setAttribute("organisations", orgs);
+			ctx.setAttribute("users", us);
+			
+			us.writeUsers(ctx.getRealPath(""));
+			orgs.writeOrganisations(ctx.getRealPath(""));
+			
 			return Response.ok(json).build();
 		}
 		// pokusava da izbrise nepostojeceg
@@ -386,6 +400,7 @@ public class UserService {
 			us.changeUser(current,p);
 			ctx.setAttribute("curent", current);
 			ctx.setAttribute("users", us);
+			us.writeUsers(ctx.getRealPath(""));
 			// ovo onda ovde?
 			return Response.ok(json).build();
 		} else {
@@ -397,6 +412,7 @@ public class UserService {
 			us.changeUser(current,p);
 			ctx.setAttribute("curent", current);
 			ctx.setAttribute("users", us);
+			us.writeUsers(ctx.getRealPath(""));
 			json = mapper.writeValueAsString(current);
 			return Response.ok(json).build();
 		}
@@ -461,6 +477,10 @@ public class UserService {
 		Users users = (Users) ctx.getAttribute("users");
 		if(users == null){
 			users = new Users(ctx.getRealPath(""));
+			if(users.getUsersMap().isEmpty()) {
+				User superAdmin = new User("super@admin.com", "superadmin", "Super", "Admin", null, RoleType.SuperAdmin);
+				users.getUsersMap().put(superAdmin.getEmail(), superAdmin);
+			}
 			Organisations o = new Organisations(ctx.getRealPath(""));
 			ctx.setAttribute("organisations", o);
 			for (Organisation org : o.getOrganisationsMap().values()) {

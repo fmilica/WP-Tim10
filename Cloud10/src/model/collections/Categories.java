@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashMap;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
@@ -59,5 +60,15 @@ public class Categories {
 	
 	public void remove(Category c) {
 		categoriesMap.remove(c.getName());
+	}
+	
+	public void writeCategories(String filePath) {
+		String sep = File.separator;
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+            mapper.writeValue(new File(filePath + sep + "data" + sep + "categories.json"), categoriesMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 	}
 }

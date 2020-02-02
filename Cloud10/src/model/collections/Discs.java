@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashMap;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
@@ -61,5 +62,15 @@ public class Discs {
 	}
 	public void setDiscsMap(HashMap<String, Disc> discsMap) {
 		this.discsMap = discsMap;
+	}
+	
+	public void writeDiscs(String filePath) {
+		String sep = File.separator;
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+            mapper.writeValue(new File(filePath + sep + "data" + sep + "discs.json"), discsMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 	}
 }

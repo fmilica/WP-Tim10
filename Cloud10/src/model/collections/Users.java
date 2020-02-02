@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashMap;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
@@ -130,5 +131,15 @@ public class Users {
 				System.out.println(u+" "+u.getOrganisation().getDescription());
 			}
 		}
+	}
+	
+	public void writeUsers(String filePath) {
+		String sep = File.separator;
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+            mapper.writeValue(new File(filePath + sep + "data" + sep + "users.json"), usersMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 	}
 }

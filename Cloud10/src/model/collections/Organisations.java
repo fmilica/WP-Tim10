@@ -5,12 +5,14 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashMap;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import model.Organisation;
+import model.User;
 
 public class Organisations {
 
@@ -61,7 +63,25 @@ public class Organisations {
 		}
 	}
 	
+	public void removeUser(User u) {
+		for (Organisation o : organisationsMap.values()) {
+			if(o.getName().equals(u.getOrganisation().getName())) {
+				o.getUsers().remove(u.getEmail());
+			}
+		}
+	}
+	
 	public void addItem(Organisation o) {
 		organisationsMap.put(o.getName(), o);
+	}
+	
+	public void writeOrganisations(String filePath) {
+		String sep = File.separator;
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+            mapper.writeValue(new File(filePath + sep + "data" + sep + "organisations.json"), organisationsMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 	}
 }

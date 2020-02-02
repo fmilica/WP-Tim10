@@ -16,7 +16,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import model.Category;
 import model.User;
+import model.VirtualMachine;
 import model.collections.Categories;
+import model.collections.VirtualMachines;
 import model.enums.RoleType;
 import model.wrappers.CategoryWrapper;
 
@@ -81,8 +83,8 @@ public class CategoriesService {
 		}
 		cats.addItem(c);
 		ctx.setAttribute("categories", cats);
+		cats.writeCategories(ctx.getRealPath(""));
 		json = mapper.writeValueAsString(c);
-		System.out.println("ovo je json koji vrati "+json);
 	    return Response.ok(json).build();
 	}
 	
@@ -125,6 +127,7 @@ public class CategoriesService {
 		}
 		cats.change(cw);
 		ctx.setAttribute("categories", cats);
+		cats.writeCategories(ctx.getRealPath(""));
 		//json = mapper.writeValueAsString(c);
 		return Response.ok().build();
 	}
@@ -155,6 +158,14 @@ public class CategoriesService {
 			return Response.status(Response.Status.BAD_REQUEST).entity("User has null fields!").build();
 		}
 		
+		VirtualMachines vms = (VirtualMachines) ctx.getAttribute("vms");
+		if(vms != null) {
+			for (VirtualMachine vm : vms.getVirtualMachinesMap().values()) {
+				if(vm.getCategory().getName().equals(c.getName())) {
+					return Response.status(Response.Status.BAD_REQUEST).entity("Category assigned to virtual machine can't be deleted!").build();
+				}
+			}
+		}
 		Categories cats = getCategories();
 		
 		//ako novo ime ne postoji u kategorijama
@@ -164,6 +175,7 @@ public class CategoriesService {
 		}
 		cats.remove(c);
 		ctx.setAttribute("categories", cats);
+		cats.writeCategories(ctx.getRealPath(""));
 		json = mapper.writeValueAsString(c);
 		return Response.ok(json).build();
 	}
