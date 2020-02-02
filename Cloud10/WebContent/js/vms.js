@@ -168,7 +168,7 @@ function editVM(vm) {
 	$('#iCore').val(vm.coreNum)
 	$('#iRam').val(vm.ram)
 	$('#iGpu').val(vm.gpu)
-	if (currentUser.role == "Admin") {
+	if (currentUser.role == "Admin" || currentUser.role == "SuperAdmin") {
 		$('#on-off').removeAttr("disabled")
 	} else {
 		$('#on-off').attr("disabled", "disabled")
@@ -274,11 +274,12 @@ $(document).ready(function() {
 			type : "POST",
 			url : rootURL + "/rest/vms/editVMActivities",
 			data : JSON.stringify(vmActivities),
+			dataType : "json",
 			contentType : "application/json",
 			success : window.location.href="mainPage.html",
-			error : function(response) {
-				alert(response.responseText);
-				if (response.responseText.includes("No logged in user!")) {
+			error : function(data) {
+				alert(data.responseText);
+				if (data.responseText.includes("No logged in user!")) {
 					window.location.href = "login.html"
 				}
 			}

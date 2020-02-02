@@ -159,7 +159,7 @@
                 <form class="form-horizontal" action="mainPage.html" method="post">
                   <div class="card-body">
                     <div class="row">
-                      <label>Name</label>
+                      <label id="lName">Name</label>
                       <input id="iName" type="text" class="form-control" placeholder="Enter name...">
                       <label id="lOrgan">Organisation</label>
                       <select id="iOrgan" class="form-control">
@@ -218,9 +218,11 @@
                   <div class="table-responsive p-0">
                     <table id="editActivesTable" class="table table-striped table-valign-middle">
                       <thead class="actives">
-                        <th>On Time</th>
-                        <th>Off Time</th>
-                        <th>Delete</th>
+                        <tr>
+                          <th>On Time</th>
+                          <th>Off Time</th>
+                          <th>Delete</th>
+                        </tr>
                       </thead>
                       <tbody>
                       </tbody>

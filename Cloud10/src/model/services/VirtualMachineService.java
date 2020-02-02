@@ -38,15 +38,15 @@ public class VirtualMachineService {
 
 	@Context
 	ServletContext ctx;
-	
+
 	@GET
 	@Path("/getAllVms")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllVms() throws JsonProcessingException {
-		User current = (User)request.getSession().getAttribute("current");
+		User current = (User) request.getSession().getAttribute("current");
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
-		if(current == null) {
+		if (current == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
 		if (current.getRole() == RoleType.SuperAdmin) {
@@ -71,7 +71,7 @@ public class VirtualMachineService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getOrganVMs(Organisation organisation) throws JsonProcessingException {
 		User current = (User) ctx.getAttribute("currentUser");
-		if(current == null || current.getRole() == RoleType.User) {
+		if (current == null || current.getRole() == RoleType.User) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
 		ArrayList<VirtualMachine> organVMs = new ArrayList<VirtualMachine>();
@@ -85,7 +85,7 @@ public class VirtualMachineService {
 		String json = mapper.writeValueAsString(organVMs);
 		return Response.ok(json).build();
 	}
-	
+
 	private VirtualMachines getVMs() {
 		VirtualMachines vms = (VirtualMachines) ctx.getAttribute("vms");
 		if (vms == null) {
@@ -103,37 +103,40 @@ public class VirtualMachineService {
 		User current = (User) ctx.getAttribute("currentUser");
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
-		if(current == null || current.getRole() == RoleType.User) {
+		if (current == null || current.getRole() == RoleType.User) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
-		if(vm == null) {
+		if (vm == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("No VM sent!").build();
 		}
-		if(vm.hasNull()) {
+		if (vm.hasNull()) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("Some of VM fields are empty!").build();
 		}
 		// validacija na serverskoj strani!
 		VirtualMachines vms = getVMs();
 		// jedinstvenost imena
 		if (!vms.vmNameFree(vm.getName())) {
-			return Response.status(Response.Status.BAD_REQUEST).entity("VM with specified name already exists!").build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("VM with specified name already exists!")
+					.build();
 		}
 		Organisations orgs = (Organisations) ctx.getAttribute("organisations");
-		if(!orgs.getOrganisationsMap().containsKey(vm.getOrganisation())) {
-			return Response.status(Response.Status.BAD_REQUEST).entity("Organisation with specified name doesn't exist!").build();
+		if (!orgs.getOrganisationsMap().containsKey(vm.getOrganisation())) {
+			return Response.status(Response.Status.BAD_REQUEST)
+					.entity("Organisation with specified name doesn't exist!").build();
 		}
 		Organisation org = orgs.getOrganisationsMap().get(vm.getOrganisation());
 		org.addResource(vm.getName());
 		// dodavanje diskovima reference na novonapravljenu virtuelnu masinu
 		if (vm.getDiscs() != null) {
-			Discs discs = (Discs)ctx.getAttribute("discs");
+			Discs discs = (Discs) ctx.getAttribute("discs");
 			Collection<String> vmDiscs = vm.getDiscs();
 			for (String discName : vmDiscs) {
 				if (discs.getDiscsMap().containsKey(discName)) {
 					discs.getDiscsMap().get(discName).setVm(vm.getName());
 				} else {
 					// nepostojeci disk!
-					return Response.status(Response.Status.BAD_REQUEST).entity("VM with specified name doesn't exist!").build();
+					return Response.status(Response.Status.BAD_REQUEST).entity("VM with specified name doesn't exist!")
+							.build();
 				}
 			}
 		}
@@ -152,10 +155,10 @@ public class VirtualMachineService {
 		User current = (User) ctx.getAttribute("currentUser");
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
-		if(current == null || current.getRole() == RoleType.User) {
+		if (current == null || current.getRole() == RoleType.User) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
-		if(vmw == null) {
+		if (vmw == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("No user sent!").build();
 		}
 		VirtualMachines vms = getVMs();
@@ -164,12 +167,13 @@ public class VirtualMachineService {
 		if (!vmw.getOldName().equals(vmw.getName())) {
 			// uneto novo ime
 			// da li je zauzeto novouneto ime
-			if(!vms.vmNameFree(vmw.getName())) {
-				return Response.status(Response.Status.BAD_REQUEST).entity("VM with specified name already exists!").build();
+			if (!vms.vmNameFree(vmw.getName())) {
+				return Response.status(Response.Status.BAD_REQUEST).entity("VM with specified name already exists!")
+						.build();
 			} else {
 				// promenilo se i slobodno je novo ime
 				// menjamo u organizaciji u listi njenih resursa
-				Organisations orgs = (Organisations)ctx.getAttribute("organisations");
+				Organisations orgs = (Organisations) ctx.getAttribute("organisations");
 				// ako postoji organizacija koja je prosledjena
 				if (orgs.getOrganisationsMap().containsKey(vmw.getOrganisation())) {
 					// postoji
@@ -190,20 +194,19 @@ public class VirtualMachineService {
 		oldVm.setGPU(vmw.getGpu());
 		// dodavanje novih i starih diskova
 		// NEOPHODNA PROVERA DA LI JE NULL BILO STA !
-		//Collection<String> allDiscs = vmw.getDiscs();
-		//allDiscs.addAll(vmw.getNewDiscs());
+		// Collection<String> allDiscs = vmw.getDiscs();
+		// allDiscs.addAll(vmw.getNewDiscs());
 		// za sve diskove stare koje nije oznacio, namesti kod diska da je slobodan
 		Collection<String> oldChosenDiscs = vmw.getDiscs();
 		if (oldChosenDiscs != null) {
 			for (String old : oldVm.getDiscs()) {
 				// iterira kroz stare diskove
-				Discs discs = (Discs)ctx.getAttribute("discs");
+				Discs discs = (Discs) ctx.getAttribute("discs");
 				if (oldChosenDiscs == null) {
 					// nije odabrao nijedan stari
 					// oslobadjamo ih sve
 					discs.getDiscsMap().get(old).setVm(null);
-				}
-				else if (!oldChosenDiscs.contains(old)) {
+				} else if (!oldChosenDiscs.contains(old)) {
 					// nije odabrao neki od starih diskova
 					// oslobadjamo ga
 					discs.getDiscsMap().get(old).setVm(null);
@@ -214,7 +217,7 @@ public class VirtualMachineService {
 			Collection<String> newChosenDiscs = vmw.getNewDiscs();
 			for (String newDisc : newChosenDiscs) {
 				// odabrao je novi disk
-				Discs discs = (Discs)ctx.getAttribute("discs");
+				Discs discs = (Discs) ctx.getAttribute("discs");
 				// zauzimamo ga
 				discs.getDiscsMap().get(newDisc).setVm(oldVm.getName());
 			}
@@ -243,7 +246,7 @@ public class VirtualMachineService {
 		json = mapper.writeValueAsString(vmw);
 		return Response.ok(json).build();
 	}
-	
+
 	@POST
 	@Path("/removeVM")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -252,13 +255,13 @@ public class VirtualMachineService {
 		User current = (User) ctx.getAttribute("currentUser");
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
-		if(current == null || current.getRole() == RoleType.User) {
+		if (current == null || current.getRole() == RoleType.User) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
-		if(vm == null) {
+		if (vm == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("No VM sent!").build();
 		}
-		if(vm.getName() == null) {
+		if (vm.getName() == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("No VM sent!").build();
 		}
 		VirtualMachines vms = getVMs();
@@ -266,7 +269,7 @@ public class VirtualMachineService {
 		if (!vms.vmNameFree(vm.getName())) {
 			// brise dobar
 			// brise vm iz resursa organizacije
-			Organisations orgs = (Organisations)ctx.getAttribute("organisations");
+			Organisations orgs = (Organisations) ctx.getAttribute("organisations");
 			// da li postoji organizacija
 			if (orgs.getOrganisationsMap().containsKey(vm.getOrganisation())) {
 				// da li postoji u resursima
@@ -276,7 +279,7 @@ public class VirtualMachineService {
 			if (vm.getDiscs() != null) {
 				// ima diskova vezanih za sebe
 				// oslobadja ih
-				Discs discs = (Discs)ctx.getAttribute("discs");
+				Discs discs = (Discs) ctx.getAttribute("discs");
 				// proverava da li postoji takav disk
 				for (String discName : vm.getDiscs()) {
 					if (discs.getDiscsMap().containsKey(discName)) {
@@ -296,7 +299,7 @@ public class VirtualMachineService {
 		// brise nepostojecu
 		return Response.status(Response.Status.BAD_REQUEST).entity("VM with specified name doesn't exist!").build();
 	}
-	
+
 	@POST
 	@Path("/editVMActivities")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -312,7 +315,7 @@ public class VirtualMachineService {
 		if (current.getRole() != RoleType.SuperAdmin) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
 		}
-		
+
 		// sadrzaj poziva //
 		// nije poslao nista
 		if (vma == null) {
@@ -342,7 +345,7 @@ public class VirtualMachineService {
 			// aktivnost mora imati pocetak da bi bila aktivnost
 			// kraj moze i ne mora da ima
 			if (a.getOn() == null || a.getOn().equals("")) {
-				return Response.status(Response.Status.BAD_REQUEST).entity("Activity must have start time!").build(); 
+				return Response.status(Response.Status.BAD_REQUEST).entity("Activity must have start time!").build();
 			}
 			// ima pocetak
 			if (Activity.checkDate(a.getOn())) {
@@ -351,15 +354,16 @@ public class VirtualMachineService {
 					// ima kraj
 					if (Activity.checkDate(a.getOff())) {
 						// ima validan kraj
-						if (a.getOff().compareTo(a.getOn()) >= 0) {
+						if (a.getOnDate().before(a.getOffDate())) {
 							// kraj aktivnosti je posle pocetka
 							newActivities.add(new Activity(a.getOn(), a.getOff()));
-						}else {
-							return Response.status(Response.Status.BAD_REQUEST).entity("End time can't be before start time!").build();	
-						}
 						} else {
+							return Response.status(Response.Status.BAD_REQUEST)
+									.entity("End time can't be before start time!").build();
+						}
+					} else {
 						// nevalidan kraj
-						return Response.status(Response.Status.BAD_REQUEST).entity("Incorrect end time!").build(); 
+						return Response.status(Response.Status.BAD_REQUEST).entity("Incorrect end time!").build();
 					}
 				} else {
 					// nema kraj
@@ -367,7 +371,7 @@ public class VirtualMachineService {
 				}
 			} else {
 				// nevalidan pocetak
-				return Response.status(Response.Status.BAD_REQUEST).entity("Incorrect start time!").build(); 
+				return Response.status(Response.Status.BAD_REQUEST).entity("Incorrect start time!").build();
 			}
 		}
 		// kreirali smo sve aktivnosti

@@ -19,12 +19,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
+import model.Activity;
 import model.Disc;
 import model.Organisation;
 import model.User;
+import model.VirtualMachine;
 import model.collections.Discs;
 import model.collections.Organisations;
+import model.collections.VirtualMachines;
+import model.enums.DiscType;
 import model.enums.RoleType;
+import model.wrappers.BillDates;
+import model.wrappers.BillTypeWrapper;
+import model.wrappers.BillWrapper;
 import model.wrappers.OrganisationWrapper;
 
 @Path("/organisations")
@@ -115,11 +122,9 @@ public class OrganisationService {
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
 		if(current.getEmail() == null || current.getRole() != RoleType.SuperAdmin) {
-			System.out.println("nedozvoljen pristup");
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
 		if(o == null) {
-			System.out.println("ima null");
 			return Response.status(Response.Status.BAD_REQUEST).entity("No organisation sent!").build();
 		}
 		if(o.hasNull()) {
@@ -185,6 +190,103 @@ public class OrganisationService {
 		orgs.writeOrganisations(ctx.getRealPath(""));
 		json = mapper.writeValueAsString(org);
 		return Response.ok(json).build();
+	}
+	
+	@POST
+	@Path("/calculateBill")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response calculateBill(BillDates bd) throws JsonProcessingException {
+		User current = (User)ctx.getAttribute("currentUser");
+		// pristup //
+		if (current == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if (current.getRole() != RoleType.Admin) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
+		}
+		Organisations orgs = (Organisations)ctx.getAttribute("organisations");
+		Organisation o = orgs.getOrganisationsMap().get(current.getOrganisation().getName());
+		
+		VirtualMachines vms = (VirtualMachines)ctx.getAttribute("vms");
+		Discs discs = (Discs)ctx.getAttribute("discs");
+		
+		BillWrapper bw = new BillWrapper();
+		
+		// validacija datuma //
+		if (!bd.formatDate()) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("Dates not formatted correctly!").build();
+		}
+		
+		double total;
+		double totalVM = 0;
+		double totalDisc = 0;
+		for (String resource : o.getResources()) {
+			if (vms.getVirtualMachinesMap().containsKey(resource)) {
+				// virtuelna masina je
+				// racunanje //
+				VirtualMachine vm = vms.getVirtualMachinesMap().get(resource);
+				double hourPrice = 0;
+				// 25e * coreNum
+				double devide = 25.0 / 30.0 / 24.0;
+				double cores = vm.getCoreNum() * devide;
+				// 15e * 1GB RAM
+				devide = 15.0 / 30.0 / 24.0;
+				double rams = vm.getRAM() * devide;
+				// 1e * GPUCore
+				devide = 1.0 / 30.0 / 24.0;
+				double gpus = vm.getGPU() * devide;
+				hourPrice = cores + rams + gpus;
+				
+				// koliko sati je bila aktivna
+				double hoursActive = 0;
+				for (Activity a : vm.getActivities()) {
+					if (a.getOff() != null) {
+						// zavrsena aktivnost
+						// samo njih uracunavamo
+						if (a.getOnTime().after(bd.getStartDate())
+								&& a.getOffTime().before(bd.getEndDate())) {
+							// aktivnost se nalazi u zadatom opsegu
+							long diffMili = a.getOffTime().getTime() - a.getOnTime().getTime();
+							double diffHours = Math.ceil(diffMili / (60 * 60 * 1000));
+							hoursActive += diffHours;	
+						}
+					}
+				}
+				// ukupno radjeno ikada
+				double thisVM = Math.round((hourPrice * hoursActive) * 100.0) / 100.0;
+				bw.getVms().add(new BillTypeWrapper(resource, thisVM));
+				totalVM += thisVM;
+			} else {
+				// disk je
+				Disc d = discs.getDiscsMap().get(resource);
+				// racunanje //
+				long diffMili = bd.getEndDate().getTime() - bd.getStartDate().getTime();
+				double diffDays = Math.ceil(diffMili / (24 * 60 * 60 * 1000));
+				
+				double devide;
+				double dayPrice;
+				
+				if (d.getType() == DiscType.HDD) {
+					// 0.1e GB HDD
+					devide = 0.1/30;
+					dayPrice = d.getCapacity() * devide;
+				} else {
+					// 0.3e GB SSD
+					devide = 0.3/30;
+					dayPrice = d.getCapacity() * devide;
+				}
+				double thisDisc = Math.round((dayPrice * diffDays) * 100.0) / 100.0;
+				bw.getDiscs().add(new BillTypeWrapper(resource, thisDisc));
+				totalDisc += thisDisc;
+			}
+		}
+		total = totalVM + totalDisc;
+		total = Math.round((total) * 100.0) / 100.0;
+		bw.setTotal(total);
+		ObjectMapper mapper = new ObjectMapper();
+		String bill = mapper.writeValueAsString(bw);
+		return Response.ok(bill).build();
 	}
 	
 	private Organisations getOrgs() {
