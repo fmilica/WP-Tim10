@@ -1,5 +1,7 @@
 package model;
 
+import java.util.StringTokenizer;
+
 import model.enums.RoleType;
 
 public class User {
@@ -137,6 +139,19 @@ public class User {
 		}
 		else if(this.role == null) {
 			return true;
+		}
+		return false;
+	}
+	
+	public boolean checkEmail() {
+		StringTokenizer st1 = new StringTokenizer(this.email, "@");
+		String first = "";
+		if(st1.countTokens() == 2) {
+			first = st1.nextToken();
+			StringTokenizer st2 = new StringTokenizer(first, ".");
+			if(st2.countTokens() >= 2) {
+				return true;
+			}
 		}
 		return false;
 	}

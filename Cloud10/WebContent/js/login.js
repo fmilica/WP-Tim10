@@ -48,6 +48,25 @@ $(document).on('submit', function(e) {
 	console.log(email);
 	console.log(password);
 	
+	var odg = "";
+	var prvi = email.split("@")
+	let pokusam = prvi[0];
+	let arr2 = "";
+	if(prvi.length == 2){
+		console.log(prvi[1])
+		pokusam = prvi.pop()
+		arr2 = pokusam.split(".")
+		if(arr2.length >= 2){
+			odg = "ok";
+		}
+		else{
+			odg = null;
+		}
+	}
+	if(odg == null){
+		console.log("neee meee zeee")
+	}
+	
 	if(!email){
 		$(this).find('#displayError1').html('Polje email mora biti popunjeno');
 	}
