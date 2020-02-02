@@ -131,9 +131,13 @@ function addO(){
 	if(!name){
 		$(document).find('input[name="add_name"]').focus()
 	}
-	else if(!desc){
-		$(document).find('input[name="add_desc"]').focus()
-	}
+	if(desc){
+    	$(document).find('#spanDesc').hide();
+    }
+    if(!desc){
+    	$(document).find('input[name="add_desc"]').focus()
+    	$(document).find('#spanDesc').show();
+    }
 	
     if(name && desc){
         $.ajax({
@@ -197,6 +201,8 @@ function discardO(){
 	$(document).find('.addForm').hide();
     $(document).find('.addBtn').hide();
     $(document).find('.editBtn').hide();
+    
+    $(document).find('#spanDesc').hide();
 }
 
 function loadImage(event){

@@ -49,6 +49,9 @@ public class VirtualMachineService {
 		if (current == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
+		if (current.getEmail() == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
 		if (current.getRole() == RoleType.SuperAdmin) {
 			json = mapper.writeValueAsString(getVMs().getVirtualMachinesMap().values());
 			return Response.ok(json).build();
@@ -71,8 +74,14 @@ public class VirtualMachineService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getOrganVMs(Organisation organisation) throws JsonProcessingException {
 		User current = (User) ctx.getAttribute("currentUser");
-		if (current == null || current.getRole() == RoleType.User) {
+		if (current == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if (current.getEmail() == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if (current.getRole() == RoleType.User) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
 		}
 		ArrayList<VirtualMachine> organVMs = new ArrayList<VirtualMachine>();
 		VirtualMachines vms = getVMs();
@@ -103,8 +112,14 @@ public class VirtualMachineService {
 		User current = (User) ctx.getAttribute("currentUser");
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
-		if (current == null || current.getRole() == RoleType.User) {
+		if (current == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if (current.getEmail() == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if (current.getRole() == RoleType.User) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
 		}
 		if (vm == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("No VM sent!").build();
@@ -155,8 +170,14 @@ public class VirtualMachineService {
 		User current = (User) ctx.getAttribute("currentUser");
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
-		if (current == null || current.getRole() == RoleType.User) {
+		if (current == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if (current.getEmail() == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if (current.getRole() == RoleType.User) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
 		}
 		if (vmw == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("No user sent!").build();
@@ -255,8 +276,14 @@ public class VirtualMachineService {
 		User current = (User) ctx.getAttribute("currentUser");
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
-		if (current == null || current.getRole() == RoleType.User) {
+		if (current == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if (current.getEmail() == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if (current.getRole() == RoleType.User) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
 		}
 		if (vm == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("No VM sent!").build();
@@ -309,6 +336,9 @@ public class VirtualMachineService {
 		// pravo pristupa //
 		// niko nije ulogovan
 		if (current == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if (current.getEmail() == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
 		// samo superAdmin ima pristup ovoj metodi

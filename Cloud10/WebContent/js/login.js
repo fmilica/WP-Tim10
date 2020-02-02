@@ -48,32 +48,40 @@ $(document).on('submit', function(e) {
 	console.log(email);
 	console.log(password);
 	
-	var odg = "";
-	var prvi = email.split("@")
-	let pokusam = prvi[0];
-	let arr2 = "";
-	if(prvi.length == 2){
-		console.log(prvi[1])
-		pokusam = prvi.pop()
-		arr2 = pokusam.split(".")
-		if(arr2.length >= 2){
-			odg = "ok";
+	//nesto@nesto.nesto
+	var odg = null
+	var prvi = ""
+	let drugi = ""
+	let arr2 = ""
+	if(email){
+		prvi = email.split("@")
+		if(prvi.length == 2){
+			drugi = prvi.pop() //uzima poslednjeg dodatog
+			arr2 = drugi.split(".")
+			if(arr2.length >= 2){
+				odg = "ok";
+			}
+			else{
+				odg = null;
+			}
 		}
 		else{
 			odg = null;
 		}
 	}
+	
 	if(odg == null){
-		console.log("neee meee zeee")
+		//ovaj if treba da se stavi umesto ovog dole
 	}
 	
-	if(!email){
-		$(this).find('#displayError1').html('Polje email mora biti popunjeno');
+	if(!email){// ovog
+		$(this).find('#displayError1').html('Field must be filled!');
 	}
 	if(!password){
-		$(this).find('#displayError2').html('Polje password mora biti popunjeno');
+		$(this).find('#displayError2').html('Field must be filled!');
 
 	}
+	// (odg && password)
 	if(email && password){
 		$.ajax({
 			type : 'POST',
@@ -99,6 +107,11 @@ $(document).on('submit', function(e) {
 		});
 	}
 });
+
+$(document).on('input', '#login',  function(e){
+	$(this).find('#displayError1').hide();
+})
+
 
 //funkcija zapravljenje json fajla od prosledjenih argumenata(Korisnik)
 function formToJSON(email, password) {

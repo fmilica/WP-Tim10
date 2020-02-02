@@ -110,27 +110,44 @@ function addC(){
     }
     
     if(!name){
-    	var name = $('#iName').focus()
+    	$('#iName').focus()
+    	$('#spanName').show()
     }
-    else if(!coreNum || !($.isNumeric(coreNum)) || parseInt(coreNum) < 0){
+    if(name){
+    	$('#spanName').hide()
+    }
+    if(!coreNum || !($.isNumeric(coreNum)) || parseInt(coreNum) < 0){
     	alert("Only positive numbers!")
-    	$('#iCoreNum').focus();
+    	$('#iCoreNum').focus()
+    	$('#spanCore').show()
     }
-    else if(!ram || !($.isNumeric(ram)) || parseInt(ram) < 0){
+    else{
+    	$('spanCore').hide()
+    }
+    if(!ram || !($.isNumeric(ram)) || parseInt(ram) < 0){
     	alert("Only positive numbers!")
-    	$('#iRam').focus();
+    	$('#iRam').focus()
+    	$('#spanRam').show()
     }
-    else if(gpu){
+    else{
+    	$('#spanRam').hide()
+    }
+    if(gpu){
     	if($.isNumeric(gpu)){
     		if(parseInt(gpu) < 0){
-    			$('#iGpu').focus();
+    			$('#iGpu').focus()
+    			$('#spanGpu').show()
     		}
     	}
     	else{
-    		$('#iGpu').focus();
+    		$('#iGpu').focus()
+    		$('#spanGpu').show()
     	}
     }
-    else if(!gpu){
+    else{
+    	$('#spanGpu').hide()
+    }
+    if(!gpu){
     	gpu = 0;
     }
     
@@ -164,32 +181,48 @@ function submitC(){
     	alert("All of the input boxes must be filled!")
     }
     
-    if(!name){
-    	var name = $('#iName').focus()
+	if(!name){
+    	$('#iName').focus()
+    	$('#spanName').show()
     }
-    else if(!coreNum || !($.isNumeric(coreNum)) || parseInt(coreNum) < 0){
+    if(name){
+    	$('#spanName').hide()
+    }
+    if(!coreNum || !($.isNumeric(coreNum)) || parseInt(coreNum) < 0){
     	alert("Only positive numbers!")
-    	$('#iCoreNum').focus();
+    	$('#iCoreNum').focus()
+    	$('#spanCore').show()
     }
-    else if(!ram || !($.isNumeric(ram)) || parseInt(ram) < 0){
+    else{
+    	$('spanCore').hide()
+    }
+    if(!ram || !($.isNumeric(ram)) || parseInt(ram) < 0){
     	alert("Only positive numbers!")
-    	$('#iRam').focus();
+    	$('#iRam').focus()
+    	$('#spanRam').show()
     }
-    else if(gpu){
+    else{
+    	$('#spanRam').hide()
+    }
+    if(gpu){
     	if($.isNumeric(gpu)){
     		if(parseInt(gpu) < 0){
-    			alert("Only positive numbers!")
-    			$('#iGpu').focus();
+    			$('#iGpu').focus()
+    			$('#spanGpu').show()
     		}
     	}
     	else{
-    		alert("Only positive numbers!")
-    		$('#iGpu').focus();
+    		$('#iGpu').focus()
+    		$('#spanGpu').show()
     	}
     }
-    else if(!gpu){
+    else{
+    	$('#spanGpu').hide()
+    }
+    if(!gpu){
     	gpu = 0;
     }
+    
     if(name && coreNum && ram && gpu){
         $.ajax({
             type : 'POST',
@@ -221,6 +254,11 @@ function abortC(){
     $('#iCoreNum').val("")
     $('#iRam').val("")
     $('#iGpu').val("")
+    
+    $('#spanName').hide()
+    $('#spanCore').hide()
+    $('#spanRam').hide()
+    $('#spanGpu').hide()
 }
 
 function deleteC(){

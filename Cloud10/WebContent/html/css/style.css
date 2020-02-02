@@ -207,3 +207,11 @@
 label {
     margin-top: 0.5rem;
 }
+
+.spanStyle {
+	font-size: 15px;
+	color: red;
+	display: none;
+	text-align: center;
+	padding-top: 10px;
+}

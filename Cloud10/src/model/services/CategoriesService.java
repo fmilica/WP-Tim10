@@ -63,8 +63,14 @@ public class CategoriesService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addCategory(Category c) throws JsonProcessingException {
 		User current = getCurrent();
-		if(current == null || current.getRole() != RoleType.SuperAdmin || current.getEmail() == null) {
+		if(current == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getEmail() == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getRole() != RoleType.SuperAdmin) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!!").build();
 		}
 		if(c == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("No category sent!").build();
@@ -96,8 +102,14 @@ public class CategoriesService {
 		System.out.println("dodavanje kategorije na serverskoj strani ");
 		User current = getCurrent();
 		//samo admin ima pristup 
-		if(current.getRole() != RoleType.SuperAdmin || current.getEmail() == null) {
+		if(current == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getEmail() == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getRole() != RoleType.SuperAdmin) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
 		}
 		if(cw == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("No category sent!").build();
@@ -143,8 +155,14 @@ public class CategoriesService {
 		
 		User current = getCurrent();
 		//samo admin ima pristup 
-		if(current.getRole() != RoleType.SuperAdmin || current.getEmail() == null) {
+		if(current == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getEmail() == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getRole() != RoleType.SuperAdmin) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
 		}
 		if(c == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("No category sent!").build();

@@ -153,8 +153,14 @@ public class UserService {
 		User current = getCurrent();
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
-		if(current == null || current.getRole() == RoleType.User) {
+		if(current == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getEmail() == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getRole() == RoleType.User) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
 		}
 		if (p == null) {
 			// ako nista nije poslato -> jeste null
@@ -217,8 +223,14 @@ public class UserService {
 		User current = getCurrent();
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
-		if(current == null || current.getRole() == RoleType.User) {
+		if(current == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getEmail() == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getRole() == RoleType.User) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
 		}
 		if (p == null) {
 			// nije poslat objekat
@@ -279,8 +291,14 @@ public class UserService {
 		User current = getCurrent();
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
-		if(current == null || current.getRole() == RoleType.User) {
+		if(current == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getEmail() == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getRole() == RoleType.User) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
 		}
 		if (p == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("No user sent!").build();
@@ -339,7 +357,7 @@ public class UserService {
 	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response editProfile(User p) throws JsonProcessingException {
-		System.out.println("izmena korisnika - provera na serverskoj strani");
+		System.out.println("izmena profila - provera na serverskoj strani");
 		//moze da se menja email, ime, prezime, sifra
 		User current = getCurrent();
 		ObjectMapper mapper = new ObjectMapper();
@@ -347,21 +365,26 @@ public class UserService {
 		if(current == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
+		if(current.getEmail() == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
 		if (p == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("No user sent!").build();
 		}
 		if (p.getRole() != RoleType.SuperAdmin) {
-			if(p.hasNull()) {
-				System.out.println("ima kao neki null");
-				return Response.status(Response.Status.BAD_REQUEST).entity("User has null fields!").build();
-			}	
+			if(!(p.getPassword() == null || p.getPassword().trim().length() == 0)) {
+				if(p.hasNullEdit()) {
+					System.out.println("ima kao neki null");
+					return Response.status(Response.Status.BAD_REQUEST).entity("User has null fields!").build();
+				}
+			}
 		} else {
 			// superadmin ima null za organizaciju
 			// dodala sam ti novu funkciju hasNullSuperAdmin()
 			// DAL IMA SMISLA DA SUPERADMIN MOZE DA SE PROMENI U DRUGI TIP
 			// ONDA APLIKACIJA VISE NEMA SUPER ADMINA STO JE USLOV
 			// MOZDA ZABRANITI TU PROMENU?
-			if (p.hasNullSuperAdmin()) {
+			if (p.hasNullSuperAdminEdit()) {
 				return Response.status(Response.Status.BAD_REQUEST).entity("User has null fields!").build();
 			}
 		}
@@ -393,11 +416,15 @@ public class UserService {
 			// menja email i novouneti email ne postoji
 			json = mapper.writeValueAsString(new User());
 			// da li i ovde treba da dodelis izmenjene vrednosti currentu?
+			us.removeUser(current);
 			current.setEmail(p.getEmail());
-			current.setPassword(p.getPassword());
+			if(p.getPassword()==null || p.getPassword().trim().length() != 0) {
+				current.setPassword(p.getPassword());
+			}
 			current.setName(p.getName());
 			current.setSurname(p.getSurname());
-			us.changeUser(current,p);
+			//us.changeUser(current,p);
+			us.getUsersMap().put(current.getEmail(), current);
 			ctx.setAttribute("curent", current);
 			ctx.setAttribute("users", us);
 			us.writeUsers(ctx.getRealPath(""));
@@ -406,7 +433,9 @@ public class UserService {
 		} else {
 			// ne menja email
 			// dodeljuje sve vrednosti sem email?
-			current.setPassword(p.getPassword());
+			if(p.getPassword()==null || p.getPassword().trim().length() != 0) {
+				current.setPassword(p.getPassword());
+			}
 			current.setName(p.getName());
 			current.setSurname(p.getSurname());
 			us.changeUser(current,p);
@@ -475,7 +504,7 @@ public class UserService {
 	private Users getUsers() {
 		System.out.println("getUsers()");
 		Users users = (Users) ctx.getAttribute("users");
-		if(users == null){
+		if(users == null) {
 			users = new Users(ctx.getRealPath(""));
 			if(users.getUsersMap().isEmpty()) {
 				User superAdmin = new User("super@admin.com", "superadmin", "Super", "Admin", null, RoleType.SuperAdmin);
@@ -493,43 +522,43 @@ public class UserService {
 			ctx.setAttribute("users",users);
 			users.print();
 		}
-		users.print();
 		return users;
 	}
 	
 	private Users getAdminUsers() {
 		Users users = (Users) ctx.getAttribute("users");
-		if(users == null){
+		if(users == null) {
+			users = new Users(ctx.getRealPath(""));
 			User current = getCurrent();
 			ctx.setAttribute("organisation", current.getOrganisation());
 			System.out.println("ADMIN ORGANIZACIJA"+ctx.getAttribute("organisation"));
-			users = new Users(ctx.getRealPath(""),current);
-			Organisations o = new Organisations();
-			o.getOrganisationsMap().put(current.getOrganisation().getName(), current.getOrganisation());
-			ctx.setAttribute("organiations", o);
+			Users retU = new Users();
 			for (User user : users.getUsersMap().values()) {
-				user.setOrganisation((Organisation)ctx.getAttribute("organisation"));
+				System.out.println(user);
+				if(user.getRole() != RoleType.SuperAdmin) {
+					System.out.println(user);
+					retU.getUsersMap().put(user.getEmail(), user);
+				}
 			}
-			request.getSession().setAttribute("current", current);
-			ctx.setAttribute("users",users);
 		}
+		
+		//request.getSession().setAttribute("current", current);
 		return users;
 	}
 	
 	private Users getCurrentUsers() {
-		Users users = (Users) ctx.getAttribute("users");
-		if(users == null){
-			User current = getCurrent();
-			Organisations o = new Organisations(ctx.getRealPath(""));
-			ctx.setAttribute("organisation", o.getOrganisationsMap().get(current.getOrganisation().getName()));
-			current.setOrganisation((Organisation)ctx.getAttribute("organisation"));
-			
-			users = new Users();
-			users.getUsersMap().put(current.getEmail(), current);
-			
-			request.getSession().setAttribute("current", current);
-			ctx.setAttribute("users",users);
-		}
+		//pogresno radi funkcija, sreca pa je nikad ne pozivamo
+		Users users = new Users();
+		User current = getCurrent();
+		Organisations o = new Organisations(ctx.getRealPath(""));
+		ctx.setAttribute("organisation", o.getOrganisationsMap().get(current.getOrganisation().getName()));
+		current.setOrganisation((Organisation)ctx.getAttribute("organisation"));
+		
+		users.getUsersMap().put(current.getEmail(), current);
+		
+		request.getSession().setAttribute("current", current);
+		ctx.setAttribute("users",users);
+		
 		return users;
 	}
 	

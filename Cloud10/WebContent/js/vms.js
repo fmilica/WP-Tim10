@@ -297,10 +297,13 @@ $(document).ready(function() {
 
 		if(!vmName) {
 			alert("Name is required")
+			$('#iName').focus()
+			$('#spanName').show()
 			e.preventDefault()
 		}
 		else {
 			// JSON objekat koji se salje
+			$('#spanName').hide()
 			vm = {
 				name : vmName,
 				category : {
@@ -365,10 +368,13 @@ $(document).ready(function() {
 
 		if(!vmName) {
 			alert("Name is required")
+			$('iName').focus()
+			$('#spanName').show()
 			e.preventDefault()
 		}
 		else {
 			// JSON objekat koji se salje
+			$('#spanName').hide()
 			vm = {
 				name : vmName,
 				organisation : vmOrganisation,

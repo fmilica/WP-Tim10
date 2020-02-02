@@ -51,6 +51,9 @@ public class DiscsService {
 		if(current == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
+		if(current.getEmail() == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
 		if (current.getRole() == RoleType.SuperAdmin) {
 			json = mapper.writeValueAsString(getDiscs().getDiscsMap().values());
 			return Response.ok(json).build();
@@ -77,6 +80,12 @@ public class DiscsService {
 		String json = "";
 		if(current == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getEmail() == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(organisation == null) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("No Organisation sent!").build();
 		}
 		if(organisation.getName() == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("No Organisation sent!").build();
@@ -105,8 +114,14 @@ public class DiscsService {
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
 		System.out.println(d);
-		if(current == null  || current.getRole() == RoleType.User) {
+		if(current == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getEmail() == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getRole() == RoleType.User) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
 		}
 		if(d == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("No Disc sent!").build();
@@ -162,8 +177,14 @@ public class DiscsService {
 		User current = (User) ctx.getAttribute("currentUser");
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
-		if(current == null || current.getRole() == RoleType.User) {
+		if(current == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getEmail() == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getRole() == RoleType.User) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
 		}
 		if(dw == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("No user sent!").build();
@@ -216,8 +237,14 @@ public class DiscsService {
 		User current = (User) ctx.getAttribute("currentUser");
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
-		if(current == null || current.getRole() != RoleType.SuperAdmin) {
+		if(current == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getEmail() == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getRole() != RoleType.SuperAdmin) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
 		}
 		if(d == null || d.getName() == null || d.getName().trim().length()==0) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("No disc sent!").build();

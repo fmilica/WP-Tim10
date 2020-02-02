@@ -175,6 +175,8 @@ $(document).ready(function() {
         }
 
         if (checkInput(e, dName, dCap)) {
+        	$('#spanName').hide()
+        	$('#spanCap').hide()
             $.ajax({
 				type : "POST",
 				url : rootURL + "/rest/discs/addDisc",
@@ -218,6 +220,8 @@ $(document).ready(function() {
         }
 
         if(checkInput(e, dName, dCap)) {
+        	$('#spanName').hide()
+        	$('#spanCap').hide()
             $.ajax({
                 type : "POST",
                 url : rootURL + "/rest/discs/editDisc",
@@ -285,18 +289,26 @@ $(document).ready(function() {
     function checkInput(e, dName, dCap) {
         if(!dName) {
             alert("Name is required!")
+            $('#iName').focus()
+            $('#spanName').show()
             e.preventDefault()
             return false
         } else if (!dCap) {
             alert("Capacity is required!")
+            $('#iCap').focus()
+            $('#spanCap').show()
             e.preventDefault()
             return false
         } else if (!$.isNumeric(dCap)) {
             alert("Capacity must be a number!")
+            $('#iCap').focus()
+            $('#spanCap').show()
             e.preventDefault()
             return false
         } else if (parseInt(dCap) <= 0) {
             alert("Capacity must be greater than 0!")
+            $('#iCap').focus()
+            $('#spanCap').show()
             e.preventDefault()
             return false
         }

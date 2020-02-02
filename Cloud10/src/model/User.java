@@ -62,8 +62,6 @@ public class User {
 		this.password = user.password;
 		this.name = user.name;
 		this.surname = user.surname;
-		this.organisation = user.organisation;
-		this.role = user.role;
 	}
 	
 	@Override
@@ -121,6 +119,58 @@ public class User {
 		return false;
 	}
 	
+	public boolean hasNullEdit() {
+		if(this.email == null || this.email.trim().length() == 0) {
+			return true;
+		}
+		else if(this.name == null || this.name.trim().length() == 0) {
+			return true;
+		}
+		else if(this.surname == null || this.surname.trim().length() == 0) {
+			return true;
+		}
+		else if(this.role == null) {
+			return true;
+		}
+		else if(this.organisation == null || this.organisation.getName() == null || this.organisation.getName().trim().length() == 0) {
+			return true;
+		}
+		else if(this.role == null) {
+			return true;
+		}
+		else if(this.role != RoleType.SuperAdmin) {
+			if(this.organisation.getName() == null || this.organisation.getName().trim().length() == 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean hasNullSuperAdminEdit() {
+		if(this.email == null || this.email.trim().length() == 0) {
+			return true;
+		}
+		else if(this.name == null || this.name.trim().length() == 0) {
+			return true;
+		}
+		else if(this.surname == null || this.surname.trim().length() == 0) {
+			return true;
+		}
+		else if(this.role == null) {
+			return true;
+		}
+		
+		else if(this.role == null) {
+			return true;
+		}
+		else if(this.role != RoleType.SuperAdmin) {
+			if(this.organisation.getName() == null || this.organisation.getName().trim().length() == 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public boolean hasNullSuperAdmin() {
 		if(this.email == null || this.email.trim().length() == 0) {
 			return true;
@@ -134,11 +184,13 @@ public class User {
 		else if(this.surname == null || this.surname.trim().length() == 0) {
 			return true;
 		}
-		else if(this.organisation.getName() == null || this.organisation.getName().trim().length() == 0) {
-			return true;
-		}
 		else if(this.role == null) {
 			return true;
+		}
+		else if(this.role != RoleType.SuperAdmin) {
+			if(this.organisation.getName() == null || this.organisation.getName().trim().length() == 0) {
+				return true;
+			}
 		}
 		return false;
 	}

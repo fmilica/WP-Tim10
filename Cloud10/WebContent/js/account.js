@@ -1,5 +1,5 @@
 var rootURL = "../Cloud10"
-
+var currentOrg = null;
 $(window).on('load', function(){
 	
     $.ajax({
@@ -25,6 +25,12 @@ function showUser(user){
 	$(document).find('input[name="add_repeat"]').val("")
 	$(document).find('input[name="add_name"]').val(user.name)
 	$(document).find('input[name="add_surn"]').val(user.surname)
+	if(user.role != "SuperAdmin"){
+		currentOrg = user.organisation.name
+	}
+	else{
+		currentOrg = ""
+	}
 	//disable za organisation
 	if(user.role != "SuperAdmin"){
 		if (user.role == "Admin") {
@@ -61,29 +67,50 @@ function saveChanges(){
 	if(!email || !name || !surn || !org || !type){
         alert("All of the input boxes must be filled!")
     }
-	else if(pass != repeat && pass && repeat){
-		$(document).find('input[name="add_pass"]').focus()
-		$(document).find('input[name="add_repeat"]').focus()
-		alert("Password and Repeated password are not the same!");
+	else if(pass && repeat){
+		$('#spanPass').hide()
+		$('#spanRepeat').hide()
+		if(pass != repeat){
+			$(document).find('input[name="add_pass"]').focus()
+			$('#spanPass').show()
+			$(document).find('input[name="add_repeat"]').focus()
+			$('#spanRepeat').show()
+			alert("Password and Repeated password are not the same!");
+		}
+	}
+	else{
+		$('#spanPass').show()
+		$('#spanRepeat').show()
 	}
 	
 	if(!email){
     	$(document).find('input[name="add_email"]').focus();
+    	$('spanEmail').show()
     }
-    else if(!name){
+	if(email){
+		$('spanEmail').hide()
+	}
+    if(!name){
     	$(document).find('input[name="add_name"]').focus();
+    	$('spanName').show()
     }
-    else if(!surn){
+    if(name){
+    	$('spanEmail').hide()
+    }
+    if(!surn){
     	$(document).find('input[name="add_surn"]').focus();
+    	$('spanSurn').show()
     }
-	
-	if(email && pass && name && surn && org && type){
+    if(surn){
+    	$('spanSurn').hide()
+    }
+	if(email && name && surn && org && type){
 		$.ajax({
             type : 'POST',
 		    url : rootURL + "/rest/users/editProfile",
 		    contentType : 'application/json',
 		    dataType : "json",
-		    data : formJSON(email, pass, name, surn, org, type),
+		    data : formJSON(email, pass, name, surn, currentOrg, type),
 		    success : function(data) {
 				window.location.href = "accountPage.html";
 		    },

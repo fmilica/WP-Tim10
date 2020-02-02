@@ -1,6 +1,7 @@
 var rootURL = "../Cloud10"
 
 var currentType = null
+var currentOrg = null
 var retVal = null
 //e.preventDefault();
 
@@ -11,16 +12,17 @@ var retVal = null
 $(window).on('load', function(){
     $.ajax({
 		type : 'GET',
-		url : rootURL + "/rest/users/getUserType",
+		url : rootURL + "/rest/users/checkCurrent",
 		dataType : "json",
 		success : function(data){
-            currentType = data;
+            currentType = data.role;
             if(currentType == "SuperAdmin"){
                 loadOrgs();
                 //zato sto inace nece u tabeli prikazati kolonu organisations kada se ucita prvi put
                 loadUsersToShow();
             }
             else if(currentType == "Admin"){
+            	currentOrg = data.organisation.name
 				$('.adminOnly').show()
             	loadUsersToShow();
             }
@@ -86,19 +88,33 @@ function showThem(data){
 	header.append(h + '</tr>');
 	
 	$.each(list, function(index,user){
-		if(user.role != "SuperAdmin"){
-            var tr = $('<tr id="'+index+'" class="edit"></tr>');
-            var row = '<td id="'+index+'">'+user.email+'</td>'+
-                        '<td id="'+index+'">'+user.name+'</td>'+
-                        '<td id="'+index+'">'+user.surname+'</td>';
-            
-            
-            if(currentType == "SuperAdmin"){
-                row += '<td id="'+index+'">'+user.organisation.name+'</td>'
-            }
-            tr.append(row)
-			table.append(tr);
+		if(currentType == "Admin"){
+			if(user.role != "SuperAdmin" && user.organisation.name == currentOrg){
+				var tr = $('<tr id="'+index+'" class="edit"></tr>');
+	            var row = '<td id="'+index+'">'+user.email+'</td>'+
+	                        '<td id="'+index+'">'+user.name+'</td>'+
+	                        '<td id="'+index+'">'+user.surname+'</td>';
+
+	            tr.append(row)
+				table.append(tr);
+			}
 		}
+		else{
+			if(user.role != "SuperAdmin"){
+				var tr = $('<tr id="'+index+'" class="edit"></tr>');
+	            var row = '<td id="'+index+'">'+user.email+'</td>'+
+	                        '<td id="'+index+'">'+user.name+'</td>'+
+	                        '<td id="'+index+'">'+user.surname+'</td>';
+	            
+	            
+	            if(currentType == "SuperAdmin"){
+	                row += '<td id="'+index+'">'+user.organisation.name+'</td>'
+	            }
+	            tr.append(row)
+				table.append(tr);
+			}
+		}
+		
 	});
 	
 	$('tr.edit').click(function(e){
@@ -144,6 +160,9 @@ function submitU(){
     if(currentType == "SuperAdmin"){
         org = $(document).find('select[name="selectAdd"]').val()
     }
+	if(currentType == "Admin"){
+		org = currentOrg
+	}
     var type = $(document).find('select[name="selectType"]').val()
     if(!email || !pass || !name || !surn || !org || !type){
         alert("All of the input boxes must be filled!")
@@ -152,14 +171,26 @@ function submitU(){
     if(!email){
     	$(document).find('input[name="add_email"]').focus();
     }
-    else if(!pass){
+    if(pass){
+    	$(document).find('#spanPass').hide()
+    }
+    if(!pass){
     	$(document).find('input[name="add_pass"]').focus();
+    	$(document).find('#spanPass').show()
     }
-    else if(!name){
+    if(name){
+    	$(document).find('#spanName').hide()
+    }
+    if(!name){
     	$(document).find('input[name="add_name"]').focus();
+    	$(document).find('#spanName').show()
     }
-    else if(!surn){
+    if(surn){
+    	$(document).find('#spanSurn').hide()
+    }
+    if(!surn){
     	$(document).find('input[name="add_surn"]').focus();
+    	$(document).find('#spanSurn').show()
     }
     
     if(email && pass && name && surn && org && type){
@@ -193,9 +224,13 @@ function deleteU(){
     }
     var type = $(document).find('select[name="selectType"]').val()
 	
+    if(email){
+    	$(document).find('#spanEmail').hide();
+    }
     if(!email){
     	alert("You need to enter user's email!")
-    	$(document).find('input[name="add_email"]').focus()
+    	$(document).find('input[name="add_email"]').focus();
+    	$(document).find('#spanEmail').show();
     }
     if(email){
 		$.ajax({
@@ -250,6 +285,11 @@ function showForm(){
     
     $(document).find('.editBtn').hide();
     $(document).find('.addBtn').show();
+    
+	$(document).find('#spanEmail').hide();
+	$(document).find('#spanPass').hide()
+	$(document).find('#spanName').hide()
+	$(document).find('#spanSurn').hide()
 }
 
 function add(){
@@ -266,18 +306,33 @@ function add(){
     if(!email || !pass || !name || !surn || !org || !type){
         alert("All of the input boxes must be filled!")
     }
-    
+    if(email){
+    	$(document).find('#spanEmail').hide();
+    }
     if(!email){
     	$(document).find('input[name="add_email"]').focus();
+    	$(document).find('#spanEmail').show();
     }
-    else if(!pass){
+    if(pass){
+    	$(document).find('#spanPass').hide()
+    }
+    if(!pass){
     	$(document).find('input[name="add_pass"]').focus();
+    	$(document).find('#spanPass').show()
     }
-    else if(!name){
+    if(name){
+    	$(document).find('#spanName').hide()
+    }
+    if(!name){
     	$(document).find('input[name="add_name"]').focus();
+    	$(document).find('#spanName').show()
     }
-    else if(!surn){
+    if(surn){
+    	$(document).find('#spanSurn').hide()
+    }
+    if(!surn){
     	$(document).find('input[name="add_surn"]').focus();
+    	$(document).find('#spanSurn').show()
     }
     
     if(email && pass && name && surn && org && type){

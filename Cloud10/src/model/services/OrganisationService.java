@@ -48,8 +48,14 @@ public class OrganisationService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getOrganisations() throws JsonIOException, JsonSyntaxException, FileNotFoundException, JsonProcessingException {
 		User current = (User)ctx.getAttribute("currentUser");
-		if(current.getEmail() == null || current.getRole() != RoleType.SuperAdmin) {
+		if(current == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getEmail() == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getRole() != RoleType.SuperAdmin) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
 		}
 		Organisations orgs = (Organisations) ctx.getAttribute("organisations");
 		ObjectMapper mapper = new ObjectMapper();
@@ -62,8 +68,14 @@ public class OrganisationService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getOrganisation() throws JsonIOException, JsonSyntaxException, FileNotFoundException, JsonProcessingException {
 		User current = (User)ctx.getAttribute("currentUser");
-		if(current.getEmail() == null || current.getRole() != RoleType.Admin) {
+		if(current == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getEmail() == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getRole() != RoleType.Admin) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
 		}
 		Organisations o = getOrgs();
 		ObjectMapper mapper = new ObjectMapper();
@@ -77,6 +89,9 @@ public class OrganisationService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getFreeDiscs(Organisation o) throws JsonProcessingException {
 		User current = (User) ctx.getAttribute("currentUser");
+		if(current == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
 		if(current.getEmail() == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
@@ -121,8 +136,14 @@ public class OrganisationService {
 		User current = (User) ctx.getAttribute("currentUser");
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
-		if(current.getEmail() == null || current.getRole() != RoleType.SuperAdmin) {
+		if(current == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getEmail() == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getRole() != RoleType.SuperAdmin) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
 		}
 		if(o == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("No organisation sent!").build();
@@ -153,9 +174,17 @@ public class OrganisationService {
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
 		User current = (User)ctx.getAttribute("currentUser");
-		if(current.getEmail() == null || current.getRole() == RoleType.User) {
+		if(current == null) {
 			System.out.println("nema pristup");
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getEmail() == null) {
+			System.out.println("nema pristup");
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if(current.getRole() == RoleType.User) {
+			System.out.println("nema pristup");
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
 		}
 		if(o == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("No user sent!").build();
@@ -200,6 +229,9 @@ public class OrganisationService {
 		User current = (User)ctx.getAttribute("currentUser");
 		// pristup //
 		if (current == null) {
+			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
+		}
+		if (current.getEmail() == null) {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied! No logged in user!").build();
 		}
 		if (current.getRole() != RoleType.Admin) {

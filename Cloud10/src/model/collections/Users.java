@@ -49,10 +49,12 @@ public class Users {
 			e.printStackTrace();
 		}
 		for (User user : us.values()) {
+			System.out.println(user);
 			if(user.getOrganisation().getName().equals(u.getOrganisation().getName())) {
 				users.put(user.getEmail(), user);
 			}
 		}
+		this.print();
 		this.usersMap = users;
 	}
 
@@ -110,7 +112,15 @@ public class Users {
 	public void changeUser(User current, User modified) {
 		for (User u : usersMap.values()) {
 			if(u.getEmail().equals(current.getEmail())) {
-				u = new User(modified);
+				if(modified.getPassword() == null || modified.getPassword().trim().length() == 0) {
+					u.setEmail(modified.getEmail());
+					u.setName(modified.getName());
+					u.setSurname(modified.getSurname());
+					break;
+				}
+				else {
+					u = new User(modified);
+				}
 			}
 		}
 	}
