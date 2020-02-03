@@ -204,6 +204,10 @@
     display: block;
 }
 
+#filterCard {
+    display : none;
+}
+
 label {
     margin-top: 0.5rem;
 }

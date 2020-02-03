@@ -27,6 +27,7 @@ import model.collections.Organisations;
 import model.collections.VirtualMachines;
 import model.enums.RoleType;
 import model.wrappers.ActivityHelper;
+import model.wrappers.Params;
 import model.wrappers.VirtualMachineActivities;
 import model.wrappers.VirtualMachineWrapper;
 
@@ -220,18 +221,26 @@ public class VirtualMachineService {
 		// za sve diskove stare koje nije oznacio, namesti kod diska da je slobodan
 		Collection<String> oldChosenDiscs = vmw.getDiscs();
 		if (oldChosenDiscs != null) {
-			for (String old : oldVm.getDiscs()) {
-				// iterira kroz stare diskove
-				Discs discs = (Discs) ctx.getAttribute("discs");
-				if (oldChosenDiscs == null) {
+			Discs discs = (Discs) ctx.getAttribute("discs");
+			if (oldVm.getDiscs() != null) {
+				for (String old : oldVm.getDiscs()) {
+					// iterira kroz stare diskove
+					if (!oldChosenDiscs.contains(old)) {
+						// nije odabrao neki od starih diskova
+						// oslobadjamo ga
+						discs.getDiscsMap().get(old).setVm(null);
+					}
+				}	
+			}
+		} else {
+			Discs discs = (Discs) ctx.getAttribute("discs");
+			// prethodno je imao diskove
+			if (oldVm.getDiscs() != null) {
+				for (String old : oldVm.getDiscs()) {
 					// nije odabrao nijedan stari
 					// oslobadjamo ih sve
 					discs.getDiscsMap().get(old).setVm(null);
-				} else if (!oldChosenDiscs.contains(old)) {
-					// nije odabrao neki od starih diskova
-					// oslobadjamo ga
-					discs.getDiscsMap().get(old).setVm(null);
-				}
+				}	
 			}
 		}
 		if (vmw.getNewDiscs() != null) {
@@ -246,22 +255,31 @@ public class VirtualMachineService {
 		// DODAJEMO UNIJU OBE LISTE
 		oldVm.setDiscs(vmw.getDiscs());
 		// oldVm.setActivities(vmw.getActivities());
-		Activity last = oldVm.getActivities().get(oldVm.getActivities().size() - 1);
-		Date d = new Date();
-		if (last.getOff() == null) {
-			// bila je upaljena
-			if (!vmw.isStatus()) {
-				// poslao je da zeli da je ugasi
-				last.setOffTime(d);
+		if (oldVm.getActivities() != null && !oldVm.getActivities().isEmpty()) {
+			Activity last = oldVm.getActivities().get(oldVm.getActivities().size() - 1);
+			Date d = new Date();
+			if (last.getOff() == null) {
+				// bila je upaljena
+				if (!vmw.isStatus()) {
+					// poslao je da zeli da je ugasi
+					last.setOffTime(d);
+				}
+			} else {
+				// bila je ugasena
+				if (vmw.isStatus()) {
+					// poslao je da zeli da je upali
+					Activity a = new Activity(d);
+					oldVm.getActivities().add(a);
+				}
 			}
 		} else {
-			// bila je ugasena
-			if (vmw.isStatus()) {
-				// poslao je da zeli da je upali
-				Activity a = new Activity(d);
-				oldVm.getActivities().add(a);
-			}
+			// nije imao nijednu aktivnost
+			oldVm.setActivities(new ArrayList<Activity>());
+			Date d = new Date();
+			Activity a = new Activity(d);
+			oldVm.getActivities().add(a);
 		}
+		
 		vms.addVM(oldVm);
 		vms.writeVMs(ctx.getRealPath(""));
 		json = mapper.writeValueAsString(vmw);
@@ -407,5 +425,76 @@ public class VirtualMachineService {
 		// kreirali smo sve aktivnosti
 		oldVm.setActivities(newActivities);
 		return Response.ok().build();
+	}
+	
+	@POST
+	@Path("/filterVMs")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response filterVMs(Params params) throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		String filtred = "";
+		
+		Integer coresLow = lowLimit(params.getCoresLow());
+		Integer coresHigh = highLimit(params.getCoresHigh());
+		Integer ramLow = lowLimit(params.getRamLow());
+		Integer ramHigh = highLimit(params.getRamHigh());
+		Integer gpuLow = lowLimit(params.getGpuLow());
+		Integer gpuHigh = highLimit(params.getGpuHigh());
+
+		// ako je bilo slova, parser vraca null
+		// vracamo gresku
+		if (coresLow == null || coresHigh == null || 
+				ramLow == null || ramHigh == null ||
+				gpuLow == null || gpuHigh == null) {
+			return Response.status(Response.Status.BAD_REQUEST).build();
+		}
+		ArrayList<VirtualMachine> filtredVMs = new ArrayList<VirtualMachine>();
+		VirtualMachines vms = (VirtualMachines)ctx.getAttribute("vms");
+		for (VirtualMachine vm : vms.getVirtualMachinesMap().values()) {
+			if (vm.getName().contains(params.getSearchBy()) &&
+					vm.getCoreNum() > coresLow && vm.getCoreNum() < coresHigh &&
+					vm.getRAM() > ramLow && vm.getRAM() < ramHigh &&
+					vm.getGPU() > gpuLow && vm.getGPU() < gpuHigh) {
+				filtredVMs.add(vm);
+			}
+		}
+		
+		filtred = mapper.writeValueAsString(filtredVMs);
+		return Response.ok(filtred).build();
+	}
+	
+	private static Integer lowLimit(String low) {
+		if (low.equals("")) {
+			return Integer.MIN_VALUE;
+		} else {
+			if (isNumeric(low)) {
+				return Integer.parseInt(low);
+			}
+		}
+		return null;
+	}
+
+	private static Integer highLimit(String high) {
+		if (high.equals("")) {
+			return Integer.MAX_VALUE;
+		} else {
+			if (isNumeric(high)) {
+				return Integer.parseInt(high);
+			}
+		}
+		return null;
+	}
+
+	private static boolean isNumeric(String strNum) {
+		if (strNum == null) {
+			return false;
+		}
+		try {
+			int i = Integer.parseInt(strNum);
+			return true;
+		} catch (NumberFormatException nfe) {
+			return false;
+		}
 	}
 }

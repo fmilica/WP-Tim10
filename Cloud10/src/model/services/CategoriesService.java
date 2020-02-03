@@ -124,7 +124,6 @@ public class CategoriesService {
 		Categories cats = getCategories();
 		
 		//ako mu staro ime ne postoji u kategorijama
-		// zasto je ovo dobro?
 		if(!cats.getCategoriesMap().containsKey(cw.getOldName())) {
 			System.out.println("izmena nepostojeceg");
 			return Response.status(Response.Status.BAD_REQUEST).entity("Can't edit category that doesn't exist!").build();
@@ -135,8 +134,10 @@ public class CategoriesService {
 			cats.change(cw);
 			// ne moras da vracas kategoriju, samo reload stranicu i bice u tabeli
 			//json = mapper.writeValueAsString(new Category());
-			return Response.status(Response.Status.BAD_REQUEST).entity("New category name already exists!").build();
+			// nije bad request!
+			return Response.ok().build();
 		}
+		
 		cats.change(cw);
 		ctx.setAttribute("categories", cats);
 		cats.writeCategories(ctx.getRealPath(""));
@@ -173,7 +174,7 @@ public class CategoriesService {
 		//ako mu je neki atribut null
 		if(c.hasNull()) {
 			System.out.println("ima kao neki null");
-			return Response.status(Response.Status.BAD_REQUEST).entity("User has null fields!").build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("Category has null fields!").build();
 		}
 		
 		VirtualMachines vms = (VirtualMachines) ctx.getAttribute("vms");

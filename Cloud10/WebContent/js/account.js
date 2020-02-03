@@ -63,7 +63,9 @@ function saveChanges(){
     var surn = $(document).find('input[name="add_surn"]').val()
     //nebitni su mi
 	var org = "adminorg"
-    var type = $(document).find('select[name="selectType"]').val()
+	var type = $(document).find('select[name="selectType"]').val()
+	var odg = null
+
 	if(!email || !name || !surn || !org || !type){
         alert("All of the input boxes must be filled!")
     }
@@ -76,6 +78,8 @@ function saveChanges(){
 			$(document).find('input[name="add_repeat"]').focus()
 			$('#spanRepeat').show()
 			alert("Password and Repeated password are not the same!");
+		} else {
+			odg = "ok"
 		}
 	}
 	else{
@@ -104,7 +108,7 @@ function saveChanges(){
     if(surn){
     	$('spanSurn').hide()
     }
-	if(email && name && surn && org && type){
+	if(email && name && surn && org && type && odg=="ok"){
 		$.ajax({
             type : 'POST',
 		    url : rootURL + "/rest/users/editProfile",

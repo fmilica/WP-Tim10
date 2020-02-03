@@ -62,9 +62,11 @@ public class OrganisationWrapper {
 		else if(this.name == null || this.name.trim().length() == 0) {
 			return true;
 		}
+		// nije obavezan opis
+		/*
 		else if(this.description == null || this.description.trim().length() == 0) {
 			return true;
-		}
+		}*/
 		//logo moze da bude null a liste su naravno prazne
 		return false;
 	}

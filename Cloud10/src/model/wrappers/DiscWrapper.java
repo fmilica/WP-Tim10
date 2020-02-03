@@ -82,9 +82,12 @@ public class DiscWrapper {
 		else if(this.capacity <= 0) {
 			return true;
 		}
+		// moze da ne odabere vm
+		/*
 		else if(this.vm == null || this.vm.trim().length() == 0) {
 			return true;
 		}
+		*/
 		return false;
 	}
 }

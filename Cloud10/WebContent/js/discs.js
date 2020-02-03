@@ -251,10 +251,12 @@ $(document).ready(function() {
     // AKO POSTOJI VM ZA KOJI JE ZAKACEN -> VM GUBI VEZU SA NJIM
     $('#submitDelete').click(function(e) {
         var name = $('#iName').val()
+        var organisation = $('#iOrgan').val()
 
         var disc = {
             name : name,
-            vm : currentVm
+            vm : currentVm,
+            organisation : organisation
         }
         $.ajax({
             type : "POST",

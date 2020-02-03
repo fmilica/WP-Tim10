@@ -47,7 +47,38 @@ public class Categories {
 		categoriesMap.put(cat.getName(), cat);
 	}
 	
+	// mozda je bolje raditi u servisnoj klasi
 	public void change(CategoryWrapper cw) {
+		if (!cw.getOldName().equals(cw.getName())) {
+			// promeni ime
+			// brisemo sa starim imenom iz mape
+			if (categoriesMap.containsKey(cw.getOldName())) {
+				Category c = categoriesMap.get(cw.getOldName());
+				categoriesMap.remove(cw.getOldName());
+				c.setCoreNum(cw.getCoreNum());
+				c.setGPU(cw.getGpu());
+				c.setRAM(cw.getRam());
+				c.setName(cw.getName());
+				categoriesMap.put(cw.getName(), c);
+			}/*
+			else {
+				trebalo bi vratiti error tip 400, bad request, mora postojati staro ime
+			}*/
+		}
+		// isto je staro i novo ime
+		// menjamo vrednosti
+		// ako postoji u mapi
+		if (categoriesMap.containsKey(cw.getName())) {
+			Category c = categoriesMap.get(cw.getName());
+			c.setCoreNum(cw.getCoreNum());
+			c.setGPU(cw.getGpu());
+			c.setRAM(cw.getRam());
+		}
+		/*
+		else {
+			isti error kao gore
+		}*/
+		/*
 		for (Category cat : categoriesMap.values()) {
 			if(cat.getName().equals(cw.getOldName())) {
 				cat.setName(cw.getName());
@@ -55,7 +86,7 @@ public class Categories {
 				cat.setRAM(cw.getRam());
 				cat.setGPU(cw.getGpu());
 			}
-		}
+		}*/
 	}
 	
 	public void remove(Category c) {

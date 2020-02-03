@@ -7,6 +7,7 @@ var change = false
 var currentVM
 
 window.onload = function() {
+
 	// dobavljanje kateogrija
 	$.ajax({
 		type : "GET",
@@ -61,7 +62,6 @@ function fillContentTable(allVms) {
 	var list = allVms == null ? [] : (allVms instanceof Array ? allVms : [allVms])
 
 	var table = $(document).find('#content')
-
 	var header = $(document).find('#content thead')
 	header.append('<th>' + "Name" + '</th>' + 
 				  '<th>' + "Category" + '</th>' + 
@@ -286,6 +286,58 @@ $(document).ready(function() {
 		})
 	})
 
+	// otvaranje kartice za filtriranje
+	$('#showFilter').click(function(e) {
+		e.preventDefault()
+		$('#filterCard').show()
+	})
+
+	// zatvaranje kartice za filtriranje
+	$('#collapse').click(function(e) {
+		e.preventDefault()
+		$('#filterCard').hide()
+	})
+
+	// dobavljanje vrednosti filtriranja
+	$('#filter').click(function(e) {
+		var searchBy = $('#search').val()
+		var coresLow = $('#coresLow').val()
+		var coresHigh = $('#coresHigh').val()
+		var ramLow = $('#ramLow').val()
+		var ramHigh = $('#ramHigh').val()
+		var gpuLow = $('#gpuLow').val()
+		var gpuHigh = $('#gpuHigh').val()
+
+		if (!checkNumeric(coresLow, coresHigh, ramLow, ramHigh, gpuLow, gpuHigh)) {
+			alert("All filter values must be a numbers!")
+			e.preventDefault()
+		} else {
+			var params = {
+				searchBy : searchBy,
+				coresLow : coresLow,
+				coresHigh : coresHigh,
+				ramLow : ramLow,
+				ramHigh : ramHigh,
+				gpuLow : gpuLow,
+				gpuHigh : gpuHigh
+			}
+			$.ajax({
+				type : "POST",
+				url : rootURL + "/rest/vms/filterVMs",
+				contentType : "application/json",
+				data : JSON.stringify(params),
+				success : function(data) {
+					$('#content thead').empty()
+					$('#content tbody').empty()
+					fillContentTable(data)
+				},
+				error : function(response) {
+					alert(response.responseText)
+				}
+			})
+		}
+	})
+
 	// dobavljanje unetih vrednosti sa forme
 	$('#submitAdd').click(function(e) {
 		var vmName = $('#iName').val()
@@ -325,15 +377,7 @@ $(document).ready(function() {
 				contentType : "application/json",
 				dataType : "json",
 				data : JSON.stringify(vm),
-				success : function(response){
-					if(response == undefined) {
-						alert("Virtual Machine with specified name already exists!")
-						showForm()
-					}
-					else {
-						window.location.href="mainPage.html"
-					}
-				},
+				success : window.location.href="mainPage.html",
 				error : function(response) {
 					alert(response.responseText);
 					if (response.responseText.includes("No logged in user!")) {
@@ -546,4 +590,21 @@ function addCatOptions(allCats) {
 	})
 	// da bi se namestile stavke kategorije u polja
 	$('#iCat').trigger("change")
+}
+
+function checkNumeric(coresLow, coresHigh, ramLow, ramHigh, gpuLow, gpuHigh) {
+	if(coresLow != "" && !$.isNumeric(coresLow)) {
+		return false
+	} else if (coresHigh != "" && !$.isNumeric(coresHigh)) {
+		return false
+	} else if (ramLow != "" && !$.isNumeric(ramLow)) {
+		return false
+	} else if (ramHigh != "" && !$.isNumeric(ramHigh)) {
+		return false
+	} else if (gpuLow != "" && !$.isNumeric(gpuLow)) {
+		return false
+	} else if (gpuHigh != "" && !$.isNumeric(gpuHigh)) {
+		return false
+	}
+	return true;
 }

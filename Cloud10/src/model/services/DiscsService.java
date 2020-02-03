@@ -210,7 +210,8 @@ public class DiscsService {
 		oldDisc.setName(dw.getNewName());
 		oldDisc.setCapacity(dw.getCapacity());
 		oldDisc.setType(dw.getType());
-		if (dw.getVm() != null && !dw.getVm().equals("")) {
+		System.out.println(dw.getVm());
+		if (dw.getVm() != null && dw.getVm().trim().length() != 0) {
 			VirtualMachines vms = (VirtualMachines)ctx.getAttribute("vms");
 			// da li postoji vm koja je prosledjena
 			if (vms.getVirtualMachinesMap().containsKey(dw.getVm())) {
@@ -221,6 +222,18 @@ public class DiscsService {
 				vms.writeVMs(ctx.getRealPath(""));
 			} else {
 				return Response.status(Response.Status.BAD_REQUEST).entity("VM with specified name doesn't exist!").build();
+			}
+		} else {
+			// nije odabrao vm
+			// mozda je bio zakacen za neku, a sada vise nece
+			oldDisc.setVm(null);
+			VirtualMachines vms = (VirtualMachines)ctx.getAttribute("vms");
+			// da li se nalazi u nekoj vm
+			for (VirtualMachine vm : vms.getVirtualMachinesMap().values()) {
+				if (vm.getDiscs().contains(dw.getOldName())) {
+					// brisemo ga iz njenih resursa
+					vm.getDiscs().remove(dw.getOldName());
+				}
 			}
 		}
 		discs.addDisc(oldDisc);
@@ -282,7 +295,7 @@ public class DiscsService {
 			json = mapper.writeValueAsString(d);
 			return Response.ok(json).build();
 		}
-		return Response.status(Response.Status.BAD_REQUEST).entity("Disc with specified name already exists!").build();
+		return Response.status(Response.Status.BAD_REQUEST).entity("Disc with specified name doesn't exists!").build();
 	}
 	
 	private Discs getDiscs() {

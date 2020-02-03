@@ -96,7 +96,7 @@
             <li class="nav-item has-treeview adminOnly">
               <a href="billPage.html" class="nav-link">
                 <i class="iconBill"></i>
-                  Monthly Bill
+                Monthly Bill
               </a>
             </li>
           </ul>
@@ -142,11 +142,54 @@
                   </table>
                 </div>
                 <div class="card-footer">
-                  <input type="button" class="btn btn-primary btn-vm admin" id="addNew" value="Add VM">
+                  <div class="row-btns">
+                    <input type="button" class="btn btn-primary btn-vm admin" id="addNew" value="Add VM">
+                    <input type="button" class="btn btn-primary btn-vm float-right" id="showFilter" value="Filter VMs">
+                  </div>
                 </div>
                 <!-- /.card-footer-->
               </div>
               <!-- /.card -->
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6" id="filterCard">
+              <div class="card">
+                <div class="card-header vm">
+                  <h3 id="filterForm" class="card-title">Search and filter by:</h3>
+                </div>
+                <div class="card-body">
+                  <label>Search by:</label>
+                  <input type="text" class="form-control" id="search" placeholder="Search...">
+                  <label>Number of Cores:</label>
+                  <div class="row-btns">
+                    <input type="text" id="coresLow">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    -
+                    <input type="text" class="float-right" id="coresHigh">
+                  </div>
+                  <label>RAM Capacity:</label>
+                  <div class="row-btns">
+                    <input type="text" id="ramLow">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    -
+                    <input type="text" class="float-right" id="ramHigh">
+                  </div>
+                  <label>Number of GPU Cores:</label>
+                  <div class="row-btns">
+                    <input type="text" id="gpuLow">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    -
+                    <input type="text" class="float-right" id="gpuHigh">
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <div class="row-btns">
+                    <input id="filter" type="button" class="btn btn-primary btn-vm" value="Filter">
+                    <input id="collapse" type="button" class="btn btn-primary btn-vm float-right" value="Collapse">
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="row">
@@ -178,7 +221,8 @@
                           <tbody>
                           </tbody>
                         </table>
-                        <input id="editActives" type="button" class="btn btn-primary btn-actives superAdmin" value="Edit Activities">
+                        <input id="editActives" type="button" class="btn btn-primary btn-actives superAdmin"
+                          value="Edit Activities">
                       </div>
                       <label id="lCat">Category</label>
                       <select id="iCat" class="form-control">
@@ -202,11 +246,12 @@
                   <div class="card-footer">
                     <div>
                       <input id="submitAdd" type="button" class="btn btn-primary btn-vm admin" value="Add VM">
-                      <input id="submitChange" type="button" class="btn btn-primary btn-vm admin" value="Save changes">  
+                      <input id="submitChange" type="button" class="btn btn-primary btn-vm admin" value="Save changes">
                     </div>
                     <div class="row-btns">
                       <input id="submitDelete" type="button" class="btn btn-primary btn-vm admin" value="Delete VM">
-                      <input id="submitAbort" type="button" class="btn btn-primary btn-vm float-right user" value="Abort changes">
+                      <input id="submitAbort" type="button" class="btn btn-primary btn-vm float-right user"
+                        value="Abort changes">
                     </div>
                   </div>
                 </form>
@@ -235,8 +280,10 @@
                 </div>
                 <div class="card-footer">
                   <div class="row-btns">
-                    <input id="submitEditActives" type="button" class="btn btn-primary btn-vm superAdmin" value="Save Changes">
-                    <input id="submitAbortActives" type="button" class="btn btn-primary btn-vm float-right superAdmin" value="Discard changes">
+                    <input id="submitEditActives" type="button" class="btn btn-primary btn-vm superAdmin"
+                      value="Save Changes">
+                    <input id="submitAbortActives" type="button" class="btn btn-primary btn-vm float-right superAdmin"
+                      value="Discard changes">
                   </div>
                 </div>
               </div>

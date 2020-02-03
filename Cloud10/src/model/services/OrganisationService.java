@@ -187,11 +187,11 @@ public class OrganisationService {
 			return Response.status(Response.Status.FORBIDDEN).entity("Access denied!").build();
 		}
 		if(o == null) {
-			return Response.status(Response.Status.BAD_REQUEST).entity("No user sent!").build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("No organisation sent!").build();
 		}
 		if(o.hasNull()) {
 			System.out.println("ima kao neki null");
-			return Response.status(Response.Status.BAD_REQUEST).entity("User has null fields!").build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("Organisation has null fields!").build();
 		}
 		Organisations orgs = new Organisations();
 		if(current.getRole() == RoleType.SuperAdmin) {
@@ -211,10 +211,14 @@ public class OrganisationService {
 		}
 		System.out.println(o.getLogo());
 		Organisation org = orgs.getOrganisationsMap().get(o.getOldName());
+		// izbacujemo iz organizacija onu sa starim imenom
+		orgs.getOrganisationsMap().remove(o.getOldName());
 		System.out.println(org);
 		org.setName(o.getName());
 		org.setDescription(o.getDescription());
 		org.setLogo(o.getLogo());
+		// ubacujemo ovu sa novim imenom
+		orgs.getOrganisationsMap().put(org.getName(), org);
 		ctx.setAttribute("organisations", orgs);
 		orgs.writeOrganisations(ctx.getRealPath(""));
 		json = mapper.writeValueAsString(org);
