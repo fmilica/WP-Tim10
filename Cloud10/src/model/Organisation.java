@@ -58,7 +58,7 @@ public class Organisation {
 			while(st.hasMoreTokens()) {
 				file = st.nextToken();
 			}
-			String path = "images/png/";
+			String path = "images" + sep ;
 			st = new StringTokenizer(file, ".");
 			String name = st.nextToken();
 			String ext = st.nextToken();

@@ -490,7 +490,7 @@ public class VirtualMachineService {
 			return false;
 		}
 		try {
-			int i = Integer.parseInt(strNum);
+			Integer.parseInt(strNum);
 			return true;
 		} catch (NumberFormatException nfe) {
 			return false;

@@ -217,6 +217,17 @@ public class OrganisationService {
 		org.setName(o.getName());
 		org.setDescription(o.getDescription());
 		org.setLogo(o.getLogo());
+		VirtualMachines vms = (VirtualMachines)ctx.getAttribute("vms");
+		Discs discs = (Discs)ctx.getAttribute("discs");
+		for (String resource : org.getResources()) {
+			if (vms.getVirtualMachinesMap().containsKey(resource)) {
+				VirtualMachine vm = vms.getVirtualMachinesMap().get(resource);
+				vm.setOrganisation(org.getName());	
+			} else {
+				Disc d = discs.getDiscsMap().get(resource);
+				d.setOrganisation(org.getName());
+			}
+		}
 		// ubacujemo ovu sa novim imenom
 		orgs.getOrganisationsMap().put(org.getName(), org);
 		ctx.setAttribute("organisations", orgs);

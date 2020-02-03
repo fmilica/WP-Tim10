@@ -378,7 +378,8 @@ $(document).ready(function() {
 				contentType : "application/json",
 				dataType : "json",
 				data : JSON.stringify(vm),
-				success : window.location.href="mainPage.html",
+				success : function(response) {
+					window.location.href="mainPage.html"},
 				error : function(response) {
 					alert(response.responseText);
 					if (response.responseText.includes("No logged in user!")) {

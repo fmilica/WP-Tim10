@@ -121,7 +121,7 @@ function editOrg(org){
 function addO(){
 	var name = $(document).find('input[name="add_name"]').val()
     var desc = $(document).find('input[name="add_desc"]').val()
-    var logo = $(document).find('input[name="add_logo"]').val()
+    var logo = $(document).find('.imgUpload').val()
 	
 	if(!name){
 		$(document).find('input[name="add_name"]').focus()
