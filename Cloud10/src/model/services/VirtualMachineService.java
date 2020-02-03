@@ -132,8 +132,7 @@ public class VirtualMachineService {
 		VirtualMachines vms = getVMs();
 		// jedinstvenost imena
 		if (!vms.vmNameFree(vm.getName())) {
-			return Response.status(Response.Status.BAD_REQUEST).entity("VM with specified name already exists!")
-					.build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("VM with specified name already exists!").build();
 		}
 		Organisations orgs = (Organisations) ctx.getAttribute("organisations");
 		if (!orgs.getOrganisationsMap().containsKey(vm.getOrganisation())) {

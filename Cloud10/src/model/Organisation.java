@@ -95,10 +95,7 @@ public class Organisation {
 		if(this.name == null || this.name.trim().length() == 0) {
 			return true;
 		}
-		else if(this.description == null || this.description.trim().length() == 0) {
-			return true;
-		}
-		//logo moze da bude null ili prazan kao i liste
+		//logo moze da bude null ili prazan kao i liste i opis
 		return false;
 	}
 }

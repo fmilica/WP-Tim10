@@ -48,6 +48,10 @@ $(document).on('submit', function(e) {
 	console.log(email);
 	console.log(password);
 	
+	if(!email){// ovog
+		$(this).find('#displayError1').html('Field must be filled!');
+	}
+	
 	//nesto@nesto.nesto
 	var odg = null
 	var prvi = ""
@@ -71,18 +75,15 @@ $(document).on('submit', function(e) {
 	}
 	
 	if(odg == null){
-		//ovaj if treba da se stavi umesto ovog dole
+		$(this).find('#displayError1').html('Email must be aaa@bbb.ccc');
 	}
 	
-	if(!email){// ovog
-		$(this).find('#displayError1').html('Field must be filled!');
-	}
 	if(!password){
 		$(this).find('#displayError2').html('Field must be filled!');
 
 	}
 	// (odg && password)
-	if(email && password){
+	if(email && odg && password){
 		$.ajax({
 			type : 'POST',
 			url : rootURL + "/rest/users/login",

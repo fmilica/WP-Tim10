@@ -263,6 +263,11 @@ function discardU(){
 	$(document).find('.addForm').hide();
     $(document).find('.addBtn').hide();
     $(document).find('.editBtn').hide();
+    $(document).find('#spanEmail').hide();
+    $(document).find('#spanPass').hide();
+    $(document).find('#spanName').hide();
+    $(document).find('#spanSurn').hide();
+    $('#spanStar').hide();
 }
 
 function showForm(){
@@ -286,7 +291,7 @@ function showForm(){
     $(document).find('.editBtn').hide();
     $(document).find('.addBtn').show();
     
-	$(document).find('#spanEmail').hide();
+	$(document).find('#spanEmail').hide()
 	$(document).find('#spanPass').hide()
 	$(document).find('#spanName').hide()
 	$(document).find('#spanSurn').hide()
@@ -301,14 +306,44 @@ function add(){
     if(currentType == "SuperAdmin"){
         org = $(document).find('select[name="selectAdd"]').val()
     }
+    else if(currentType == "Admin"){
+    	org = currentOrg
+    }
     var type = $(document).find('select[name="selectType"]').val()
     
     if(!email || !pass || !name || !surn || !org || !type){
         alert("All of the input boxes must be filled!")
     }
-    if(email){
-    	$(document).find('#spanEmail').hide();
-    }
+    
+    //nesto@nesto.nesto
+	var odgEmail = null
+	var prvi = ""
+	let drugi = ""
+	let arr2 = ""
+	if(email){
+		$('spanEmail').hide()
+		$('#spanStar').hide();
+		prvi = email.split("@")
+		if(prvi.length == 2){
+			drugi = prvi.pop() //uzima poslednjeg dodatog
+			arr2 = drugi.split(".")
+			if(arr2.length >= 2){
+				odgEmail = "ok";
+			}
+			else{
+				odgEmail = null;
+			}
+		}
+		else{
+			odgEmail = null;
+		}
+	}
+	
+	if(odgEmail == null){
+		$('#spanEmail').html('Email must be aaa@bbb.ccc');
+		$('#spanEmail').show()
+		$('#spanStar').show();
+	}
     if(!email){
     	$(document).find('input[name="add_email"]').focus();
     	$(document).find('#spanEmail').show();
@@ -335,7 +370,7 @@ function add(){
     	$(document).find('#spanSurn').show()
     }
     
-    if(email && pass && name && surn && org && type){
+    if(email && odgEmail && pass && name && surn && org && type){
         $.ajax({
             type : 'POST',
 		    url : rootURL + "/rest/users/addUser",

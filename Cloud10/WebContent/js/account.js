@@ -82,6 +82,10 @@ function saveChanges(){
 			odg = "ok"
 		}
 	}
+	else if(!pass && !repeat){
+		$('#spanPass').hide()
+		$('#spanRepeat').hide()
+	}
 	else{
 		$('#spanPass').show()
 		$('#spanRepeat').show()
@@ -89,26 +93,53 @@ function saveChanges(){
 	
 	if(!email){
     	$(document).find('input[name="add_email"]').focus();
-    	$('spanEmail').show()
+    	$('#spanEmail').show()
     }
+	//nesto@nesto.nesto
+	var odgEmail = null
+	var prvi = ""
+	let drugi = ""
+	let arr2 = ""
 	if(email){
-		$('spanEmail').hide()
+		$('#spanEmail').hide()
+		$('#spanStar').hide()
+		prvi = email.split("@")
+		if(prvi.length == 2){
+			drugi = prvi.pop() //uzima poslednjeg dodatog
+			arr2 = drugi.split(".")
+			if(arr2.length >= 2){
+				odgEmail = "ok";
+			}
+			else{
+				odgEmail = null;
+			}
+		}
+		else{
+			odgEmail = null;
+		}
 	}
+	
+	if(odgEmail == null){
+		$('#spanEmail').html('Email must be aaa@bbb.ccc');
+		$('#spanEmail').show()
+		$('#spanStar').show()
+	}
+	
     if(!name){
     	$(document).find('input[name="add_name"]').focus();
-    	$('spanName').show()
+    	$('#spanName').show()
     }
     if(name){
-    	$('spanEmail').hide()
+    	$('#spanName').hide()
     }
     if(!surn){
     	$(document).find('input[name="add_surn"]').focus();
-    	$('spanSurn').show()
+    	$('#spanSurn').show()
     }
     if(surn){
-    	$('spanSurn').hide()
+    	$('#spanSurn').hide()
     }
-	if(email && name && surn && org && type && odg=="ok"){
+	if(email && odgEmail && name && surn && org && type && odg=="ok"){
 		$.ajax({
             type : 'POST',
 		    url : rootURL + "/rest/users/editProfile",

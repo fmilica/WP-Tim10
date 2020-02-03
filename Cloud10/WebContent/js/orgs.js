@@ -122,24 +122,16 @@ function addO(){
 	var name = $(document).find('input[name="add_name"]').val()
     var desc = $(document).find('input[name="add_desc"]').val()
     var logo = $(document).find('input[name="add_logo"]').val()
-    
-    if(!name || !desc){
-        alert("All of the input boxes must be filled!")
-        event.preventDefault();
-    }
 	
 	if(!name){
 		$(document).find('input[name="add_name"]').focus()
+		$('#spanName').show()
 	}
-	if(desc){
-    	$(document).find('#spanDesc').hide();
-    }
-    if(!desc){
-    	$(document).find('input[name="add_desc"]').focus()
-    	$(document).find('#spanDesc').show();
-    }
+	if(name){
+		$('spanName').hide()
+	}
 	
-    if(name && desc){
+    if(name){
         $.ajax({
             type : 'POST',
 		    url : rootURL + "/rest/organisations/addOrganisation",
@@ -164,20 +156,16 @@ function submitO(){
 	var name = $(document).find('input[name="add_name"]').val()
     var desc = $(document).find('input[name="add_desc"]').val()
     var logo = $(document).find('.imgUpload').val()
-    console.log(logo)
-    if(!name || !desc){
-        alert("All of the input boxes must be filled!")
-        event.preventDefault();
-    }
 	
 	if(!name){
 		$(document).find('input[name="add_name"]').focus()
+		$('#spanName').show()
 	}
-	else if(!desc){
-		$(document).find('input[name="add_desc"]').focus()
+	else{
+		$('#spanName').hide()
 	}
 	
-    if(name && desc){
+    if(name){
         $.ajax({
             type : 'POST',
 		    url : rootURL + "/rest/organisations/changeOrganisation",
@@ -202,7 +190,7 @@ function discardO(){
     $(document).find('.addBtn').hide();
     $(document).find('.editBtn').hide();
     
-    $(document).find('#spanDesc').hide();
+    $(document).find('#spanName').hide();
 }
 
 function loadImage(event){

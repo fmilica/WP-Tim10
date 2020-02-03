@@ -4,8 +4,8 @@
   	"description" : "First organisation to exist",
   	"logo" : "",
   	"users" : [
-  		"email2",
-  		"email3"
+  		"email2@mail.com",
+  		"email3@mail.com"
   	],
   	"resources" : [
   		"VM1",
@@ -19,7 +19,7 @@
   	"description" : "Second organisation to exist",
   	"logo" : "",
   	"users" : [
-  		"email4"
+  		"email4@mail.com"
   	],
   	"resources" : [
   		"VM2",

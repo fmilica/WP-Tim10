@@ -114,9 +114,9 @@ public class CategoriesService {
 		if(cw == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("No category sent!").build();
 		}
-		Category c = new Category(cw);
+		Category c1 = new Category(cw);
 		//ako mu je neki atribut null
-		if(c.hasNull()) {
+		if(c1.hasNull()) {
 			System.out.println("ima kao neki null");
 			return Response.status(Response.Status.BAD_REQUEST).entity("User has null fields!").build();
 		}
@@ -131,19 +131,70 @@ public class CategoriesService {
 		
 		if(cats.getCategoriesMap().containsKey(cw.getName())) {
 			System.out.println("izmena na postojeceg");
-			cats.change(cw);
-			// ne moras da vracas kategoriju, samo reload stranicu i bice u tabeli
-			//json = mapper.writeValueAsString(new Category());
-			// nije bad request!
+			if (!cw.getOldName().equals(cw.getName())) {
+				// promeni ime
+				// brisemo sa starim imenom iz mape
+				if (cats.getCategoriesMap().containsKey(cw.getOldName())) {
+					Category c = cats.getCategoriesMap().get(cw.getOldName());
+					cats.getCategoriesMap().remove(cw.getOldName());
+					c.setCoreNum(cw.getCoreNum());
+					c.setGPU(cw.getGpu());
+					c.setRAM(cw.getRam());
+					c.setName(cw.getName());
+					cats.getCategoriesMap().put(cw.getName(), c);
+				}
+				else {
+					return Response.status(Response.Status.BAD_REQUEST).entity("Old category name doesn't exist!").build();
+				}
+			}
+			// isto je staro i novo ime
+			// menjamo vrednosti
+			// ako postoji u mapi
+			if (cats.getCategoriesMap().containsKey(cw.getName())) {
+				Category c = cats.getCategoriesMap().get(cw.getName());
+				c.setCoreNum(cw.getCoreNum());
+				c.setGPU(cw.getGpu());
+				c.setRAM(cw.getRam());
+			}
+			else {
+				return Response.status(Response.Status.BAD_REQUEST).entity("Old category name doesn't exist!").build();
+			}
 			return Response.ok().build();
 		}
-		
-		cats.change(cw);
+		if (!cw.getOldName().equals(cw.getName())) {
+			// promeni ime
+			// brisemo sa starim imenom iz mape
+			if (cats.getCategoriesMap().containsKey(cw.getOldName())) {
+				Category c = cats.getCategoriesMap().get(cw.getOldName());
+				cats.getCategoriesMap().remove(cw.getOldName());
+				c.setCoreNum(cw.getCoreNum());
+				c.setGPU(cw.getGpu());
+				c.setRAM(cw.getRam());
+				c.setName(cw.getName());
+				cats.getCategoriesMap().put(cw.getName(), c);
+			}
+			else {
+				return Response.status(Response.Status.BAD_REQUEST).entity("Old category name doesn't exist!").build();
+			}
+		}
+		// isto je staro i novo ime
+		// menjamo vrednosti
+		// ako postoji u mapi
+		if (cats.getCategoriesMap().containsKey(cw.getName())) {
+			Category c = cats.getCategoriesMap().get(cw.getName());
+			c.setCoreNum(cw.getCoreNum());
+			c.setGPU(cw.getGpu());
+			c.setRAM(cw.getRam());
+		}
+		else {
+			return Response.status(Response.Status.BAD_REQUEST).entity("Old category name doesn't exist!").build();
+		}
 		ctx.setAttribute("categories", cats);
 		cats.writeCategories(ctx.getRealPath(""));
 		//json = mapper.writeValueAsString(c);
 		return Response.ok().build();
 	}
+	
 	
 	@POST
 	@Path("/deleteCategory")

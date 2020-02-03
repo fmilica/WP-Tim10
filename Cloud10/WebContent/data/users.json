@@ -1,27 +1,27 @@
 {
-  "email1": {
-    "email": "email1",
+  "email1@mail.com": {
+    "email": "email1@mail.com",
     "password": "pass1",
     "name": "Name1",
     "surname": "Surname1",
     "role": "SuperAdmin"
   },
-  "email2": {
-    "email": "email2",
+  "email2@mail.com": {
+    "email": "email2@mail.com",
     "password": "pass2",
     "name": "Name2",
     "surname": "Surname2",
     "role": "Admin"
   },
-  "email3": {
-    "email": "email3",
+  "email3@mail.com": {
+    "email": "email3@mail.com",
     "password": "pass3",
     "name": "Name3",
     "surname": "Surname3",
     "role": "User"
   },
-  "email4" : {
-  	"email" : "email4",
+  "email4@mail.com" : {
+  	"email" : "email4@mail.com",
   	"password" : "pass4",
   	"name" : "Name4",
   	"surname" : "Surname4",

@@ -255,6 +255,7 @@ $(document).ready(function() {
 	// odustajanje od promene aktivnosti
 	$('#submitAbortActives').click(function(e) {
 		$('#editActivesForm').hide()
+		$('#spanName').hide()
 	})
 
 	// potvrdjivanje promene aktivnosti

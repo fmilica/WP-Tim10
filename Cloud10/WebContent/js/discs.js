@@ -286,6 +286,8 @@ $(document).ready(function() {
     $('#submitAbort').click(function(e) {
         // gasi se forma za izmenu i nista se ne menja
         $('#addForm').hide()
+        $('#spanName').hide()
+        $('#spanCap').hide()
     })
 
     function checkInput(e, dName, dCap) {
